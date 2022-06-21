@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.thepostcardproject.R;
+import com.example.thepostcardproject.models.User;
 import com.google.android.material.textfield.TextInputEditText;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
@@ -110,7 +111,8 @@ public class LoginActivity extends AppCompatActivity {
      * @param password The provided password
      */
     private void signupUser(String username, String password) {
-        ParseUser user = new ParseUser();
+//        Log.d(TAG, "hii");
+        ParseUser user = new User();
         user.setUsername(username);
         user.setPassword(password);
         user.signUpInBackground(new SignUpCallback() {

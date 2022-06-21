@@ -40,7 +40,6 @@ public class ProfileFragment extends Fragment {
         Places.initialize(getActivity().getApplicationContext(), "AIzaSyAVrhwVJs0zsb_X8HcFuWBkqhp4LTIsJ2g");
         PlacesClient placesClient = Places.createClient(getContext());
 
-
         // Add the autocomplete fragment
         AutocompleteSupportFragment autocompleteFragment = new AutocompleteSupportFragment();
         getChildFragmentManager().beginTransaction().replace(R.id.fl_autocomplete_fragment, autocompleteFragment).commit();

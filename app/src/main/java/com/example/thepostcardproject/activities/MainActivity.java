@@ -31,6 +31,7 @@ import java.util.Arrays;
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivity";
     BottomNavigationView bottomNavigationView;
+    FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,15 +40,21 @@ public class MainActivity extends AppCompatActivity {
 
         setupViews();
         setupBottomNavigation();
-//        openAutocomplete();
+        goHomeFragment();
     }
 
+    /**
+     * Binds instance variables to the associated views
+     */
     private void setupViews() {
         bottomNavigationView = findViewById(R.id.bottom_navigation);
+        fragmentManager = getSupportFragmentManager();
     }
 
+    /**
+     * Sets up the bottom navigation bar to navigate to the appropriate fragment upon clicking a navigation item
+     */
     private void setupBottomNavigation() {
-        final FragmentManager fragmentManager = getSupportFragmentManager();
         final HomeFragment homeFragment = new HomeFragment();
         final MapFragment mapFragment = new MapFragment();
         final CreateFragment createFragment = new CreateFragment();
@@ -81,14 +88,27 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Logs out the current Parse user and goes to the login activity
+     */
     private void logout() {
         ParseUser.logOut();
         goLoginActivity();
     }
 
+    /**
+     * Uses an intent to navigate to the login activity
+     */
     private void goLoginActivity() {
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    /**
+     * Navigates to the Home fragment
+     */
+    private void goHomeFragment() {
+        fragmentManager.beginTransaction().replace(R.id.rl_container, new HomeFragment()).commit();
     }
 }
