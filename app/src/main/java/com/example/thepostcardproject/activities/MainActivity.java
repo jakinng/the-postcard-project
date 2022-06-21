@@ -41,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
         setupViews();
         setupBottomNavigation();
         goHomeFragment();
+
+        Places.initialize(getApplicationContext(), "AIzaSyAVrhwVJs0zsb_X8HcFuWBkqhp4LTIsJ2g");
+        PlacesClient placesClient = Places.createClient(this);
     }
 
     /**

@@ -60,8 +60,12 @@ public class HomeFragment extends Fragment {
             @Override
             public void done(List<Postcard> postcards, ParseException e) {
                 if (e == null) {
-                    String firstItem = postcards.get(0).getMessage();
-                    Log.d(TAG, "Message in first postcard: " + firstItem);
+                    if (postcards.size() == 0) {
+                        Log.d(TAG, "No postcards yet!");
+                    } else {
+                        String firstItem = postcards.get(0).getMessage();
+                        Log.d(TAG, "Message in first postcard: " + firstItem);
+                    }
                 } else {
                     Log.d(TAG, "Error in querying for received postcards: " + e.getMessage());
                 }

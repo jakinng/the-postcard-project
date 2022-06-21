@@ -1,10 +1,12 @@
 package com.example.thepostcardproject.models;
 
-import static com.example.thepostcardproject.utilities.Keys.KEY_ABBREVIATED_NAME;
+import static com.example.thepostcardproject.utilities.Keys.KEY_LOCATION_NAME;
+import static com.example.thepostcardproject.utilities.Keys.KEY_NAME;
 import static com.example.thepostcardproject.utilities.Keys.KEY_COORDINATES;
-import static com.example.thepostcardproject.utilities.Keys.KEY_FORMATTED_NAME;
+import static com.example.thepostcardproject.utilities.Keys.KEY_ADDRESS;
 
 import com.parse.ParseClassName;
+import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 
@@ -12,27 +14,27 @@ import com.parse.ParseObject;
 public class Location extends ParseObject {
     public Location() { super(); }
 
-    public Location(String formattedName, String abbreviatedName, ParseGeoPoint coordinates) {
+    public Location(String locationName, String address, ParseGeoPoint coordinates) {
         super();
-        setFormattedName(formattedName);
-        setAbbreviatedName(abbreviatedName);
+        setLocationName(locationName);
+        setAddress(address);
         setCoordinates(coordinates);
     }
 
-    public String getFormattedName() {
-        return getString(KEY_FORMATTED_NAME);
+    public String getLocationName() throws ParseException {
+        return fetchIfNeeded().getString(KEY_LOCATION_NAME);
     }
 
-    public void setFormattedName(String formattedName) {
-        put(KEY_FORMATTED_NAME, formattedName);
+    public void setLocationName(String locationName) {
+        put(KEY_LOCATION_NAME, locationName);
     }
 
-    public String getAbbreviatedName() {
-        return getString(KEY_ABBREVIATED_NAME);
+    public String getAddress() {
+        return getString(KEY_ADDRESS);
     }
 
-    public void setAbbreviatedName(String abbreviatedName) {
-        put(KEY_ABBREVIATED_NAME, abbreviatedName);
+    public void setAddress(String address) {
+        put(KEY_ADDRESS, address);
     }
 
     public ParseGeoPoint getCoordinates() {
@@ -41,5 +43,9 @@ public class Location extends ParseObject {
 
     public void setCoordinates(ParseGeoPoint coordinates) {
         put(KEY_COORDINATES, coordinates);
+    }
+
+    public String locationFromAddressComponents() {
+        return "hi";
     }
 }
