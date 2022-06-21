@@ -17,6 +17,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ThePostcardProject"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAVrhwVJs0zsb_X8HcFuWBkqhp4LTIsJ2g" />
+
         <activity
             android:name=".activities.LoginActivity"
             android:exported="true">

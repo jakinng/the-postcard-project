@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -15,11 +16,20 @@ import com.example.thepostcardproject.fragments.CreateFragment;
 import com.example.thepostcardproject.fragments.HomeFragment;
 import com.example.thepostcardproject.fragments.MapFragment;
 import com.example.thepostcardproject.fragments.ProfileFragment;
+import com.google.android.gms.common.api.Status;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.parse.ParseUser;
 
+import java.util.Arrays;
+
 public class MainActivity extends AppCompatActivity {
+    public static final String TAG = "MainActivity";
     BottomNavigationView bottomNavigationView;
 
     @Override
@@ -29,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         setupViews();
         setupBottomNavigation();
+//        openAutocomplete();
     }
 
     private void setupViews() {
