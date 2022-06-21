@@ -46,4 +46,8 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:4.10.0"
     // Google Places SDK
     implementation 'com.google.android.libraries.places:places:2.6.0'
+    // Glide
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    // Glide v4 uses this new annotation processor -- see https://bumptech.github.io/glide/doc/generatedapi.html
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 }

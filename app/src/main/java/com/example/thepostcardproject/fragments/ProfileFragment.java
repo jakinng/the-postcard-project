@@ -3,13 +3,18 @@ package com.example.thepostcardproject.fragments;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
+import static com.example.thepostcardproject.utilities.Keys.KEY_USER_FROM;
+import static com.example.thepostcardproject.utilities.Keys.KEY_USER_TO;
+
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +25,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.thepostcardproject.R;
+import com.example.thepostcardproject.adapters.ProfilePostcardAdapter;
 import com.example.thepostcardproject.models.Location;
+import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.models.User;
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
@@ -31,10 +38,13 @@ import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,9 +55,13 @@ import java.util.List;
  */
 public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
-    private static int AUTOCOMPLETE_REQUEST_CODE = 1;
+    private static final int NUM_PROFILE_COLUMNS = 3;
+    private static int AUTOCOMPLETE_REQUEST_CODE = 1000;
 
     User currentUser;
+    ArrayList<Postcard> sentPostcards;
+    ProfilePostcardAdapter adapter;
+
     ImageView ivLocationIcon;
     RecyclerView rvPostcards;
     ImageView ivProfile;
@@ -82,6 +96,7 @@ public class ProfileFragment extends Fragment {
         setupViews(view);
         displayUsername();
         displayUserLocation();
+        displaySentPostcards();
     }
 
     /**
@@ -176,5 +191,45 @@ public class ProfileFragment extends Fragment {
         currentUser.setCurrentLocation(newLocation);
         tvLocation.setText(place.getName());
         currentUser.saveInBackground();
+    }
+
+    // ********************************************************
+    // **         HELPER METHODS FOR POSTCARD FEED           **
+    // ********************************************************
+
+    /**
+     * Sets the variable sentPostcards to be the list of postcards sent by the current user
+     */
+    private void querySentPostcards() {
+        ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
+        // TODO : try to use currentUser instead and see if it works
+        query.whereEqualTo(KEY_USER_TO, ParseUser.getCurrentUser());
+        query.findInBackground(new FindCallback<Postcard>() {
+            @Override
+            public void done(List<Postcard> postcards, ParseException e) {
+                if (e == null) {
+                    if (postcards.size() == 0) {
+                        Log.d(TAG, "No sent postcards yet!");
+                    } else {
+                        String firstItem = postcards.get(0).getMessage();
+                        Log.d(TAG, "Message in first postcard: " + firstItem);
+                        sentPostcards = (ArrayList<Postcard>) postcards;
+                        adapter.addAll(sentPostcards);
+                    }
+                } else {
+                    Log.d(TAG, "Error in querying for received postcards: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    /**
+     * Displays the postcards sent by the user
+     */
+    private void displaySentPostcards() {
+        adapter = new ProfilePostcardAdapter(getContext(), new ArrayList<>());
+        rvPostcards.setAdapter(adapter);
+        rvPostcards.setLayoutManager(new GridLayoutManager(getContext(), NUM_PROFILE_COLUMNS));
+        querySentPostcards();
     }
 }

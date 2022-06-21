@@ -50,7 +50,7 @@ public class HomeFragment extends Fragment {
     }
 
     /**
-     * Tests querying for postcards received from the current logged in user
+     * Queries for postcards received from the current logged in user
      * Logs the message from the first postcard
      */
     private void queryReceivedPostcards() {
