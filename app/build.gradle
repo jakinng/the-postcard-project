@@ -44,4 +44,6 @@ dependencies {
     implementation "com.github.parse-community.Parse-SDK-Android:parse:4.0.0"
     // HTTP logging interceptor
     implementation "com.squareup.okhttp3:logging-interceptor:4.10.0"
+    // Google Places SDK
+    implementation 'com.google.android.libraries.places:places:2.6.0'
 }

@@ -6,4 +6,6 @@
     <string name="hello_home">hello home</string>
     <string name="hello_map">hello map</string>
     <string name="hello_profile">hello profile</string>
+    <string name="username">username</string>
+    <string name="password">password</string>
 </resources>

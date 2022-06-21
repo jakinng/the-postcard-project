@@ -2,6 +2,9 @@ package com.example.thepostcardproject;
 
 import android.app.Application;
 
+import com.example.thepostcardproject.models.Location;
+import com.example.thepostcardproject.models.Postcard;
+import com.example.thepostcardproject.models.User;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -35,5 +38,10 @@ public class ParseApplication extends Application {
                 .server("https://parseapi.back4app.com")
                 .build()
         );
+
+        // Register models as Parse subclasses
+        ParseObject.registerSubclass(Postcard.class);
+        ParseObject.registerSubclass(Location.class);
+        ParseUser.registerSubclass(User.class);
     }
 }

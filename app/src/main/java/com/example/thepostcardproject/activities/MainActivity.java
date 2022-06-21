@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -16,6 +17,7 @@ import com.example.thepostcardproject.fragments.MapFragment;
 import com.example.thepostcardproject.fragments.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.parse.ParseUser;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                         fragment = profileFragment;
                         break;
                     case R.id.action_logout:
-                        // TODO : intent to go to login activity
+                        logout();
                     default:
                         return true;
                 }
@@ -66,5 +68,16 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private void logout() {
+        ParseUser.logOut();
+        goLoginActivity();
+    }
+
+    private void goLoginActivity() {
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
