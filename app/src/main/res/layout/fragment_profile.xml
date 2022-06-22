@@ -6,21 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".fragments.ProfileFragment">
 
-<!--    <FrameLayout-->
-<!--        android:id="@+id/fl_autocomplete_fragment"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_below="@+id/iv_profile"-->
-<!--        android:layout_marginStart="24dp"-->
-<!--        android:layout_marginTop="-31dp"-->
-<!--        android:layout_toEndOf="@+id/iv_profile" />-->
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_postcards"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/iv_location_icon"
-        android:layout_marginTop="6dp" />
+        android:layout_marginTop="30dp" />
 
     <ImageView
         android:id="@+id/iv_profile"

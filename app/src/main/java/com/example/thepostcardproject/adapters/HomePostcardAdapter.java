@@ -17,43 +17,43 @@ import com.parse.ParseFile;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfilePostcardAdapter extends RecyclerView.Adapter<ProfilePostcardAdapter.ViewHolder> {
+public class HomePostcardAdapter extends RecyclerView.Adapter<HomePostcardAdapter.ViewHolder> {
     private Context context;
-    private List<Postcard> sentPostcards;
+    private List<Postcard> receivedPostcards;
 
-    public ProfilePostcardAdapter(Context context, List<Postcard> sentPostcards) {
+    public HomePostcardAdapter(Context context, List<Postcard> sentPostcards) {
         this.context = context;
-        this.sentPostcards = sentPostcards;
+        this.receivedPostcards = sentPostcards;
     }
 
     @NonNull
     @Override
-    public ProfilePostcardAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public HomePostcardAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View postcardView = inflater.inflate(R.layout.item_profile_postcard, parent, false);
+        View postcardView = inflater.inflate(R.layout.item_home_postcard, parent, false);
         ViewHolder viewHolder = new ViewHolder(postcardView);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ProfilePostcardAdapter.ViewHolder holder, int position) {
-        Postcard postcard = sentPostcards.get(position);
+    public void onBindViewHolder(@NonNull HomePostcardAdapter.ViewHolder holder, int position) {
+        Postcard postcard = receivedPostcards.get(position);
         holder.bind(postcard);
     }
 
     @Override
     public int getItemCount() {
-        return sentPostcards.size();
+        return receivedPostcards.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView ivProfilePostcard;
+        public ImageView ivHomePostcard;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            ivProfilePostcard = (ImageView) itemView.findViewById(R.id.iv_profile_postcard);
+            ivHomePostcard = (ImageView) itemView.findViewById(R.id.iv_home_postcard);
         }
 
         public void bind(Postcard postcard) {
@@ -61,12 +61,12 @@ public class ProfilePostcardAdapter extends RecyclerView.Adapter<ProfilePostcard
             Glide.with(context)
                     .load(coverPhoto.getUrl())
                     .centerCrop()
-                    .into(ivProfilePostcard);
+                    .into(ivHomePostcard);
         }
     }
 
-    public void addAll(ArrayList<Postcard> sentPostcards) {
-        this.sentPostcards.addAll(sentPostcards);
+    public void addAll(ArrayList<Postcard> postcards) {
+        this.receivedPostcards.addAll(postcards);
         notifyDataSetChanged();
     }
 }

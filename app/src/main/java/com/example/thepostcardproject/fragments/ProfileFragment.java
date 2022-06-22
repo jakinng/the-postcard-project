@@ -203,7 +203,7 @@ public class ProfileFragment extends Fragment {
     private void querySentPostcards() {
         ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
         // TODO : try to use currentUser instead and see if it works
-        query.whereEqualTo(KEY_USER_TO, ParseUser.getCurrentUser());
+        query.whereEqualTo(KEY_USER_FROM, ParseUser.getCurrentUser());
         query.findInBackground(new FindCallback<Postcard>() {
             @Override
             public void done(List<Postcard> postcards, ParseException e) {
@@ -217,7 +217,7 @@ public class ProfileFragment extends Fragment {
                         adapter.addAll(sentPostcards);
                     }
                 } else {
-                    Log.d(TAG, "Error in querying for received postcards: " + e.getMessage());
+                    Log.d(TAG, "Error in querying for sent postcards: " + e.getMessage());
                 }
             }
         });

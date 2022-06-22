@@ -8,7 +8,8 @@
         <entry key="app/src/main/res/layout/fragment_create.xml" value="0.22985781990521326" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.17604166666666668" />
         <entry key="app/src/main/res/layout/fragment_map.xml" value="0.17604166666666668" />
-        <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.601985559566787" />
+        <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.5483081914027245" />
+        <entry key="app/src/main/res/layout/item_home_postcard.xml" value="0.16084093211752787" />
         <entry key="app/src/main/res/layout/item_profile_postcard.xml" value="0.1" />
         <entry key="app/src/main/res/menu/menu_bottom_navigation.xml" value="0.346875" />
       </map>
