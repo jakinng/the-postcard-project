@@ -9,6 +9,7 @@ import static com.example.thepostcardproject.utilities.Keys.KEY_USER_TO;
 
 import com.parse.Parse;
 import com.parse.ParseClassName;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -37,16 +38,16 @@ public class Postcard extends ParseObject {
         put(KEY_COVER_PHOTO, coverPhoto);
     }
 
-    public User getUserFrom() {
-        return (User) getParseUser(KEY_USER_FROM);
+    public User getUserFrom() throws ParseException {
+        return (User) fetchIfNeeded().getParseUser(KEY_USER_FROM);
     }
 
     public void setUserFrom(ParseUser userFrom) {
         put(KEY_USER_FROM, userFrom);
     }
 
-    public User getUserTo() {
-        return (User) getParseUser(KEY_USER_TO);
+    public User getUserTo() throws ParseException {
+        return (User) fetchIfNeeded().getParseUser(KEY_USER_TO);
     }
 
     public void setUserTo(ParseUser userTo) {

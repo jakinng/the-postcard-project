@@ -15,7 +15,9 @@ import com.example.thepostcardproject.R;
 import com.example.thepostcardproject.fragments.CreateFragment;
 import com.example.thepostcardproject.fragments.HomeFragment;
 import com.example.thepostcardproject.fragments.MapFragment;
+import com.example.thepostcardproject.fragments.PostcardDetailFragment;
 import com.example.thepostcardproject.fragments.ProfileFragment;
+import com.example.thepostcardproject.models.Postcard;
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
      * Sets up the bottom navigation bar to navigate to the appropriate fragment upon clicking a navigation item
      */
     private void setupBottomNavigation() {
-        final HomeFragment homeFragment = new HomeFragment();
+
         final MapFragment mapFragment = new MapFragment();
         final CreateFragment createFragment = new CreateFragment();
         final ProfileFragment profileFragment = new ProfileFragment();
@@ -69,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
                 Fragment fragment;
                 switch (item.getItemId()) {
                     case R.id.action_home:
-                        fragment = homeFragment;
-                        break;
+                        goHomeFragment();
+                        return true;
                     case R.id.action_map:
                         fragment = mapFragment;
                         break;
@@ -112,6 +114,16 @@ public class MainActivity extends AppCompatActivity {
      * Navigates to the Home fragment
      */
     private void goHomeFragment() {
-        fragmentManager.beginTransaction().replace(R.id.rl_container, new HomeFragment()).commit();
+        HomeFragment.GoToDetailViewListener goToDetailViewListener = new HomeFragment.GoToDetailViewListener() {
+            @Override
+            public void goToDetailView(Postcard postcard) {
+                fragmentManager.beginTransaction()
+                        .replace(R.id.rl_container, PostcardDetailFragment.newInstance(postcard))
+                        .addToBackStack(null)
+                        .commit();
+            }
+        };
+        final HomeFragment homeFragment = HomeFragment.newInstance(goToDetailViewListener);
+        fragmentManager.beginTransaction().replace(R.id.rl_container, homeFragment).commit();
     }
 }

@@ -5,11 +5,12 @@
       <map>
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.28368794326241137" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.3161953727506427" />
-        <entry key="app/src/main/res/layout/fragment_create.xml" value="0.41834451901565994" />
-        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.17604166666666668" />
+        <entry key="app/src/main/res/layout/fragment_create.xml" value="0.22781524658203126" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.4360193888346354" />
         <entry key="app/src/main/res/layout/fragment_map.xml" value="0.17604166666666668" />
+        <entry key="app/src/main/res/layout/fragment_postcard_detail.xml" value="0.33177083333333335" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.5483081914027245" />
-        <entry key="app/src/main/res/layout/item_home_postcard.xml" value="0.16084093211752787" />
+        <entry key="app/src/main/res/layout/item_home_postcard.xml" value="0.31840796019900497" />
         <entry key="app/src/main/res/layout/item_profile_postcard.xml" value="0.1" />
         <entry key="app/src/main/res/menu/menu_bottom_navigation.xml" value="0.346875" />
         <entry key="app/src/main/res/xml/fileprovider.xml" value="0.20104166666666667" />

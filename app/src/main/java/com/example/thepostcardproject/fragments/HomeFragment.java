@@ -44,8 +44,16 @@ public class HomeFragment extends Fragment {
 
     RecyclerView rvPostcards;
 
+    GoToDetailViewListener goToDetailViewListener;
+
     public HomeFragment() {
         // Required empty public constructor
+    }
+
+    public static HomeFragment newInstance(GoToDetailViewListener goToDetailViewListener) {
+        HomeFragment homeFragment = new HomeFragment();
+        homeFragment.goToDetailViewListener = goToDetailViewListener;
+        return homeFragment;
     }
 
     @Override
@@ -109,9 +117,13 @@ public class HomeFragment extends Fragment {
      * Displays the postcards sent by the user
      */
     private void displayPostcards() {
-        adapter = new HomePostcardAdapter(getContext(), new ArrayList<>());
+        adapter = new HomePostcardAdapter(getContext(), new ArrayList<>(), goToDetailViewListener);
         rvPostcards.setAdapter(adapter);
         rvPostcards.setLayoutManager(new LinearLayoutManager(getContext()));
         queryReceivedPostcards();
+    }
+
+    public interface GoToDetailViewListener {
+        public void goToDetailView(Postcard postcard);
     }
 }
