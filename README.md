@@ -41,11 +41,11 @@ Send digital postcards to your friends or people around the world!
 * Users can see a detail view of postcards
 * Users can set their location
 * Users can find other users by location
+* Users can filter postcard feeds by location and time
+* Users can send postcards through text/email/messaging apps
 
 **Optional Nice-to-have Stories/Stretch Goals**
-* Users can send postcards through text/email/messaging apps
 * Push notifications
-* Users can see postcard feeds by location
 * The app suggests images to include based on location
 * Users can friend other users
 
@@ -53,16 +53,15 @@ Send digital postcards to your friends or people around the world!
 
 * Login
    * Users can create new accounts and log in to their account
-* Stream
-   * If no location selected, displays all possible matches with infinite pagination
-   * If location and times selected (in Creation screen), displays potential matches based on these restrictions
-* Detail
-    * People can see the profile page of a potential match
-    * Users can message matches
+* Stream (Home)
+   * Users can see all the postcards they have been sent
+* Detail (Postcard Detail)
+    * People can see a detailed view of a postcard
 * Creation
-    * Create a new request for a specific location and time
+    * Create a new postcard and send it to another user
 * Profile
-    * Users can see their own profiles
+    * Users can see postcards that they have sent
+    * Users can see their own profiles with information about username, location, profile picture
 
 ### 3. Navigation
 **Flow Navigation** (Screen to Screen)
