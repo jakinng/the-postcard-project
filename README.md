@@ -101,3 +101,6 @@ https://www.figma.com/proto/4HzdZHuMUNbvywe34ra96w/The-Postcard-Project?node-id=
 - [OPTIONAL: List endpoints if using existing API such as Yelp] -->
 
 <a href="https://www.flaticon.com/free-icons/postcard" title="postcard icons">Postcard icons created by monkik - Flaticon</a>
+Used:
+- https://github.com/rubensousa/GravitySnapHelper
+- https://gist.github.com/nesquena/d09dc68ff07e845cc622
