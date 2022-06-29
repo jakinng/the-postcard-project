@@ -26,10 +26,10 @@ public class HomePostcardAdapter extends RecyclerView.Adapter<HomePostcardAdapte
     public final static String TAG = "HomePostcardAdapter";
 
     private Context context;
-    private List<Postcard> receivedPostcards;
+    private ArrayList<Postcard> receivedPostcards;
     private HomeFragment.GoToDetailViewListener goToDetailViewListener;
 
-    public HomePostcardAdapter(Context context, List<Postcard> sentPostcards, HomeFragment.GoToDetailViewListener goToDetailViewListener) {
+    public HomePostcardAdapter(Context context, ArrayList<Postcard> sentPostcards, HomeFragment.GoToDetailViewListener goToDetailViewListener) {
         this.context = context;
         this.receivedPostcards = sentPostcards;
         this.goToDetailViewListener = goToDetailViewListener;

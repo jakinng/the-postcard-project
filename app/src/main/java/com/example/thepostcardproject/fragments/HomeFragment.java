@@ -22,6 +22,7 @@ import com.example.thepostcardproject.adapters.HomePostcardAdapter;
 import com.example.thepostcardproject.adapters.ProfilePostcardAdapter;
 import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.models.User;
+import com.example.thepostcardproject.utilities.EndlessRecyclerViewScrollListener;
 import com.example.thepostcardproject.utilities.Keys;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -38,13 +39,19 @@ import java.util.List;
  */
 public class HomeFragment extends Fragment {
     public static final String TAG = "HomeFragment";
+    public static final int LOAD_AT_ONCE = 5;
 
-    ArrayList<Postcard> receivedPostcards;
-    HomePostcardAdapter adapter;
+    private ArrayList<Postcard> receivedPostcards;
+    private HomePostcardAdapter adapter;
 
-    RecyclerView rvPostcards;
+    private RecyclerView rvPostcards;
 
-    GoToDetailViewListener goToDetailViewListener;
+    private GoToDetailViewListener goToDetailViewListener;
+    private EndlessRecyclerViewScrollListener scrollListener;
+
+    // Counters for the infinite scroll
+    private int limit = 0;
+    private boolean loadMore = false;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -86,28 +93,40 @@ public class HomeFragment extends Fragment {
      */
     private void setupViews(View view) {
         rvPostcards = view.findViewById(R.id.rv_postcards);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        rvPostcards.setLayoutManager(linearLayoutManager);
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                loadMorePostcards();
+            }
+        };
+        rvPostcards.addOnScrollListener(scrollListener);
     }
 
-    /**
-     * Sets the variable sentPostcards to be the list of postcards sent by the current user
-     */
-    private void queryReceivedPostcards() {
+    private void loadMorePostcards() {
         ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
+//        query.include(Postcard.KEY_USER);
         query.whereEqualTo(KEY_USER_TO, ParseUser.getCurrentUser());
+        query.setLimit(LOAD_AT_ONCE);
+        query.addDescendingOrder("createdAt");
+
+        query.setSkip(limit);
         query.findInBackground(new FindCallback<Postcard>() {
             @Override
             public void done(List<Postcard> postcards, ParseException e) {
                 if (e == null) {
-                    if (postcards.size() == 0) {
-                        Log.d(TAG, "No received postcards yet!");
+                    limit += postcards.size();
+                    if (postcards.size() != 0) {
+                        loadMore = true;
+                        Log.d(TAG, "the description of the first post is: " + String.valueOf(postcards.get(0).getMessage()));
+                        adapter.addAll((ArrayList<Postcard>) postcards);
                     } else {
-                        String firstItem = postcards.get(0).getMessage();
-                        Log.d(TAG, "Message in first postcard: " + firstItem);
-                        receivedPostcards = (ArrayList<Postcard>) postcards;
-                        adapter.addAll(receivedPostcards);
+                        loadMore = false;
+                        Log.d(TAG, "no posts!!!!");
                     }
                 } else {
-                    Log.d(TAG, "Error in querying for received postcards: " + e.getMessage());
+                    Log.d(TAG, "I can't get the posts..." + e.getMessage());
                 }
             }
         });
@@ -119,11 +138,12 @@ public class HomeFragment extends Fragment {
     private void displayPostcards() {
         adapter = new HomePostcardAdapter(getContext(), new ArrayList<>(), goToDetailViewListener);
         rvPostcards.setAdapter(adapter);
-        rvPostcards.setLayoutManager(new LinearLayoutManager(getContext()));
-        queryReceivedPostcards();
+        // Optimizes since the items are static and will not change while scrolling
+        rvPostcards.setHasFixedSize(true);
+        loadMorePostcards();
     }
 
     public interface GoToDetailViewListener {
-        public void goToDetailView(Postcard postcard);
+        void goToDetailView(Postcard postcard);
     }
 }

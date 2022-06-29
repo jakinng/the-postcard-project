@@ -18,6 +18,7 @@
         android:gravity="start|top"
         android:inputType="textMultiLine"
         android:minLines="8"
+        android:textColor="@color/postcard_black"
         tools:text="Dear Mom, I am doing well in Las Vegas. Love, Jakin" />
 
     <EditText
@@ -29,8 +30,8 @@
         android:layout_marginStart="12dp"
         android:layout_marginTop="14dp"
         android:layout_marginEnd="6dp"
-        android:layout_toEndOf="@+id/iv_add_button"
-        android:hint="to: \@" />
+        android:hint="to: \@"
+        android:textColor="@color/postcard_light_blue" />
 
     <ImageButton
         android:id="@+id/ib_send_postcard"
@@ -45,49 +46,32 @@
 
     <ImageView
         android:id="@+id/iv_cover_photo"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="280dp"
         android:layout_below="@+id/et_message"
-        android:layout_alignStart="@+id/et_message"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-
-        android:layout_marginStart="0dp"
+        android:layout_marginStart="6dp"
         android:layout_marginTop="56dp"
-        android:layout_marginEnd="6dp"
-        android:layout_marginBottom="52dp"
-        tools:src="@tools:sample/avatars" />
+        android:layout_marginEnd="6dp" />
 
     <ImageView
         android:id="@+id/iv_open_camera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/iv_cover_photo"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="11dp"
-        android:src="@drawable/edit_icon"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="12dp"
+        android:layout_toStartOf="@+id/iv_open_gallery"
         app:srcCompat="@drawable/icon_from_camera" />
 
     <ImageView
         android:id="@+id/iv_open_gallery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/iv_open_camera"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="1dp"
-        android:layout_toEndOf="@+id/iv_open_camera"
+        android:layout_alignTop="@+id/iv_cover_photo"
+        android:layout_alignEnd="@+id/iv_cover_photo"
+        android:layout_marginTop="9dp"
+        android:layout_marginEnd="9dp"
         android:src="@drawable/icon_from_gallery"
         app:srcCompat="@drawable/icon_from_gallery" />
-
-    <!--    <ImageView-->
-<!--        android:id="@+id/iv_add_button"-->
-<!--        android:layout_width="24dp"-->
-<!--        android:layout_height="24dp"-->
-<!--        android:layout_alignStart="@+id/iv_cover_photo"-->
-<!--        android:layout_alignTop="@+id/iv_cover_photo"-->
-<!--        android:layout_marginStart="190dp"-->
-<!--        android:layout_marginTop="137dp"-->
-<!--        app:srcCompat="@drawable/postcard_icon" />-->
 
 </RelativeLayout>

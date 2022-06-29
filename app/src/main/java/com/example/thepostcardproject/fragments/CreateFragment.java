@@ -120,43 +120,45 @@ public class CreateFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                Bitmap capturedImage = BitmapFactory.decodeFile(photoFilePath);
-                // See BitmapScaler.java: https://gist.github.com/nesquena/3885707fd3773c09f1bb
-                Bitmap resizedBitmap = BitmapScaler.scaleToFitWidth(capturedImage, 400);
+                // TODO : figure out whether i need this file stuff LOL i forget why i put it there
+//                Bitmap capturedImage = BitmapFactory.decodeFile(photoFilePath);
+//                // See BitmapScaler.java: https://gist.github.com/nesquena/3885707fd3773c09f1bb
+//                Bitmap resizedBitmap = BitmapScaler.scaleToFitWidth(capturedImage, 400);
+
                 Glide.with(getContext())
-                        .load(resizedBitmap)
+                        .load(photoFile)
                         .centerCrop()
                         .into(ivCoverPhoto);
-                // Save the smaller image to disk
-                // Configure byte output stream
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                // Compress the image further
-                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
-                // Create a new file for the resized bitmap (`getPhotoFileUri` defined above)
-                File resizedFile = null;
-                try {
-                    // TODO : make it so you can user createImageFileFromName
-                    resizedFile = createImageFile();
-                    resizedFile.createNewFile();
-                    FileOutputStream fos = new FileOutputStream(resizedFile);
-                    // Write the bytes of the bitmap to file
-                    fos.write(bytes.toByteArray());
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+//                // Save the smaller image to disk
+//                // Configure byte output stream
+//                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+//                // Compress the image further
+//                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
+//                // Create a new file for the resized bitmap (`getPhotoFileUri` defined above)
+//                File resizedFile = null;
+//                try {
+//                    // TODO : make it so you can user createImageFileFromName
+//                    resizedFile = createImageFile();
+//                    resizedFile.createNewFile();
+//                    FileOutputStream fos = new FileOutputStream(resizedFile);
+//                    // Write the bytes of the bitmap to file
+//                    fos.write(bytes.toByteArray());
+//                    fos.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             } else {
                 Snackbar.make(ivCoverPhoto, "Picture wasn't taken!", Snackbar.LENGTH_SHORT).show();
             }
         }
         if ((data != null) && requestCode == PICK_PHOTO_CODE) {
             Uri photoUri = data.getData();
-
-            // Load the image located at photoUri into selectedImage
-            Bitmap selectedImage = loadFromUri(photoUri);
-
             // Load the selected image into a preview
-            ivCoverPhoto.setImageBitmap(selectedImage);
+            Glide.with(getContext())
+                    .load(photoUri)
+                    .centerCrop()
+                    .into(ivCoverPhoto);
         }
     }
 

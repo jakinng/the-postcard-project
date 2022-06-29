@@ -238,6 +238,7 @@ public class ProfileFragment extends Fragment {
         adapter = new ProfilePostcardAdapter(getContext(), new ArrayList<>(), goToDetailViewListener);
         rvPostcards.setAdapter(adapter);
         rvPostcards.setLayoutManager(new GridLayoutManager(getContext(), NUM_PROFILE_COLUMNS));
+        rvPostcards.setHasFixedSize(true);
         querySentPostcards();
     }
 
