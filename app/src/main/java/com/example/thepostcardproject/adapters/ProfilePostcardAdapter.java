@@ -83,8 +83,10 @@ public class ProfilePostcardAdapter extends RecyclerView.Adapter<ProfilePostcard
         goToDetailViewListener.goToDetailView(postcard);
     }
 
-    public void addAll(ArrayList<Postcard> sentPostcards) {
-        this.sentPostcards.addAll(sentPostcards);
-        notifyDataSetChanged();
+    public void addAll(ArrayList<Postcard> postcards) {
+        int positionStart = sentPostcards.size();
+        this.sentPostcards.addAll(postcards);
+        notifyItemRangeInserted(positionStart, postcards.size());
+//        notifyDataSetChanged();
     }
 }

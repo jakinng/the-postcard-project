@@ -100,7 +100,9 @@ public class HomePostcardAdapter extends RecyclerView.Adapter<HomePostcardAdapte
     }
 
     public void addAll(ArrayList<Postcard> postcards) {
+        int positionStart = receivedPostcards.size();
         this.receivedPostcards.addAll(postcards);
+//        notifyItemRangeInserted(positionStart, postcards.size());
         notifyDataSetChanged();
     }
 }

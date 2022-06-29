@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
@@ -29,6 +30,7 @@ import com.example.thepostcardproject.adapters.ProfilePostcardAdapter;
 import com.example.thepostcardproject.models.Location;
 import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.models.User;
+import com.example.thepostcardproject.utilities.EndlessRecyclerViewScrollListener;
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -56,19 +58,25 @@ import java.util.List;
 public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
     private static final int NUM_PROFILE_COLUMNS = 3;
-    private static int AUTOCOMPLETE_REQUEST_CODE = 1000;
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 1000;
+    public static final int LOAD_AT_ONCE = 5;
 
-    User currentUser;
-    ArrayList<Postcard> sentPostcards;
-    ProfilePostcardAdapter adapter;
+    private User currentUser;
+    private ArrayList<Postcard> sentPostcards;
+    private ProfilePostcardAdapter adapter;
 
-    ImageView ivLocationIcon;
-    RecyclerView rvPostcards;
-    ImageView ivProfile;
-    TextView tvUsername;
-    TextView tvLocation;
+    private ImageView ivLocationIcon;
+    private RecyclerView rvPostcards;
+    private ImageView ivProfile;
+    private TextView tvUsername;
+    private TextView tvLocation;
 
-    GoToDetailViewListener goToDetailViewListener;
+    private GoToDetailViewListener goToDetailViewListener;
+    private EndlessRecyclerViewScrollListener scrollListener;
+
+    // Counters for the infinite scroll
+    private int limit = 0;
+    private boolean loadMore = false;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -205,12 +213,38 @@ public class ProfileFragment extends Fragment {
     // **         HELPER METHODS FOR POSTCARD FEED           **
     // ********************************************************
 
+
+    /**
+     * Displays the postcards sent by the user
+     */
+    private void displaySentPostcards() {
+        // TODO : if limit == 0 and whatever, show "no postcards!"
+
+        // Set the adapter with a grid layout manager
+        adapter = new ProfilePostcardAdapter(getContext(), new ArrayList<>(), goToDetailViewListener);
+        rvPostcards.setAdapter(adapter);
+        rvPostcards.setHasFixedSize(true);
+
+        // Add infinite scroll
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), NUM_PROFILE_COLUMNS);
+        rvPostcards.setLayoutManager(gridLayoutManager);
+        scrollListener = new EndlessRecyclerViewScrollListener(gridLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                loadMorePostcards();
+            }
+        };
+        rvPostcards.addOnScrollListener(scrollListener);
+        loadMorePostcards();
+    }
+
     /**
      * Sets the variable sentPostcards to be the list of postcards sent by the current user
      */
     private void querySentPostcards() {
         ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
         // TODO : try to use currentUser instead and see if it works
+
         query.whereEqualTo(KEY_USER_FROM, ParseUser.getCurrentUser());
         query.findInBackground(new FindCallback<Postcard>() {
             @Override
@@ -230,17 +264,40 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
-
     /**
-     * Displays the postcards sent by the user
+     * Loads more postcards sent by the current user into the variable sentPostcards
+     * Used for infinite scroll and for loading the initial postcards
      */
-    private void displaySentPostcards() {
-        adapter = new ProfilePostcardAdapter(getContext(), new ArrayList<>(), goToDetailViewListener);
-        rvPostcards.setAdapter(adapter);
-        rvPostcards.setLayoutManager(new GridLayoutManager(getContext(), NUM_PROFILE_COLUMNS));
-        rvPostcards.setHasFixedSize(true);
-        querySentPostcards();
+    private void loadMorePostcards() {
+        ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
+        query.whereEqualTo(KEY_USER_FROM, ParseUser.getCurrentUser());
+        query.setLimit(LOAD_AT_ONCE);
+        query.addDescendingOrder("createdAt");
+
+        query.setSkip(limit);
+        query.findInBackground(new FindCallback<Postcard>() {
+            @Override
+            public void done(List<Postcard> postcards, ParseException e) {
+                if (e == null) {
+                    limit += postcards.size();
+                    if (postcards.size() != 0) {
+                        loadMore = true;
+                        Log.d(TAG, "the description of the first post is: " + String.valueOf(postcards.get(0).getMessage()));
+                        adapter.addAll((ArrayList<Postcard>) postcards);
+                    } else {
+                        loadMore = false;
+                        Log.d(TAG, "no posts!!!!");
+                    }
+                } else {
+                    Log.d(TAG, "I can't get the posts..." + e.getMessage());
+                }
+            }
+        });
     }
+
+    // ********************************************************
+    // **        HELPER METHODS FOR CLICK TO DETAIL VIEW     **
+    // ********************************************************
 
     public interface GoToDetailViewListener {
         public void goToDetailView(Postcard postcard);

@@ -10,9 +10,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +27,7 @@ import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.models.User;
 import com.example.thepostcardproject.utilities.EndlessRecyclerViewScrollListener;
 import com.example.thepostcardproject.utilities.Keys;
+import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -39,7 +43,7 @@ import java.util.List;
  */
 public class HomeFragment extends Fragment {
     public static final String TAG = "HomeFragment";
-    public static final int LOAD_AT_ONCE = 5;
+    public static final int LOAD_AT_ONCE = 2;
 
     private ArrayList<Postcard> receivedPostcards;
     private HomePostcardAdapter adapter;
@@ -93,25 +97,16 @@ public class HomeFragment extends Fragment {
      */
     private void setupViews(View view) {
         rvPostcards = view.findViewById(R.id.rv_postcards);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        rvPostcards.setLayoutManager(linearLayoutManager);
-        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                loadMorePostcards();
-            }
-        };
-        rvPostcards.addOnScrollListener(scrollListener);
     }
 
     private void loadMorePostcards() {
         ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
-//        query.include(Postcard.KEY_USER);
         query.whereEqualTo(KEY_USER_TO, ParseUser.getCurrentUser());
         query.setLimit(LOAD_AT_ONCE);
         query.addDescendingOrder("createdAt");
 
         query.setSkip(limit);
+        // TODO : if limit == 0 and whatever, show "no postcards!"
         query.findInBackground(new FindCallback<Postcard>() {
             @Override
             public void done(List<Postcard> postcards, ParseException e) {
@@ -136,12 +131,31 @@ public class HomeFragment extends Fragment {
      * Displays the postcards sent by the user
      */
     private void displayPostcards() {
+        // Set the adapter
         adapter = new HomePostcardAdapter(getContext(), new ArrayList<>(), goToDetailViewListener);
         rvPostcards.setAdapter(adapter);
+
         // Optimizes since the items are static and will not change while scrolling
         rvPostcards.setHasFixedSize(true);
+
+        // Add infinite scroll
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        rvPostcards.setLayoutManager(linearLayoutManager);
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                loadMorePostcards();
+            }
+        };
+        rvPostcards.addOnScrollListener(scrollListener);
+
+        // Add snap to center
+        SnapHelper snapHelper = new LinearSnapHelper();
+        snapHelper.attachToRecyclerView(rvPostcards);
+
         loadMorePostcards();
     }
+
 
     public interface GoToDetailViewListener {
         void goToDetailView(Postcard postcard);

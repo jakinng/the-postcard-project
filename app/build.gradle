@@ -52,4 +52,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
     // Cardview
     implementation "androidx.cardview:cardview:1.0.0"
+    // Gravity Snap Helper
+    implementation 'com.github.rubensousa:gravitysnaphelper:2.2.2'
 }
