@@ -6,6 +6,7 @@ import static androidx.core.content.PermissionChecker.checkSelfPermission;
 import static com.example.thepostcardproject.utilities.Keys.KEY_USERNAME;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -76,7 +77,8 @@ public class CreateFragment extends Fragment {
     EditText etSendTo;
     ImageButton ibSendPostcard;
     ImageView ivCoverPhoto;
-//    ImageView ivAddButton;
+    ImageView ivOpenCamera;
+    ImageView ivOpenGallery;
 
     ActivityResultLauncher<String> requestPermissionLauncher;
     String photoFilePath;
@@ -108,7 +110,8 @@ public class CreateFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupViews(view);
-        setupTakePhoto();
+        setupCameraButton();
+        setupGalleryButton();
         setupSendButton();
     }
 
@@ -166,7 +169,8 @@ public class CreateFragment extends Fragment {
         etSendTo = view.findViewById(R.id.et_sendto);
         ibSendPostcard = view.findViewById(R.id.ib_send_postcard);
         ivCoverPhoto = view.findViewById(R.id.iv_cover_photo);
-//        ivAddButton = view.findViewById(R.id.iv_add_button);
+        ivOpenCamera = view.findViewById(R.id.iv_open_camera);
+        ivOpenGallery = view.findViewById(R.id.iv_open_gallery);
     }
 
     // ***************************************************
@@ -185,8 +189,9 @@ public class CreateFragment extends Fragment {
                     Snackbar.make(ibSendPostcard, "Please specify a recipient!", Snackbar.LENGTH_SHORT).show();
                 } else if (photoFile != null) {
                     sendToUser(userTo, message, new ParseFile(photoFile));
+                    // TODO : make the gallery intent and camera intent work in the same way (saving a file)
                 } else if (ivCoverPhoto.getDrawable() != null) {
-                    sendToUser(userTo, message, parseFileFromBitmap(ivCoverPhoto.getDrawable()));
+                    sendToUser(userTo, message, parseFileFromDrawable(ivCoverPhoto.getDrawable()));
                 } else {
                     Snackbar.make(ibSendPostcard, "Please attach a cover photo!", Snackbar.LENGTH_SHORT).show();
                 }
@@ -194,6 +199,7 @@ public class CreateFragment extends Fragment {
         });
     }
 
+    // TODO : check logic in here
     private void sendToUser(String username, String message, ParseFile coverPhoto) {
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.whereEqualTo(KEY_USERNAME, username); // find adults
@@ -213,9 +219,7 @@ public class CreateFragment extends Fragment {
                                     // Clear the visual fields
                                     etMessage.setText(null);
                                     etSendTo.setText(null);
-                                    photoFile = null;
-                                    photoFilePath = null;
-                                    ibSendPostcard.setImageDrawable(null);
+                                    ivCoverPhoto.setImageResource(0);
                                 } else {
                                     Log.d(TAG, e.getMessage());
                                     Snackbar.make(ibSendPostcard, "An error occurred!", Snackbar.LENGTH_SHORT).show();
@@ -268,6 +272,23 @@ public class CreateFragment extends Fragment {
     }
 
     /**
+     * When the "add photo" button is clicked, checks for permission and launches the camera
+     */
+    private void setupCameraButton() {
+        ivOpenCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+                        != PermissionChecker.PERMISSION_GRANTED) {
+                    requestPermissionLauncher.launch(Manifest.permission.CAMERA);
+                } else {
+                    launchCamera();
+                }
+            }
+        });
+    }
+
+    /**
      * Launch the in-app camera
      */
     private void launchCamera() {
@@ -287,24 +308,9 @@ public class CreateFragment extends Fragment {
     }
 
     /**
-     * When the "add photo" button is clicked, checks for permission and launches the camera
+     * Testing whether the intent chooser works or not
+     * TODO : figure out whether I can launch camera & gallery with one button or not (for later)
      */
-    private void setupTakePhoto() {
-        ivCoverPhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                if (checkSelfPermission(getContext(), Manifest.permission.CAMERA)
-//                        != PermissionChecker.PERMISSION_GRANTED) {
-//                    requestPermissionLauncher.launch(Manifest.permission.CAMERA);
-//                } else {
-//                    launchCamera();
-//                }
-//                launchGallery();
-                launchCameraAndGallery();
-            }
-        });
-    }
-
     private void launchCameraAndGallery() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
@@ -318,7 +324,7 @@ public class CreateFragment extends Fragment {
             } catch (IOException exception) {
                 Snackbar.make(ivCoverPhoto, "Sorry, an error occurred while taking the photo.", Snackbar.LENGTH_SHORT).show();
             }
-        }
+        } // TODO : add an error handler
         // Create intent for picking a photo from the gallery
         Intent galleryIntent = new Intent(Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -361,7 +367,21 @@ public class CreateFragment extends Fragment {
     // **  HELPER METHODS FOR DEALING WITH THE GALLERY  **
     // ***************************************************
 
-    // Trigger gallery selection for a photo
+    /**
+     * When the "add picture from gallery" button is clicked, the gallery intent is launched
+     */
+    public void setupGalleryButton() {
+        ivOpenGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchGallery();
+            }
+        });
+    }
+
+    /**
+     * Triggers gallery selection for a photo
+     */
     public void launchGallery() {
         // Create intent for picking a photo from the gallery
         Intent intent = new Intent(Intent.ACTION_PICK,
@@ -372,6 +392,11 @@ public class CreateFragment extends Fragment {
         startActivityForResult(intent, PICK_PHOTO_CODE);
     }
 
+    /**
+     * Given a photo URI, returns a Bitmap
+     * @param photoUri The URI to get the Bitmap from
+     * @return A Bitmap loaded from the URI
+     */
     public Bitmap loadFromUri(Uri photoUri) {
         Bitmap image = null;
         try {
@@ -390,7 +415,12 @@ public class CreateFragment extends Fragment {
         return image;
     }
 
-    private ParseFile parseFileFromBitmap(Drawable drawable) {
+    /**
+     * Given a drawable, returns a ParseFile associated with the same image
+     * @param drawable The drawable to convert to a ParseFile
+     * @return The ParseFile containing the associated image
+     */
+    private ParseFile parseFileFromDrawable(Drawable drawable) {
         Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         Bitmap.CompressFormat format = Bitmap.CompressFormat.JPEG;

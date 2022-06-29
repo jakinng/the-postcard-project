@@ -42,7 +42,7 @@
         android:layout_alignStart="@+id/iv_profile"
         android:layout_marginStart="0dp"
         android:layout_marginTop="12dp"
-        android:src="@drawable/location_icon"
+        android:src="@drawable/icon_location"
         app:srcCompat="@drawable/ic_vector_location" />
 
     <TextView
