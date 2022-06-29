@@ -80,8 +80,8 @@ public class MainActivity extends AppCompatActivity {
                         fragment = createFragment;
                         break;
                     case R.id.action_profile:
-                        fragment = profileFragment;
-                        break;
+                        goProfileFragment();
+                        return true;
                     case R.id.action_logout:
                         logout();
                     default:
@@ -125,5 +125,22 @@ public class MainActivity extends AppCompatActivity {
         };
         final HomeFragment homeFragment = HomeFragment.newInstance(goToDetailViewListener);
         fragmentManager.beginTransaction().replace(R.id.rl_container, homeFragment).commit();
+    }
+
+    /**
+     * Navigates to the Profile fragment
+     */
+    private void goProfileFragment() {
+        ProfileFragment.GoToDetailViewListener goToDetailViewListener = new ProfileFragment.GoToDetailViewListener() {
+            @Override
+            public void goToDetailView(Postcard postcard) {
+                fragmentManager.beginTransaction()
+                        .replace(R.id.rl_container, PostcardDetailFragment.newInstance(postcard))
+                        .addToBackStack(null)
+                        .commit();
+            }
+        };
+        final ProfileFragment profileFragment = ProfileFragment.newInstance(goToDetailViewListener);
+        fragmentManager.beginTransaction().replace(R.id.rl_container, profileFragment).commit();
     }
 }

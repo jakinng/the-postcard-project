@@ -1,15 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.PostcardDetailFragment">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/tv_message"
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="postcard message" />
+        android:layout_height="300dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        card_view:cardCornerRadius="8dp"
+        card_view:cardElevation="8dp">
 
-</FrameLayout>
+        <ImageView
+            android:id="@+id/iv_home_postcard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_text"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_below="@+id/cv_image"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        card_view:cardCornerRadius="8dp"
+        card_view:cardElevation="8dp">
+
+        <RelativeLayout
+            android:layout_width="400dp"
+            android:layout_height="300dp">
+
+            <TextView
+                android:id="@+id/tv_message"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/postcard_black"
+                android:textSize="18sp"
+                tools:text="Hi Mom, what's up?" />
+
+            <TextView
+                android:id="@+id/tv_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/tv_message"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="24dp"
+                android:layout_toEndOf="@+id/tv_message"
+                android:textColor="@color/postcard_dark_blue"
+                android:textSize="14sp"
+                tools:text="from: jakin to: mom" />
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.thepostcardproject.R;
+import com.example.thepostcardproject.fragments.HomeFragment;
+import com.example.thepostcardproject.fragments.ProfileFragment;
 import com.example.thepostcardproject.models.Postcard;
 import com.parse.ParseFile;
 
@@ -20,10 +22,12 @@ import java.util.List;
 public class ProfilePostcardAdapter extends RecyclerView.Adapter<ProfilePostcardAdapter.ViewHolder> {
     private Context context;
     private List<Postcard> sentPostcards;
+    private ProfileFragment.GoToDetailViewListener goToDetailViewListener;
 
-    public ProfilePostcardAdapter(Context context, List<Postcard> sentPostcards) {
+    public ProfilePostcardAdapter(Context context, List<Postcard> sentPostcards, ProfileFragment.GoToDetailViewListener goToDetailViewListener) {
         this.context = context;
         this.sentPostcards = sentPostcards;
+        this.goToDetailViewListener = goToDetailViewListener;
     }
 
     @NonNull
@@ -48,12 +52,13 @@ public class ProfilePostcardAdapter extends RecyclerView.Adapter<ProfilePostcard
         return sentPostcards.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView ivProfilePostcard;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivProfilePostcard = (ImageView) itemView.findViewById(R.id.iv_profile_postcard);
+            itemView.setOnClickListener(this);
         }
 
         public void bind(Postcard postcard) {
@@ -63,6 +68,19 @@ public class ProfilePostcardAdapter extends RecyclerView.Adapter<ProfilePostcard
                     .centerCrop()
                     .into(ivProfilePostcard);
         }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                Postcard postcard = sentPostcards.get(position);
+                goDetailView(postcard);
+            }
+        }
+    }
+
+    private void goDetailView(Postcard postcard) {
+        goToDetailViewListener.goToDetailView(postcard);
     }
 
     public void addAll(ArrayList<Postcard> sentPostcards) {

@@ -10,7 +10,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -65,6 +69,8 @@ import java.util.List;
 public class CreateFragment extends Fragment {
     private final static String TAG = "CreateFragment";
     public final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034;
+    public final static int PICK_PHOTO_CODE = 1046;
+
 
     EditText etMessage;
     EditText etSendTo;
@@ -140,6 +146,15 @@ public class CreateFragment extends Fragment {
                 Snackbar.make(ivCoverPhoto, "Picture wasn't taken!", Snackbar.LENGTH_SHORT).show();
             }
         }
+        if ((data != null) && requestCode == PICK_PHOTO_CODE) {
+            Uri photoUri = data.getData();
+
+            // Load the image located at photoUri into selectedImage
+            Bitmap selectedImage = loadFromUri(photoUri);
+
+            // Load the selected image into a preview
+            ivCoverPhoto.setImageBitmap(selectedImage);
+        }
     }
 
     /**
@@ -168,16 +183,18 @@ public class CreateFragment extends Fragment {
                     Snackbar.make(ibSendPostcard, "Your postcard message is empty!", Snackbar.LENGTH_SHORT).show();
                 } else if (userTo == null) {
                     Snackbar.make(ibSendPostcard, "Please specify a recipient!", Snackbar.LENGTH_SHORT).show();
-                } else if (photoFile == null) {
-                    Snackbar.make(ibSendPostcard, "Please attach a cover photo!", Snackbar.LENGTH_SHORT).show();
+                } else if (photoFile != null) {
+                    sendToUser(userTo, message, new ParseFile(photoFile));
+                } else if (ivCoverPhoto.getDrawable() != null) {
+                    sendToUser(userTo, message, parseFileFromBitmap(ivCoverPhoto.getDrawable()));
                 } else {
-                    sendToUser(userTo, message);
+                    Snackbar.make(ibSendPostcard, "Please attach a cover photo!", Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    private void sendToUser(String username, String message) {
+    private void sendToUser(String username, String message, ParseFile coverPhoto) {
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.whereEqualTo(KEY_USERNAME, username); // find adults
         query.findInBackground(new FindCallback<ParseUser>() {
@@ -187,7 +204,7 @@ public class CreateFragment extends Fragment {
                     if (users.size() == 1) {
                         User userFrom = (User) ParseUser.getCurrentUser();
                         User userTo = (User) users.get(0);
-                        Postcard postcard = new Postcard(new ParseFile(photoFile), userFrom, userTo, userFrom.getCurrentLocation(), userTo.getCurrentLocation(), message);
+                        Postcard postcard = new Postcard(coverPhoto, userFrom, userTo, userFrom.getCurrentLocation(), userTo.getCurrentLocation(), message);
                         postcard.saveInBackground(new SaveCallback() {
                             @Override
                             public void done(ParseException e) {
@@ -196,7 +213,9 @@ public class CreateFragment extends Fragment {
                                     // Clear the visual fields
                                     etMessage.setText(null);
                                     etSendTo.setText(null);
-                                    ibSendPostcard.setImageResource(0);
+                                    photoFile = null;
+                                    photoFilePath = null;
+                                    ibSendPostcard.setImageDrawable(null);
                                 } else {
                                     Log.d(TAG, e.getMessage());
                                     Snackbar.make(ibSendPostcard, "An error occurred!", Snackbar.LENGTH_SHORT).show();
@@ -274,14 +293,42 @@ public class CreateFragment extends Fragment {
         ivCoverPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkSelfPermission(getContext(), Manifest.permission.CAMERA)
-                        != PermissionChecker.PERMISSION_GRANTED) {
-                    requestPermissionLauncher.launch(Manifest.permission.CAMERA);
-                } else {
-                    launchCamera();
-                }
+//                if (checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+//                        != PermissionChecker.PERMISSION_GRANTED) {
+//                    requestPermissionLauncher.launch(Manifest.permission.CAMERA);
+//                } else {
+//                    launchCamera();
+//                }
+//                launchGallery();
+                launchCameraAndGallery();
             }
         });
+    }
+
+    private void launchCameraAndGallery() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
+            // Create a File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+                Uri photoURI = FileProvider.getUriForFile(getContext(), "com.postcard.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//                startActivityForResult(takePictureIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+            } catch (IOException exception) {
+                Snackbar.make(ivCoverPhoto, "Sorry, an error occurred while taking the photo.", Snackbar.LENGTH_SHORT).show();
+            }
+        }
+        // Create intent for picking a photo from the gallery
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
+        // So as long as the result is not null, it's safe to use the intent.
+//        startActivityForResult(intent, PICK_PHOTO_CODE);
+        Intent chooser = Intent.createChooser(galleryIntent, "Some text here");
+        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] { takePictureIntent });
+        startActivityForResult(chooser, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
     }
 
     /**
@@ -309,4 +356,50 @@ public class CreateFragment extends Fragment {
         photoFilePath = image.getAbsolutePath();
         return image;
     }
+
+    // ***************************************************
+    // **  HELPER METHODS FOR DEALING WITH THE GALLERY  **
+    // ***************************************************
+
+    // Trigger gallery selection for a photo
+    public void launchGallery() {
+        // Create intent for picking a photo from the gallery
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
+        // So as long as the result is not null, it's safe to use the intent.
+        startActivityForResult(intent, PICK_PHOTO_CODE);
+    }
+
+    public Bitmap loadFromUri(Uri photoUri) {
+        Bitmap image = null;
+        try {
+            // check version of Android on device
+            if(Build.VERSION.SDK_INT > 27){
+                // on newer versions of Android, use the new decodeBitmap method
+                ImageDecoder.Source source = ImageDecoder.createSource(getContext().getContentResolver(), photoUri);
+                image = ImageDecoder.decodeBitmap(source);
+            } else {
+                // support older versions of Android by using getBitmap
+                image = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), photoUri);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
+    }
+
+    private ParseFile parseFileFromBitmap(Drawable drawable) {
+        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Bitmap.CompressFormat format = Bitmap.CompressFormat.JPEG;
+        int quality = 100;
+        bitmap.compress(format, quality, stream);
+        byte[] bitmapBytes = stream.toByteArray();
+
+        ParseFile image = new ParseFile(bitmapBytes);
+        return image;
+    }
+
 }

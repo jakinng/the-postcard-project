@@ -68,8 +68,16 @@ public class ProfileFragment extends Fragment {
     TextView tvUsername;
     TextView tvLocation;
 
+    GoToDetailViewListener goToDetailViewListener;
+
     public ProfileFragment() {
         // Required empty public constructor
+    }
+
+    public static ProfileFragment newInstance(ProfileFragment.GoToDetailViewListener goToDetailViewListener) {
+        ProfileFragment profileFragment = new ProfileFragment();
+        profileFragment.goToDetailViewListener = goToDetailViewListener;
+        return profileFragment;
     }
 
     @Override
@@ -227,9 +235,13 @@ public class ProfileFragment extends Fragment {
      * Displays the postcards sent by the user
      */
     private void displaySentPostcards() {
-        adapter = new ProfilePostcardAdapter(getContext(), new ArrayList<>());
+        adapter = new ProfilePostcardAdapter(getContext(), new ArrayList<>(), goToDetailViewListener);
         rvPostcards.setAdapter(adapter);
         rvPostcards.setLayoutManager(new GridLayoutManager(getContext(), NUM_PROFILE_COLUMNS));
         querySentPostcards();
+    }
+
+    public interface GoToDetailViewListener {
+        public void goToDetailView(Postcard postcard);
     }
 }

@@ -6,11 +6,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.thepostcardproject.R;
 import com.example.thepostcardproject.models.Postcard;
 
@@ -24,6 +27,9 @@ public class PostcardDetailFragment extends Fragment {
     public static final String TAG = "PostcardDetailFragment";
 
     Postcard postcard;
+
+    ImageView ivHomePostcard;
+    TextView tvUsername;
     TextView tvMessage;
 
     public PostcardDetailFragment() {
@@ -56,10 +62,21 @@ public class PostcardDetailFragment extends Fragment {
     }
 
     private void setupViews(View view) {
+        ivHomePostcard = view.findViewById(R.id.iv_home_postcard);
+        tvUsername = view.findViewById(R.id.tv_username);
         tvMessage = view.findViewById(R.id.tv_message);
     }
 
     private void displayPostcard() {
+        Glide.with(getContext())
+                .load(postcard.getCoverPhoto().getUrl())
+                .into(ivHomePostcard);
+        try {
+            String toFrom = "From: " + postcard.getUserFrom().getUsername() + " | " + postcard.getLocationFrom().getLocationName() + "\nTo: " + postcard.getUserTo().getUsername() + " | " + postcard.getLocationTo().getLocationName();
+            tvUsername.setText(toFrom);
+        } catch (com.parse.ParseException e) {
+            Log.d(TAG, "An exception occurred with retrieving the username: " + e.getMessage());
+        }
         tvMessage.setText(postcard.getMessage());
     }
 }
