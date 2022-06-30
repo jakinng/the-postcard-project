@@ -21,18 +21,17 @@
         android:textColor="@color/postcard_black"
         tools:text="Dear Mom, I am doing well in Las Vegas. Love, Jakin" />
 
-    <EditText
-        android:id="@+id/et_sendto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/et_message"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="6dp"
-        android:hint="to: \@"
-        android:textColor="@color/postcard_light_blue" />
 
+    <AutoCompleteTextView
+        android:id="@+id/actv_username"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ib_send_postcard"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="27dp"
+        android:layout_toEndOf="@+id/et_message"
+        android:completionThreshold="1"
+        android:hint="\@to"/>
     <ImageButton
         android:id="@+id/ib_send_postcard"
         android:layout_width="wrap_content"
