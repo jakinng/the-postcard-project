@@ -30,10 +30,14 @@ import androidx.fragment.app.Fragment;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -59,6 +63,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -73,16 +78,19 @@ public class CreateFragment extends Fragment {
     public final static int PICK_PHOTO_CODE = 1046;
 
 
-    EditText etMessage;
-    EditText etSendTo;
-    ImageButton ibSendPostcard;
-    ImageView ivCoverPhoto;
-    ImageView ivOpenCamera;
-    ImageView ivOpenGallery;
+    private EditText etMessage;
+//    private EditText etSendTo;
+    private ImageButton ibSendPostcard;
+    private ImageView ivCoverPhoto;
+    private ImageView ivOpenCamera;
+    private ImageView ivOpenGallery;
+    private AutoCompleteTextView actvUsernameTo;
+
 
     ActivityResultLauncher<String> requestPermissionLauncher;
     String photoFilePath;
     File photoFile;
+    private ArrayAdapter<String> usernameAdapter;
 
     public CreateFragment() {
         // Required empty public constructor
@@ -113,6 +121,7 @@ public class CreateFragment extends Fragment {
         setupCameraButton();
         setupGalleryButton();
         setupSendButton();
+        setupUsernameAutocomplete();
     }
 
     @Override
@@ -168,11 +177,12 @@ public class CreateFragment extends Fragment {
      */
     private void setupViews(View view) {
         etMessage = view.findViewById(R.id.et_message);
-        etSendTo = view.findViewById(R.id.et_sendto);
+//        etSendTo = view.findViewById(R.id.et_sendto);
         ibSendPostcard = view.findViewById(R.id.ib_send_postcard);
         ivCoverPhoto = view.findViewById(R.id.iv_cover_photo);
         ivOpenCamera = view.findViewById(R.id.iv_open_camera);
         ivOpenGallery = view.findViewById(R.id.iv_open_gallery);
+        actvUsernameTo = view.findViewById(R.id.actv_username);
     }
 
     // ***************************************************
@@ -184,7 +194,8 @@ public class CreateFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String message = etMessage.getText().toString();
-                String userTo = etSendTo.getText().toString();
+//                String userTo = etSendTo.getText().toString();
+                String userTo = actvUsernameTo.getText().toString();
                 if (message == null) {
                     Snackbar.make(ibSendPostcard, "Your postcard message is empty!", Snackbar.LENGTH_SHORT).show();
                 } else if (userTo == null) {
@@ -220,7 +231,8 @@ public class CreateFragment extends Fragment {
                                     Snackbar.make(ibSendPostcard, "Postcard has been sent!", Snackbar.LENGTH_SHORT).show();
                                     // Clear the visual fields
                                     etMessage.setText(null);
-                                    etSendTo.setText(null);
+//                                    etSendTo.setText(null);
+                                    actvUsernameTo.setText(null);
                                     ivCoverPhoto.setImageResource(0);
                                 } else {
                                     Log.d(TAG, e.getMessage());
@@ -238,6 +250,49 @@ public class CreateFragment extends Fragment {
                 }
             }
         });
+    }
+
+    // ***************************************************
+    // **     AUTOCOMPLETE FOR SENDING BY USERNAME      **
+    // ***************************************************
+
+    private void setupUsernameAutocomplete() {
+        // TODO : make this to stuff look better
+        String to = "@to: ";
+        actvUsernameTo.setText(to);
+        actvUsernameTo.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.length() < to.length()){
+                    actvUsernameTo.setText(to); //set editext with "To" again like has been initialized
+                    actvUsernameTo.setSelection(actvUsernameTo.getText().length()); // to make cursor in end of text
+                }
+            }
+        });
+
+        ArrayList<String> usernames = new ArrayList<>();
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> users, ParseException e) {
+                if (e == null) {
+                    for (ParseUser parseUser : users) {
+                        User user = (User) parseUser;
+                        usernames.add(to + user.getUsername());
+                    }
+                    usernameAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, usernames);
+                    actvUsernameTo.setAdapter(usernameAdapter);
+                }
+            }
+        });
+
+
     }
 
     // ***************************************************

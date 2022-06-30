@@ -108,7 +108,7 @@ public class HomeFragment extends Fragment {
         ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
         query.whereEqualTo(KEY_USER_TO, ParseUser.getCurrentUser());
         query.setLimit(LOAD_AT_ONCE);
-//        query.addDescendingOrder("createdAt");
+        query.addDescendingOrder("createdAt");
 
         query.setSkip(limit);
         // TODO : if limit == 0 and postcards.size() == 0, show "no postcards!"
