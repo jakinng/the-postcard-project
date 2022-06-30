@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,6 +41,7 @@ import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -73,6 +75,7 @@ public class ProfileFragment extends Fragment {
 
     private GoToDetailViewListener goToDetailViewListener;
     private EndlessRecyclerViewScrollListener scrollListener;
+    private SwipeRefreshLayout swipeContainer;
 
     // Counters for the infinite scroll
     private int limit = 0;
@@ -113,7 +116,9 @@ public class ProfileFragment extends Fragment {
         displayUsername();
         displayUserLocation();
         displaySentPostcards();
+        setupSwipeToRefresh();
     }
+
 
     /**
      * Called after startActivityForResult is completed
@@ -149,6 +154,7 @@ public class ProfileFragment extends Fragment {
         ivProfile = view.findViewById(R.id.iv_profile);
         tvUsername = view.findViewById(R.id.tv_username);
         tvLocation = view.findViewById(R.id.tv_location);
+        swipeContainer = view.findViewById(R.id.swipe_container);
     }
 
     // ********************************************************
@@ -231,39 +237,15 @@ public class ProfileFragment extends Fragment {
         scrollListener = new EndlessRecyclerViewScrollListener(gridLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                loadMorePostcards();
+                if (loadMore) {
+                    loadMorePostcards();
+                }
             }
         };
         rvPostcards.addOnScrollListener(scrollListener);
         loadMorePostcards();
     }
 
-    /**
-     * Sets the variable sentPostcards to be the list of postcards sent by the current user
-     */
-    private void querySentPostcards() {
-        ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
-        // TODO : try to use currentUser instead and see if it works
-
-        query.whereEqualTo(KEY_USER_FROM, ParseUser.getCurrentUser());
-        query.findInBackground(new FindCallback<Postcard>() {
-            @Override
-            public void done(List<Postcard> postcards, ParseException e) {
-                if (e == null) {
-                    if (postcards.size() == 0) {
-                        Log.d(TAG, "No sent postcards yet!");
-                    } else {
-                        String firstItem = postcards.get(0).getMessage();
-                        Log.d(TAG, "Message in first postcard: " + firstItem);
-                        sentPostcards = (ArrayList<Postcard>) postcards;
-                        adapter.addAll(sentPostcards);
-                    }
-                } else {
-                    Log.d(TAG, "Error in querying for sent postcards: " + e.getMessage());
-                }
-            }
-        });
-    }
     /**
      * Loads more postcards sent by the current user into the variable sentPostcards
      * Used for infinite scroll and for loading the initial postcards
@@ -275,24 +257,52 @@ public class ProfileFragment extends Fragment {
         query.addDescendingOrder("createdAt");
 
         query.setSkip(limit);
+        if (limit == 0) {
+            scrollListener.resetState();
+        }
+
         query.findInBackground(new FindCallback<Postcard>() {
             @Override
             public void done(List<Postcard> postcards, ParseException e) {
                 if (e == null) {
+                    Log.d(TAG, "Just got " + postcards.size() + " postcards!");
+                    swipeContainer.setRefreshing(false);
+                    if (limit == 0) {
+                        adapter.clear();
+                        if (postcards.size() == 0) {
+                            Snackbar.make(rvPostcards, "You have not been sent any postcards!", Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
                     limit += postcards.size();
                     if (postcards.size() != 0) {
                         loadMore = true;
-                        Log.d(TAG, "the description of the first post is: " + String.valueOf(postcards.get(0).getMessage()));
                         adapter.addAll((ArrayList<Postcard>) postcards);
                     } else {
                         loadMore = false;
-                        Log.d(TAG, "no posts!!!!");
                     }
                 } else {
-                    Log.d(TAG, "I can't get the posts..." + e.getMessage());
+                    Log.d(TAG, "I can't get the postcards..." + e.getMessage());
                 }
             }
         });
+    }
+
+    private void setupSwipeToRefresh() {
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                limit = 0;
+                loadMorePostcards();
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
     }
 
     // ********************************************************

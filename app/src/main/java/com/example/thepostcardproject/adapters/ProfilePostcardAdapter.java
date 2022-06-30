@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.example.thepostcardproject.R;
@@ -88,5 +89,10 @@ public class ProfilePostcardAdapter extends RecyclerView.Adapter<ProfilePostcard
         this.sentPostcards.addAll(postcards);
         notifyItemRangeInserted(positionStart, postcards.size());
 //        notifyDataSetChanged();
+    }
+
+    public void clear() {
+        sentPostcards.clear();
+        notifyDataSetChanged();
     }
 }

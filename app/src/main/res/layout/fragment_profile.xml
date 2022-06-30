@@ -6,12 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".fragments.ProfileFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_postcards"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipe_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/iv_location_icon"
-        android:layout_marginTop="30dp" />
+        android:layout_marginTop="30dp">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_postcards"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ImageView
         android:id="@+id/iv_profile"
