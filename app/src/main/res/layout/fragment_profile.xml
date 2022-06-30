@@ -6,6 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".fragments.ProfileFragment">
 
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_postcards"
         android:layout_width="match_parent"
@@ -55,5 +61,7 @@
         android:layout_toEndOf="@+id/iv_location_icon"
         android:textColor="@color/postcard_black"
         tools:text="Vegas, baby!" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

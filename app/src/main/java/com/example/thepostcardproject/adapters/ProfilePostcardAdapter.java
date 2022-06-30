@@ -89,4 +89,9 @@ public class ProfilePostcardAdapter extends RecyclerView.Adapter<ProfilePostcard
         notifyItemRangeInserted(positionStart, postcards.size());
 //        notifyDataSetChanged();
     }
+
+    public void clear() {
+        sentPostcards.clear();
+        notifyDataSetChanged();
+    }
 }

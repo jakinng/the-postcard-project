@@ -105,4 +105,9 @@ public class HomePostcardAdapter extends RecyclerView.Adapter<HomePostcardAdapte
 //        notifyItemRangeInserted(positionStart, postcards.size());
         notifyDataSetChanged();
     }
+
+    public void clear() {
+        receivedPostcards.clear();
+        notifyDataSetChanged();
+    }
 }
