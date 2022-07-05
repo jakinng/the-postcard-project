@@ -23,6 +23,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.utils.widget.ImageFilterView;
 import androidx.core.content.FileProvider;
 import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.Fragment;
@@ -81,7 +82,7 @@ public class CreateFragment extends Fragment {
     private EditText etMessage;
 //    private EditText etSendTo;
     private ImageButton ibSendPostcard;
-    private ImageView ivCoverPhoto;
+    private ImageFilterView ivCoverPhoto;
     private ImageView ivOpenCamera;
     private ImageView ivOpenGallery;
     private AutoCompleteTextView actvUsernameTo;
@@ -163,11 +164,18 @@ public class CreateFragment extends Fragment {
         }
         if ((data != null) && requestCode == PICK_PHOTO_CODE) {
             Uri photoUri = data.getData();
+//            Bitmap photoBitmap = loadFromUri(photoUri);
+
+//            ImageProcessor processor = new ImageProcessor();
+//            Bitmap tintBitmap = processor.applySnowEffect(photoBitmap);
+
             // Load the selected image into a preview
+            ivCoverPhoto.setWarmth(2);
             Glide.with(getContext())
                     .load(photoUri)
                     .centerCrop()
                     .into(ivCoverPhoto);
+//            Snackbar.make(ivCoverPhoto, "S:FJ", Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -196,6 +204,7 @@ public class CreateFragment extends Fragment {
                 String message = etMessage.getText().toString();
 //                String userTo = etSendTo.getText().toString();
                 String userTo = actvUsernameTo.getText().toString();
+                userTo = userTo.substring(5);
                 if (message == null) {
                     Snackbar.make(ibSendPostcard, "Your postcard message is empty!", Snackbar.LENGTH_SHORT).show();
                 } else if (userTo == null) {

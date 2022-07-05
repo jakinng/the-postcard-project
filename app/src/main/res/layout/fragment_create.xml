@@ -43,7 +43,7 @@
         android:background="#FFFFFF"
         android:src="@drawable/send_icon" />
 
-    <ImageView
+    <androidx.constraintlayout.utils.widget.ImageFilterView
         android:id="@+id/iv_cover_photo"
         android:layout_width="match_parent"
         android:layout_height="280dp"

@@ -1,20 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.HomeFragment">
 
+    <!--      for text center:  android:gravity="center"-->
+
     <TextView
         android:id="@+id/tv_received_postcard_message"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:gravity="center"
         android:text="Postcards you've received!"
         android:textColor="@color/postcard_dark_blue"
         android:textSize="18sp" />
+
+    <ImageView
+        android:id="@+id/iv_filter"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignTop="@+id/tv_received_postcard_message"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="20dp"
+        app:srcCompat="@drawable/icon_filter" />
+
+    <ImageView
+        android:id="@+id/iv_filter_location"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignTop="@+id/tv_received_postcard_message"
+        android:layout_marginEnd="10dp"
+        android:layout_toStartOf="@+id/iv_filter"
+        app:srcCompat="@drawable/ic_vector_location" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_container"

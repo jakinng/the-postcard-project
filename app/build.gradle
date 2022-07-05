@@ -56,4 +56,5 @@ dependencies {
     implementation 'com.github.rubensousa:gravitysnaphelper:2.2.2'
     // Pull to refresh
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
 }
