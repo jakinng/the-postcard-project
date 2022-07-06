@@ -29,9 +29,12 @@ import com.example.thepostcardproject.models.Location;
 import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.utilities.EndlessRecyclerViewScrollListener;
 import com.example.thepostcardproject.utilities.LocationComparator;
+import com.example.thepostcardproject.utilities.OnBottomSheetCallbacks;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.snackbar.Snackbar;
@@ -54,7 +57,7 @@ import java.util.List;
  * Use the {@link HomeFragment# newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends BottomSheetDialogFragment implements OnBottomSheetCallbacks {
     public static final String TAG = "HomeFragment";
     public static final int LOAD_AT_ONCE = 5;
     public static final int SELECT_LOCATION_REQUEST_CODE = 101;
@@ -81,6 +84,10 @@ public class HomeFragment extends Fragment {
     private Date endDate;
     private Location targetLocation;
 
+    // Current state for behavior as a bottom fragment
+    private HomeBackdropFragment homeBackdropFragment;
+    private int currentState = BottomSheetBehavior.STATE_EXPANDED;
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -99,6 +106,9 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Set this as listener for the backdrop fragment
+        homeBackdropFragment = (HomeBackdropFragment) getParentFragment();
+        homeBackdropFragment.setOnBottomSheetCallbacks(this);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
@@ -116,6 +126,10 @@ public class HomeFragment extends Fragment {
         setupSwipeToRefresh();
         setupDateRangePicker();
         setupLocationPicker();
+
+
+//        Log.d(TAG, String.valueOf(view.getId() == R.id.home_fragment_container));
+//        homeBackdropFragment.configureBackdrop(view);
     }
 
     // TODO: make sure this lifecycle is okay lmfao
@@ -160,24 +174,33 @@ public class HomeFragment extends Fragment {
         ivFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MaterialDatePicker<Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
-                        .setTitleText("Filter by date range")
-                        .setSelection(
-                                new Pair(MaterialDatePicker.thisMonthInUtcMilliseconds(), MaterialDatePicker.todayInUtcMilliseconds())
-                        )
-                        .build();
-                dateRangePicker.show(getChildFragmentManager(), TAG);
-                dateRangePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
-                    @Override
-                    public void onPositiveButtonClick(Pair<Long, Long> selection) {
-                        startDate = new Date(selection.first);
-                        endDate = new Date(selection.second);
-                        Log.d(TAG, "start: " + startDate + " and end: " + endDate);
-                        skip = 0;
-                        loadMorePostcards();
-                    }
-                });
+                if (currentState == BottomSheetBehavior.STATE_EXPANDED) {
+                    homeBackdropFragment.closeBottomSheet();
+                } else {
+                    homeBackdropFragment.openBottomSheet();
+                }
             }
+
+//            @Override
+//            public void onClick(View v) {
+//                MaterialDatePicker<Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+//                        .setTitleText("Filter by date range")
+//                        .setSelection(
+//                                new Pair(MaterialDatePicker.thisMonthInUtcMilliseconds(), MaterialDatePicker.todayInUtcMilliseconds())
+//                        )
+//                        .build();
+//                dateRangePicker.show(getChildFragmentManager(), TAG);
+//                dateRangePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
+//                    @Override
+//                    public void onPositiveButtonClick(Pair<Long, Long> selection) {
+//                        startDate = new Date(selection.first);
+//                        endDate = new Date(selection.second);
+//                        Log.d(TAG, "start: " + startDate + " and end: " + endDate);
+//                        skip = 0;
+//                        loadMorePostcards();
+//                    }
+//                });
+//            }
         });
     }
 
@@ -193,6 +216,21 @@ public class HomeFragment extends Fragment {
                 startActivityForResult(intent, SELECT_LOCATION_REQUEST_CODE);
             }
         });
+    }
+
+    /**
+     * Handles the bottom sheet collapsing or expanding
+     * @param bottomSheet The view consisting of the bottom sheet, which is the entire HomeFragment
+     * @param newState The new state, either STATE_EXPANDED or STATE_COLLAPSED
+     */
+    @Override
+    public void onStateChanged(View bottomSheet, int newState) {
+        currentState = newState;
+        if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+
+        } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+
+        }
     }
 
     // ##########################################
@@ -336,7 +374,6 @@ public class HomeFragment extends Fragment {
 
         loadMorePostcards();
     }
-
 
     public interface GoToDetailViewListener {
         void goToDetailView(Postcard postcard);

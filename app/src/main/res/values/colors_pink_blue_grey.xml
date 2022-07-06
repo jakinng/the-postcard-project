@@ -4,6 +4,7 @@
 <resources>
   <color name="primary">#C2185B</color>
   <color name="primary_dark">#C2185B</color>
+  <color name="primary_dark_transparent">#66C2185B</color>
   <color name="primary_light">#F8BBD0</color>
   <color name="accent">#607D8B</color>
   <color name="primary_text">#212121</color>

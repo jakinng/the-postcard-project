@@ -57,26 +57,27 @@ public class Location extends ParseObject {
     // ##   DISTANCE TO TARGET LOCATION        ##
     // ##########################################
 
-    public static double getDistanceBetweenLocations(Location location1, Location location2) {
-        try {
+    /**
+     * Calculate the great circle (straight line along the surface of the Earth) distance between two locations
+     * @param location1 The first location to calculate distance from
+     * @param location2 The second location to calculate distance to
+     * @return The distance between the two points
+     */
+    public static double getDistanceBetweenLocations(Location location1, Location location2) throws ParseException {
             ParseGeoPoint coordinates1 = location1.getCoordinates();
             ParseGeoPoint coordinates2 = location2.getCoordinates();
             return distance(coordinates1.getLatitude(), coordinates1.getLongitude(),
                     coordinates2.getLatitude(), coordinates2.getLongitude());
-        } catch (ParseException parseException) {
-            Log.d(TAG, parseException.getMessage());
-            return 0;
-        }
     }
 
     /**
-     * Calculate the great circle distance between two points,
+     * Calculate the great circle (straight line along the surface of the Earth) distance between two points,
      * specified by latitude and longitude, assuming the Earth is a perfect sphere
      * @param lat1 The latitude of the first point
      * @param lon1 The longitude of the first point
      * @param lat2 The latitude of the second point
      * @param lon2 The longitude of the second point
-     * @return
+     * @return The distance between the two points, specified by latitude and longitude
      */
     public static double distance(double lat1, double lon1, double lat2, double lon2) {
         double p = Math.PI / 180;

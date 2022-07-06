@@ -16,8 +16,13 @@
 
         <item name="android:colorBackground">@color/white</item>
         <item name="android:fontFamily">@font/fira_sans</item>
-
     </style>
+
+    <style name="Theme.PostcardBackdrop" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Color for backdrop in HomeFragment. -->
+        <item name="android:background">@color/primary_light</item>
+    </style>
+
         <style name="TextAppearance.MdcTypographyStyles.Headline1" parent="TextAppearance.MaterialComponents.Headline1">
             <item name="fontFamily">@font/fira_sans</item>
             <item name="android:fontFamily">@font/fira_sans</item>
