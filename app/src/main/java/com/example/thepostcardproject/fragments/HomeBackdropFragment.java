@@ -39,29 +39,14 @@ public class HomeBackdropFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-//        HomeFragment.GoToDetailViewListener goToDetailViewListener = new HomeFragment.GoToDetailViewListener() {
-//            @Override
-//            public void goToDetailView(Postcard postcard) {
-//                getParentFragmentManager().beginTransaction()
-//                        .replace(R.id.rl_container, PostcardDetailFragment.newInstance(postcard))
-//                        .addToBackStack(null)
-//                        .commit();
-//            }
-//        };
-//        homeFragment = HomeFragment.newInstance(goToDetailViewListener);
-////        homeFragment = new HomeFragment();
-//        getChildFragmentManager().beginTransaction().replace(R.id.home_fragment_container, homeFragment).commit();
-
+//         Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home_backdrop, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        inflateHomeFragment();
         super.onViewCreated(view, savedInstanceState);
-
-
-        configureBackdrop();
     }
 
     public void setOnBottomSheetCallbacks(OnBottomSheetCallbacks onBottomSheetCallbacks) {
@@ -76,13 +61,25 @@ public class HomeBackdropFragment extends Fragment {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
+    private void inflateHomeFragment() {
+        HomeFragment.GoToDetailViewListener goToDetailViewListener = new HomeFragment.GoToDetailViewListener() {
+            @Override
+            public void goToDetailView(Postcard postcard) {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.rl_container, PostcardDetailFragment.newInstance(postcard))
+                        .addToBackStack(null)
+                        .commit();
+            }
+        };
+        homeFragment = HomeFragment.newInstance(goToDetailViewListener);
+//        homeFragment = new HomeFragment();
+        getChildFragmentManager().beginTransaction().replace(R.id.rl_home_fragment, homeFragment).commit();
 
-    public void configureBackdrop() {
-        HomeFragment homeFragment = (HomeFragment) getChildFragmentManager().findFragmentById(R.id.home_fragment);
-//        Log.d(TAG, String.valueOf(homeFragment.getView()));
+    }
 
-        BottomSheetBehavior bs = BottomSheetBehavior.from(homeFragment.getView());
-        bs.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+    public void configureBackdrop(View view) {
+        bottomSheetBehavior = BottomSheetBehavior.from(view);
+        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 listener.onStateChanged(bottomSheet, newState);
@@ -91,7 +88,6 @@ public class HomeBackdropFragment extends Fragment {
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
         });
-        bs.setState(BottomSheetBehavior.STATE_EXPANDED);
-        bottomSheetBehavior = bs;
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 }

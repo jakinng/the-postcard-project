@@ -6,18 +6,14 @@
     style="@style/Theme.PostcardBackdrop"
     >
 
-    <fragment
-        android:name="com.example.thepostcardproject.fragments.HomeFragment"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:elevation="1dp"
-        app:behavior_peekHeight="120dp"
-        android:id="@+id/home_fragment"
+        android:id="@+id/rl_home_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:behavior_skipCollapsed="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_behavior=".utilities.GestureLockedBottomSheetBehavior" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

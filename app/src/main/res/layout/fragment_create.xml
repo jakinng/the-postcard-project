@@ -41,7 +41,7 @@
         android:layout_marginTop="6dp"
         android:layout_marginEnd="6dp"
         android:background="#FFFFFF"
-        android:src="@drawable/send_icon" />
+        android:src="@drawable/icon_send" />
 
     <androidx.constraintlayout.utils.widget.ImageFilterView
         android:id="@+id/iv_cover_photo"

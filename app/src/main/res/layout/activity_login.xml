@@ -73,6 +73,6 @@
         android:layout_marginStart="88dp"
         android:layout_marginTop="72dp"
         android:layout_marginBottom="-50dp"
-        app:srcCompat="@drawable/postcard_icon" />
+        app:srcCompat="@drawable/icon_postcard" />
 
 </RelativeLayout>

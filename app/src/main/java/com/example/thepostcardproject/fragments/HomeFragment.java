@@ -124,12 +124,12 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         setupViews(view);
         displayPostcards();
         setupSwipeToRefresh();
-        setupDateRangePicker();
-        setupLocationPicker();
+//        setupDateRangePicker();
+//        setupLocationPicker();
 
 
 //        Log.d(TAG, String.valueOf(view.getId() == R.id.home_fragment_container));
-//        homeBackdropFragment.configureBackdrop(view);
+        homeBackdropFragment.configureBackdrop(view);
     }
 
     // TODO: make sure this lifecycle is okay lmfao
@@ -159,8 +159,8 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
      * @param view The encapsulating view
      */
     private void setupViews(View view) {
-        ivFilter = view.findViewById(R.id.iv_filter);
-        ivFilterLocation = view.findViewById(R.id.iv_filter_location);
+//        ivFilter = view.findViewById(R.id.iv_filter);
+//        ivFilterLocation = view.findViewById(R.id.iv_filter_location);
         tvPostcardHeader = view.findViewById(R.id.tv_received_postcard_message);
         rvPostcards = view.findViewById(R.id.rv_postcards);
         swipeContainer = view.findViewById(R.id.swipe_container);
