@@ -23,6 +23,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.utils.widget.ImageFilterView;
 import androidx.core.content.FileProvider;
 import androidx.core.content.PermissionChecker;
@@ -123,6 +125,7 @@ public class CreateFragment extends Fragment {
         setupGalleryButton();
         setupSendButton();
         setupUsernameAutocomplete();
+        configureActionBar();
     }
 
     @Override
@@ -496,6 +499,14 @@ public class CreateFragment extends Fragment {
 
         ParseFile image = new ParseFile(bitmapBytes);
         return image;
+    }
+
+    /**
+     * Set the action bar to have the appropriate title and icons
+     */
+    private void configureActionBar() {
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar(); // or getActionBar();
+        actionBar.setTitle("Create"); // set the top title
     }
 
 }

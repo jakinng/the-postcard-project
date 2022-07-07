@@ -35,7 +35,7 @@
                 android:background="@drawable/bottom_gray_border"
                 android:gravity="center"
                 android:paddingBottom="10dp"
-                android:text="Postcards you've received!"
+                android:text="Postcard Collection"
                 android:textColor="@color/postcard_dark_blue"
                 android:textSize="18sp" />
 
