@@ -6,17 +6,26 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.example.thepostcardproject.R;
 import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.utilities.OnBottomSheetCallbacks;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import com.google.android.material.textfield.TextInputLayout;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +37,10 @@ public class HomeBackdropFragment extends Fragment {
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private OnBottomSheetCallbacks listener;
     private HomeFragment homeFragment;
+
+    private EditText etDateRange;
+    private TextInputLayout iDateRange;
+
 
     public HomeBackdropFragment() {
         // Required empty public constructor
@@ -47,17 +60,24 @@ public class HomeBackdropFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        setupViews(view);
         inflateHomeFragment();
-        configureActionBar();
+        setupDateRangePicker();
         super.onViewCreated(view, savedInstanceState);
     }
 
-    /**
-     * Set the action bar to have the appropriate title and icons
-     */
-    private void configureActionBar() {
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar(); // or getActionBar();
-        actionBar.setTitle("Home"); // set the top title
+    private void setupViews(View view) {
+        iDateRange = view.findViewById(R.id.i_date_range);
+        etDateRange = view.findViewById(R.id.et_date_range);
+    }
+
+    private void setupDateRangePicker() {
+        etDateRange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                homeFragment.launchDateRangePicker();
+            }
+        });
     }
 
     // ################################
@@ -88,6 +108,14 @@ public class HomeBackdropFragment extends Fragment {
             public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
         });
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
+    public void displayDateRange(Date startDate, Date endDate) {
+        etDateRange.clearFocus();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM d, y");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String datesFromTo = dateFormat.format(startDate) + " - " + dateFormat.format(endDate);
+        etDateRange.setText(datesFromTo);
     }
 
     /**

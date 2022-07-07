@@ -8,6 +8,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -54,6 +56,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -138,6 +141,10 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        // Set the action bar to have the appropriate title and icons
+        actionBarOpen();
+
+        // Populate menu items
         menu.clear();
         getActivity().getMenuInflater().inflate(R.menu.menu_home, menu);
         super.onCreateOptionsMenu(menu, inflater);
@@ -170,8 +177,12 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         // If the filter icon is clicked, toggle the backdrop expanded or collapsed
         if (item.getItemId() == R.id.menu_icon_filter) {
             if (currentState == BottomSheetBehavior.STATE_EXPANDED) {
+                item.setIcon(R.drawable.icon_close);
+                actionBarClosed();
                 homeBackdropFragment.closeBottomSheet();
             } else if (currentState == BottomSheetBehavior.STATE_COLLAPSED) {
+                item.setIcon(R.drawable.icon_filter_list);
+                actionBarOpen();
                 homeBackdropFragment.openBottomSheet();
             }
             return true;
@@ -196,50 +207,59 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
     // ##            FILTER BY DATE AND LOCATION           ##
     // ######################################################
 
+    private void actionBarOpen() {
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar(); // or getActionBar();
+        actionBar.setTitle("Home"); // set the top title
+        actionBar.setElevation(0);
+    }
+
+    private void actionBarClosed() {
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar(); // or getActionBar();
+        actionBar.setTitle("Filter Postcards Displayed"); // set the top title
+        actionBar.setElevation(0);
+    }
+
+    public void launchDateRangePicker() {
+        MaterialDatePicker<Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+                .setTitleText("Filter by date range")
+                .setSelection(
+                        new Pair(MaterialDatePicker.thisMonthInUtcMilliseconds(), MaterialDatePicker.todayInUtcMilliseconds())
+                )
+                .build();
+        dateRangePicker.show(getParentFragmentManager(), TAG);
+        dateRangePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
+            @Override
+            public void onPositiveButtonClick(Pair<Long, Long> selection) {
+                startDate = new Date(selection.first);
+                endDate = new Date(selection.second);
+                Log.d(TAG, "start: " + startDate + " and end: " + endDate);
+                skip = 0;
+                loadMorePostcards();
+                homeBackdropFragment.displayDateRange(startDate, endDate);
+            }
+        });
+    }
     private void setupDateRangePicker() {
         ivFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentState == BottomSheetBehavior.STATE_EXPANDED) {
-                    homeBackdropFragment.closeBottomSheet();
-                } else {
-                    homeBackdropFragment.openBottomSheet();
-                }
-            }
-
-//            @Override
-//            public void onClick(View v) {
-//                MaterialDatePicker<Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
-//                        .setTitleText("Filter by date range")
-//                        .setSelection(
-//                                new Pair(MaterialDatePicker.thisMonthInUtcMilliseconds(), MaterialDatePicker.todayInUtcMilliseconds())
-//                        )
-//                        .build();
-//                dateRangePicker.show(getChildFragmentManager(), TAG);
-//                dateRangePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
-//                    @Override
-//                    public void onPositiveButtonClick(Pair<Long, Long> selection) {
-//                        startDate = new Date(selection.first);
-//                        endDate = new Date(selection.second);
-//                        Log.d(TAG, "start: " + startDate + " and end: " + endDate);
-//                        skip = 0;
-//                        loadMorePostcards();
-//                    }
-//                });
-//            }
-        });
-    }
-
-    private void setupLocationPicker() {
-        ivFilterLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Sets which fields the API request is asking for
-                List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.ADDRESS_COMPONENTS, Place.Field.LAT_LNG);
-                // Start the autocomplete intent.
-                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
-                        .build(getContext());
-                startActivityForResult(intent, SELECT_LOCATION_REQUEST_CODE);
+                MaterialDatePicker<Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+                        .setTitleText("Filter by date range")
+                        .setSelection(
+                                new Pair(MaterialDatePicker.thisMonthInUtcMilliseconds(), MaterialDatePicker.todayInUtcMilliseconds())
+                        )
+                        .build();
+                dateRangePicker.show(getChildFragmentManager(), TAG);
+                dateRangePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
+                    @Override
+                    public void onPositiveButtonClick(Pair<Long, Long> selection) {
+                        startDate = new Date(selection.first);
+                        endDate = new Date(selection.second);
+                        Log.d(TAG, "start: " + startDate + " and end: " + endDate);
+                        skip = 0;
+                        loadMorePostcards();
+                    }
+                });
             }
         });
     }
@@ -306,9 +326,6 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
 
                     LocationComparator comparator = new LocationComparator(targetLocation);
                     Collections.sort(postcards, comparator);
-//                    Log.d(TAG, "COMPARE!!" + comparator.compare(postcards.get(0), postcards.get(1)));
-//                    Log.d(TAG, "COMPARE!!" + Location.getDistanceBetweenLocations(targetLocation, postcards.get(0).getLocationFrom()));
-
                     for (int i = 0; i < postcards.size(); i++) {
                         try {
                             Log.d(TAG, postcards.get(i).getLocationFrom().getLocationName());
@@ -343,6 +360,7 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
             String targetLocationString = "";
             if (startDate != null && endDate != null) {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("E, MMMM d, y");
+                dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
                 datesFromTo = "\n" + dateFormat.format(startDate) + " - " + dateFormat.format(endDate);
             }
             if (targetLocation != null) {
