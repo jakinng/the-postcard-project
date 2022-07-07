@@ -38,8 +38,6 @@ public class HomeBackdropFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -62,6 +60,10 @@ public class HomeBackdropFragment extends Fragment {
         actionBar.setTitle("Home"); // set the top title
     }
 
+    // ################################
+    // ##  CONFIGURE BOTTOM SHEET    ##
+    // ################################
+
     public void setOnBottomSheetCallbacks(OnBottomSheetCallbacks onBottomSheetCallbacks) {
         this.listener = onBottomSheetCallbacks;
     }
@@ -72,22 +74,6 @@ public class HomeBackdropFragment extends Fragment {
 
     public void openBottomSheet() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-    }
-
-    private void inflateHomeFragment() {
-        HomeFragment.GoToDetailViewListener goToDetailViewListener = new HomeFragment.GoToDetailViewListener() {
-            @Override
-            public void goToDetailView(Postcard postcard) {
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.rl_container, PostcardDetailFragment.newInstance(postcard))
-                        .addToBackStack(null)
-                        .commit();
-            }
-        };
-        homeFragment = HomeFragment.newInstance(goToDetailViewListener);
-//        homeFragment = new HomeFragment();
-        getChildFragmentManager().beginTransaction().replace(R.id.rl_home_fragment, homeFragment).commit();
-
     }
 
     public void configureBackdrop(View view) {
@@ -102,5 +88,22 @@ public class HomeBackdropFragment extends Fragment {
             public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
         });
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
+    /**
+     * Adds the home fragment with the postcards received
+     */
+    private void inflateHomeFragment() {
+        HomeFragment.GoToDetailViewListener goToDetailViewListener = new HomeFragment.GoToDetailViewListener() {
+            @Override
+            public void goToDetailView(Postcard postcard) {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.rl_container, PostcardDetailFragment.newInstance(postcard))
+                        .addToBackStack(null)
+                        .commit();
+            }
+        };
+        homeFragment = HomeFragment.newInstance(goToDetailViewListener);
+        getChildFragmentManager().beginTransaction().replace(R.id.rl_home_fragment, homeFragment).commit();
     }
 }

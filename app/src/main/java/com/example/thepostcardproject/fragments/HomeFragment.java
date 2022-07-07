@@ -18,6 +18,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -109,6 +112,8 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         // Set this as listener for the backdrop fragment
         homeBackdropFragment = (HomeBackdropFragment) getParentFragment();
         homeBackdropFragment.setOnBottomSheetCallbacks(this);
+        // Enable filter icon in menu
+        setHasOptionsMenu(true);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
@@ -127,9 +132,15 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
 //        setupDateRangePicker();
 //        setupLocationPicker();
 
-
 //        Log.d(TAG, String.valueOf(view.getId() == R.id.home_fragment_container));
         homeBackdropFragment.configureBackdrop(view);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        menu.clear();
+        getActivity().getMenuInflater().inflate(R.menu.menu_home, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     // TODO: make sure this lifecycle is okay lmfao
@@ -151,6 +162,21 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
                 skip = 0;
                 loadMorePostcards();
             }
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // If the filter icon is clicked, toggle the backdrop expanded or collapsed
+        if (item.getItemId() == R.id.menu_icon_filter) {
+            if (currentState == BottomSheetBehavior.STATE_EXPANDED) {
+                homeBackdropFragment.closeBottomSheet();
+            } else if (currentState == BottomSheetBehavior.STATE_COLLAPSED) {
+                homeBackdropFragment.openBottomSheet();
+            }
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -295,7 +321,7 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
                     adapter.clear();
                     adapter.addAll((ArrayList<Postcard>) postcards);
                     try {
-                        tvPostcardHeader.setText("Postcards you've received!" + targetLocation.getLocationName());
+                        tvPostcardHeader.setText("Postcard Collection" + targetLocation.getLocationName());
                     } catch (ParseException ex) {
                         ex.printStackTrace();
                     }
@@ -326,11 +352,11 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
                     Log.d(TAG, parseException.getMessage());
                 }
             }
-            tvPostcardHeader.setText("Postcards you've received!" + datesFromTo + targetLocationString);
+            tvPostcardHeader.setText("Postcard Collection" + datesFromTo + targetLocationString);
             adapter.clear();
             if (postcards.size() == 0) {
                 // TODO : format this better
-                tvPostcardHeader.setText("No postcards received yet!" + datesFromTo + targetLocationString);
+                tvPostcardHeader.setText("Postcard Collection Empty" + datesFromTo + targetLocationString);
             }
         }
 
