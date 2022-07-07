@@ -4,9 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.thepostcardproject.R;
@@ -23,7 +26,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText etUsername;
     private TextInputEditText etPassword;
     private Button btnLogin;
-    private Button btnSignUp;
+    private TextView tvSignup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         etUsername = (TextInputEditText) findViewById(R.id.et_username);
         etPassword = (TextInputEditText) findViewById(R.id.et_password);
         btnLogin = (Button) findViewById(R.id.btn_login);
-        btnSignUp = (Button) findViewById(R.id.btn_signup);
+        tvSignup = (TextView) findViewById(R.id.tv_signup);
     }
 
     /**
@@ -63,12 +66,13 @@ public class LoginActivity extends AppCompatActivity {
      * Sets up the sign up button by adding an onclick listener to sign up a new user
      */
     private void setupSignup() {
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
+        SpannableString content = new SpannableString("create an account");
+        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+        tvSignup.setText(content);
+        tvSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = etUsername.getText().toString();
-                String password = etPassword.getText().toString();
-                signupUser(username, password);
+                goSignupActivity();
             }
         });
     }
@@ -78,6 +82,15 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void goMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    /**
+     * Uses an intent to start the MainActivity
+     */
+    private void goSignupActivity() {
+        Intent intent = new Intent(this, SignupActivity.class);
         startActivity(intent);
         finish();
     }
@@ -100,29 +113,6 @@ public class LoginActivity extends AppCompatActivity {
                     goMainActivity();
                 } else {
                     Toast.makeText(LoginActivity.this, "Wrong password. Try again!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
-    /**
-     * Signs up a new ParseUser with the associated username and password
-     * @param username The provided username
-     * @param password The provided password
-     */
-    private void signupUser(String username, String password) {
-//        Log.d(TAG, "hii");
-        ParseUser user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.signUpInBackground(new SignUpCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    goMainActivity();
-                } else {
-                    Log.d(TAG, e.getMessage());
-                    Toast.makeText(LoginActivity.this, "This username already exists. Try again!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
