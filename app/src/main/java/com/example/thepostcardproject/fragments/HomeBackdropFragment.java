@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.example.thepostcardproject.R;
+import com.example.thepostcardproject.models.Location;
 import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.utilities.OnBottomSheetCallbacks;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -23,6 +24,7 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -39,7 +41,8 @@ public class HomeBackdropFragment extends Fragment {
     private HomeFragment homeFragment;
 
     private EditText etDateRange;
-    private TextInputLayout iDateRange;
+    private EditText etLocationFrom;
+    private EditText etLocationTo;
 
 
     public HomeBackdropFragment() {
@@ -63,12 +66,14 @@ public class HomeBackdropFragment extends Fragment {
         setupViews(view);
         inflateHomeFragment();
         setupDateRangePicker();
+        setupLocationFromPicker();
         super.onViewCreated(view, savedInstanceState);
     }
 
     private void setupViews(View view) {
-        iDateRange = view.findViewById(R.id.i_date_range);
         etDateRange = view.findViewById(R.id.et_date_range);
+        etLocationFrom = view.findViewById(R.id.et_filter_location_from);
+        etLocationTo = view.findViewById(R.id.et_filter_location_to);
     }
 
     private void setupDateRangePicker() {
@@ -76,6 +81,15 @@ public class HomeBackdropFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 homeFragment.launchDateRangePicker();
+            }
+        });
+    }
+
+    private void setupLocationFromPicker() {
+        etLocationFrom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                homeFragment.launchLocationFromPicker();
             }
         });
     }
@@ -111,11 +125,18 @@ public class HomeBackdropFragment extends Fragment {
     }
 
     public void displayDateRange(Date startDate, Date endDate) {
-        etDateRange.clearFocus();
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM d, y");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         String datesFromTo = dateFormat.format(startDate) + " - " + dateFormat.format(endDate);
         etDateRange.setText(datesFromTo);
+    }
+
+    public void displayLocationFrom(Location locationFrom) {
+        try {
+            etLocationFrom.setText(locationFrom.getLocationName());
+        } catch (com.parse.ParseException e) {
+            Log.d(TAG, e.getMessage());
+        }
     }
 
     /**

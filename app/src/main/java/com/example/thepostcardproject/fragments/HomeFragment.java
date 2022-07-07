@@ -66,7 +66,7 @@ import java.util.TimeZone;
 public class HomeFragment extends BottomSheetDialogFragment implements OnBottomSheetCallbacks {
     public static final String TAG = "HomeFragment";
     public static final int LOAD_AT_ONCE = 5;
-    public static final int SELECT_LOCATION_REQUEST_CODE = 101;
+    public static final int SELECT_LOCATION_FROM_REQUEST_CODE = 101;
 
     private ArrayList<Postcard> receivedPostcards;
     private HomePostcardAdapter adapter;
@@ -78,8 +78,6 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
     private SwipeRefreshLayout swipeContainer;
 
     private TextView tvPostcardHeader;
-    private ImageView ivFilter;
-    private ImageView ivFilterLocation;
 
     // Counters for the infinite scroll
     private int skip = 0;
@@ -161,11 +159,12 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SELECT_LOCATION_REQUEST_CODE) {
+        if (requestCode == SELECT_LOCATION_FROM_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
                 ParseGeoPoint coordinates = new ParseGeoPoint(place.getLatLng().latitude, place.getLatLng().longitude);
                 targetLocation = new Location(place.getName(), place.getAddress(), coordinates);
+                homeBackdropFragment.displayLocationFrom(targetLocation);
                 skip = 0;
                 loadMorePostcards();
             }
@@ -239,29 +238,15 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
             }
         });
     }
-    private void setupDateRangePicker() {
-        ivFilter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MaterialDatePicker<Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
-                        .setTitleText("Filter by date range")
-                        .setSelection(
-                                new Pair(MaterialDatePicker.thisMonthInUtcMilliseconds(), MaterialDatePicker.todayInUtcMilliseconds())
-                        )
-                        .build();
-                dateRangePicker.show(getChildFragmentManager(), TAG);
-                dateRangePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
-                    @Override
-                    public void onPositiveButtonClick(Pair<Long, Long> selection) {
-                        startDate = new Date(selection.first);
-                        endDate = new Date(selection.second);
-                        Log.d(TAG, "start: " + startDate + " and end: " + endDate);
-                        skip = 0;
-                        loadMorePostcards();
-                    }
-                });
-            }
-        });
+
+    public void launchLocationFromPicker() {
+        // Sets which fields the API request is asking for
+        List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.ADDRESS_COMPONENTS, Place.Field.LAT_LNG);
+        // Start the autocomplete intent.
+        Intent intent = new Autocomplete.IntentBuilder(
+                AutocompleteActivityMode.FULLSCREEN, fields)
+                .build(getContext());
+        startActivityForResult(intent, SELECT_LOCATION_FROM_REQUEST_CODE);
     }
 
     /**

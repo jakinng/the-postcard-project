@@ -28,7 +28,7 @@
             android:textSize="18sp" />
 
         <com.google.android.material.textfield.TextInputLayout
-
+            android:clickable="true"
             android:id="@+id/i_filter_location_from"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,6 +41,8 @@
             app:startIconDrawable="@drawable/icon_location_24">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:focusable="false"
+                android:clickable="true"
                 android:maxLines="1"
                 android:id="@+id/et_filter_location_from"
                 android:background="@drawable/small_corner"
@@ -49,6 +51,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:clickable="true"
             android:layout_marginTop="12dp"
             android:id="@+id/i_filter_location_to"
             android:layout_width="match_parent"
@@ -59,6 +62,8 @@
             app:startIconDrawable="@drawable/icon_near_me">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:focusable="false"
+                android:clickable="true"
                 android:maxLines="1"
                 android:id="@+id/et_filter_location_to"
                 android:background="@drawable/small_corner"
