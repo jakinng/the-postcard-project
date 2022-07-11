@@ -92,7 +92,6 @@ public class LoginActivity extends AppCompatActivity {
     private void goSignupActivity() {
         Intent intent = new Intent(this, SignupActivity.class);
         startActivity(intent);
-        finish();
     }
 
     // ********************************************************
@@ -112,6 +111,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (e == null) {
                     goMainActivity();
                 } else {
+                    Log.d(TAG, e.getMessage());
                     Toast.makeText(LoginActivity.this, "Wrong password. Try again!", Toast.LENGTH_SHORT).show();
                 }
             }

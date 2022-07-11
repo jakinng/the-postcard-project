@@ -80,7 +80,7 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
     private TextView tvPostcardHeader;
 
     // Counters for the infinite scroll
-    private int skip = 0;
+    private int skip;
     private boolean loadMore = true;
 
     // Save the dates and location to filter by
@@ -91,6 +91,8 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
     // Current state for behavior as a bottom fragment
     private HomeBackdropFragment homeBackdropFragment;
     private int currentState = BottomSheetBehavior.STATE_EXPANDED;
+
+    private int sortBy = 0;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -148,7 +150,7 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    // TODO: make sure this lifecycle is okay lmfao
+    // TODO: make sure this lifecycle is okay lol
     @Override
     public void onResume() {
         super.onResume();
@@ -165,8 +167,7 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
                 ParseGeoPoint coordinates = new ParseGeoPoint(place.getLatLng().latitude, place.getLatLng().longitude);
                 targetLocation = new Location(place.getName(), place.getAddress(), coordinates);
                 homeBackdropFragment.displayLocationFrom(targetLocation);
-                skip = 0;
-                loadMorePostcards();
+                reloadPostcards();
             }
         }
     }
@@ -195,8 +196,6 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
      * @param view The encapsulating view
      */
     private void setupViews(View view) {
-//        ivFilter = view.findViewById(R.id.iv_filter);
-//        ivFilterLocation = view.findViewById(R.id.iv_filter_location);
         tvPostcardHeader = view.findViewById(R.id.tv_received_postcard_message);
         rvPostcards = view.findViewById(R.id.rv_postcards);
         swipeContainer = view.findViewById(R.id.swipe_container);
@@ -232,8 +231,7 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
                 startDate = new Date(selection.first);
                 endDate = new Date(selection.second);
                 Log.d(TAG, "start: " + startDate + " and end: " + endDate);
-                skip = 0;
-                loadMorePostcards();
+                reloadPostcards();
                 homeBackdropFragment.displayDateRange(startDate, endDate);
             }
         });
@@ -264,6 +262,13 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         }
     }
 
+    public void setSortBy(int sortBy) {
+        if (sortBy != this.sortBy) {
+            this.sortBy = sortBy;
+            reloadPostcards();
+        }
+    }
+
     // ##########################################
     // ##        DISPLAY POSTCARDS             ##
     // ##########################################
@@ -273,6 +278,8 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
      * For the infinite scroll
      */
     private void loadMorePostcards() {
+
+
         // IF THERE IS NO TARGET LOCATION
         if (targetLocation == null) {
             ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
@@ -374,6 +381,14 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
     }
 
     /**
+     * Reloads postcards, resetting the infinite scroll
+     */
+    private void reloadPostcards() {
+        skip = 0;
+        loadMorePostcards();
+    }
+
+    /**
      * Displays the postcards sent by the user
      */
     private void displayPostcards() {
@@ -420,8 +435,7 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                skip = 0;
-                loadMorePostcards();
+                reloadPostcards();
             }
         });
         // Configure the refreshing colors

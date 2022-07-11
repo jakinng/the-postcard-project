@@ -19,59 +19,65 @@
             android:background="@drawable/bottom_gray_border_blue">
 
         <TextView
-            android:id="@+id/tv_sort_location"
+            android:id="@+id/tv_sort"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
-            android:text="Sort Based on Target Location"
+            android:text="Sort Collection"
             android:textColor="@color/white"
             android:textSize="18sp" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:clickable="true"
-            android:id="@+id/i_filter_location_from"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:id="@+id/i_filter_by"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_sort_location"
+            android:layout_below="@id/tv_sort"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="12dp"
-            android:hint="Enter location sent from"
-            app:startIconContentDescription="Enter location sent from"
-            app:startIconDrawable="@drawable/icon_location_24">
+            android:hint="Sort by..."
+            android:background="@drawable/small_corner">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:focusable="false"
-                android:clickable="true"
-                android:maxLines="1"
-                android:id="@+id/et_filter_location_from"
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:focusable="false"-->
+<!--                android:clickable="true"-->
+<!--                android:maxLines="1"-->
+<!--                android:id="@+id/et_filter_location_from"-->
+<!--                android:background="@drawable/small_corner"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content" />-->
+            <AutoCompleteTextView
+                android:id="@+id/actv_filter_by"
                 android:background="@drawable/small_corner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:clickable="true"
             android:layout_marginTop="12dp"
-            android:id="@+id/i_filter_location_to"
+            android:id="@+id/i_filter_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/i_filter_location_from"
+            android:layout_below="@id/i_filter_by"
+            android:visibility="gone"
+
             android:hint="Enter location sent to"
-            app:startIconContentDescription="Enter location sent to"
+            app:startIconContentDescription="Enter location"
             app:startIconDrawable="@drawable/icon_near_me">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:focusable="false"
                 android:clickable="true"
                 android:maxLines="1"
-                android:id="@+id/et_filter_location_to"
+                android:id="@+id/et_filter_location"
                 android:background="@drawable/small_corner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
-
         </RelativeLayout>
 
     <RelativeLayout
@@ -89,35 +95,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Filter Collection by Date Range"
+            android:text="Filter by Date Range"
             android:textColor="@color/white"
             android:textSize="18sp" />
-
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_marginTop="12dp"
-            android:id="@+id/i_date_order"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_filter_location"
-            android:hint="Sort by newest date"
-            app:startIconDrawable="@drawable/icon_arrow_upward">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_date_order"
-                android:background="@drawable/small_corner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:clickable="true"
             android:layout_marginTop="12dp"
+            android:layout_below="@id/tv_filter_location"
             android:id="@+id/i_date_range"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/i_date_order"
             android:hint="Select date range"
             app:startIconDrawable="@drawable/icon_date_range">
 
@@ -141,7 +129,7 @@
             android:layout_below="@id/rl_sort_date"
             android:layout_marginLeft="24dp"
             android:layout_marginTop="12dp"
-            android:text="Filter Collection by User"
+            android:text="Filter by User"
             android:textColor="@color/white"
             android:textSize="18sp" />
 

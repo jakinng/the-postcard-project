@@ -7,7 +7,7 @@
         app:layout_behavior=".utilities.GestureLockedBottomSheetBehavior"
 
         android:elevation="1dp"
-        app:behavior_peekHeight="48dp"
+        app:behavior_peekHeight="100dp"
         app:behavior_skipCollapsed="true"
         android:background="@drawable/corner"
         >

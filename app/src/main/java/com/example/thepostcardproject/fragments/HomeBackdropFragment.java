@@ -13,6 +13,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
 import com.example.thepostcardproject.R;
@@ -26,6 +29,8 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -36,6 +41,8 @@ import java.util.TimeZone;
  */
 public class HomeBackdropFragment extends Fragment {
     private static final String TAG = "HomeBackdropFragment";
+    private static final ArrayList<String> SORT_CATEGORIES = new ArrayList<String>(Arrays.asList("Most recent date", "Earliest date", "Location sent to", "Location sent from"));
+
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private OnBottomSheetCallbacks listener;
     private HomeFragment homeFragment;
@@ -44,6 +51,8 @@ public class HomeBackdropFragment extends Fragment {
     private EditText etLocationFrom;
     private EditText etLocationTo;
 
+    private AutoCompleteTextView actvFilterBy;
+    private EditText etFilterLocation;
 
     public HomeBackdropFragment() {
         // Required empty public constructor
@@ -65,15 +74,46 @@ public class HomeBackdropFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         setupViews(view);
         inflateHomeFragment();
+        setupFilterBy();
         setupDateRangePicker();
-        setupLocationFromPicker();
+//        setupLocationFromPicker();
         super.onViewCreated(view, savedInstanceState);
     }
 
     private void setupViews(View view) {
+        actvFilterBy = view.findViewById(R.id.actv_filter_by);
+        etFilterLocation = view.findViewById(R.id.et_filter_location);
         etDateRange = view.findViewById(R.id.et_date_range);
-        etLocationFrom = view.findViewById(R.id.et_filter_location_from);
-        etLocationTo = view.findViewById(R.id.et_filter_location_to);
+//        etLocationFrom = view.findViewById(R.id.et_filter_location_from);
+//        etLocationTo = view.findViewById(R.id.et_filter_location_to);
+    }
+
+    private void setupFilterBy() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, SORT_CATEGORIES);
+        actvFilterBy.setAdapter(adapter);
+        // Automatically sort by most recent date sent and make sure the autocomplete does not filter out the other sorting possibilities
+        actvFilterBy.setText(SORT_CATEGORIES.get(0), false);
+        homeFragment.setSortBy(0);
+        actvFilterBy.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "ITEM SELECTED!!");
+                homeFragment.setSortBy(position);
+                if (position == 0) {
+                    etFilterLocation.setVisibility(View.GONE);
+                    Log.d(TAG, "Increasing selected!");
+                } else if (position == 1) {
+                    etFilterLocation.setVisibility(View.GONE);
+                    Log.d(TAG, "Increasing selected");
+                } else if (position == 2) {
+                    etFilterLocation.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "LOCATION SENT FROM!!!");
+                } else if (position == 3) {
+                    etFilterLocation.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "LOCATION SENT TO!!!");
+                }
+            }
+        });
     }
 
     private void setupDateRangePicker() {
