@@ -48,10 +48,9 @@ public class HomeBackdropFragment extends Fragment {
     private HomeFragment homeFragment;
 
     private EditText etDateRange;
-    private EditText etLocationFrom;
-    private EditText etLocationTo;
 
     private AutoCompleteTextView actvFilterBy;
+    private TextInputLayout iFilterLocation;
     private EditText etFilterLocation;
 
     public HomeBackdropFragment() {
@@ -76,45 +75,59 @@ public class HomeBackdropFragment extends Fragment {
         inflateHomeFragment();
         setupFilterBy();
         setupDateRangePicker();
-//        setupLocationFromPicker();
         super.onViewCreated(view, savedInstanceState);
     }
 
     private void setupViews(View view) {
         actvFilterBy = view.findViewById(R.id.actv_filter_by);
+        iFilterLocation = view.findViewById(R.id.i_filter_location);
         etFilterLocation = view.findViewById(R.id.et_filter_location);
         etDateRange = view.findViewById(R.id.et_date_range);
-//        etLocationFrom = view.findViewById(R.id.et_filter_location_from);
-//        etLocationTo = view.findViewById(R.id.et_filter_location_to);
     }
+
+    // ####################################
+    // ##      SORT BY CONDITIONS        ##
+    // ####################################
 
     private void setupFilterBy() {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, SORT_CATEGORIES);
         actvFilterBy.setAdapter(adapter);
         // Automatically sort by most recent date sent and make sure the autocomplete does not filter out the other sorting possibilities
         actvFilterBy.setText(SORT_CATEGORIES.get(0), false);
+        iFilterLocation.setVisibility(View.GONE);
         homeFragment.setSortBy(0);
         actvFilterBy.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "ITEM SELECTED!!");
                 homeFragment.setSortBy(position);
                 if (position == 0) {
-                    etFilterLocation.setVisibility(View.GONE);
-                    Log.d(TAG, "Increasing selected!");
+                    iFilterLocation.setVisibility(View.GONE);
                 } else if (position == 1) {
-                    etFilterLocation.setVisibility(View.GONE);
-                    Log.d(TAG, "Increasing selected");
+                    iFilterLocation.setVisibility(View.GONE);
                 } else if (position == 2) {
-                    etFilterLocation.setVisibility(View.VISIBLE);
-                    Log.d(TAG, "LOCATION SENT FROM!!!");
+                    iFilterLocation.setVisibility(View.VISIBLE);
                 } else if (position == 3) {
-                    etFilterLocation.setVisibility(View.VISIBLE);
-                    Log.d(TAG, "LOCATION SENT TO!!!");
+                    iFilterLocation.setVisibility(View.VISIBLE);
                 }
             }
         });
     }
+
+    // ####################################
+    // ##      FILTER BY LOCATION        ##
+    // ####################################
+
+    public void displayTargetLocation(Location locationFrom) {
+        try {
+            etFilterLocation.setText(locationFrom.getLocationName());
+        } catch (com.parse.ParseException e) {
+            Log.d(TAG, e.getMessage());
+        }
+    }
+
+    // ################################
+    // ##      FILTER BY DATE        ##
+    // ################################
 
     private void setupDateRangePicker() {
         etDateRange.setOnClickListener(new View.OnClickListener() {
@@ -125,31 +138,44 @@ public class HomeBackdropFragment extends Fragment {
         });
     }
 
-    private void setupLocationFromPicker() {
-        etLocationFrom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                homeFragment.launchLocationFromPicker();
-            }
-        });
+    public void displayDateRange(Date startDate, Date endDate) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM d, y");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String datesFromTo = dateFormat.format(startDate) + " - " + dateFormat.format(endDate);
+        etDateRange.setText(datesFromTo);
     }
 
     // ################################
     // ##  CONFIGURE BOTTOM SHEET    ##
     // ################################
 
+    /**
+     * Sets a listener for changes to the backdrop
+     * For example, selecting a condition to sort the postcards by is a change that HomeFragment needs to be notified of
+     * @param onBottomSheetCallbacks The listener implementing the methods upon change on the backdrop
+     */
     public void setOnBottomSheetCallbacks(OnBottomSheetCallbacks onBottomSheetCallbacks) {
         this.listener = onBottomSheetCallbacks;
     }
 
+    /**
+     * Sets the bottom sheet to be collapsed
+     */
     public void closeBottomSheet() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
+    /**
+     * Sets the bottom sheet to be expanded
+     */
     public void openBottomSheet() {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
+    /**
+     * Adds the provided view as a bottom sheet
+     * @param view The view to use as a bottom sheet
+     */
     public void configureBackdrop(View view) {
         bottomSheetBehavior = BottomSheetBehavior.from(view);
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -162,21 +188,6 @@ public class HomeBackdropFragment extends Fragment {
             public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
         });
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-    }
-
-    public void displayDateRange(Date startDate, Date endDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM d, y");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String datesFromTo = dateFormat.format(startDate) + " - " + dateFormat.format(endDate);
-        etDateRange.setText(datesFromTo);
-    }
-
-    public void displayLocationFrom(Location locationFrom) {
-        try {
-            etLocationFrom.setText(locationFrom.getLocationName());
-        } catch (com.parse.ParseException e) {
-            Log.d(TAG, e.getMessage());
-        }
     }
 
     /**

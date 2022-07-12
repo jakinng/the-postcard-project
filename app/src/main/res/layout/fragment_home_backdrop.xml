@@ -39,14 +39,6 @@
             android:hint="Sort by..."
             android:background="@drawable/small_corner">
 
-<!--            <com.google.android.material.textfield.TextInputEditText-->
-<!--                android:focusable="false"-->
-<!--                android:clickable="true"-->
-<!--                android:maxLines="1"-->
-<!--                android:id="@+id/et_filter_location_from"-->
-<!--                android:background="@drawable/small_corner"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content" />-->
             <AutoCompleteTextView
                 android:id="@+id/actv_filter_by"
                 android:background="@drawable/small_corner"
@@ -62,8 +54,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/i_filter_by"
-            android:visibility="gone"
-
             android:hint="Enter location sent to"
             app:startIconContentDescription="Enter location"
             app:startIconDrawable="@drawable/icon_near_me">

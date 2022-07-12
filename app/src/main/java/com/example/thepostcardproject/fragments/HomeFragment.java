@@ -25,13 +25,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.thepostcardproject.R;
 import com.example.thepostcardproject.adapters.HomePostcardAdapter;
 import com.example.thepostcardproject.models.Location;
 import com.example.thepostcardproject.models.Postcard;
+import com.example.thepostcardproject.models.User;
 import com.example.thepostcardproject.utilities.EndlessRecyclerViewScrollListener;
 import com.example.thepostcardproject.utilities.LocationComparator;
 import com.example.thepostcardproject.utilities.OnBottomSheetCallbacks;
@@ -42,7 +42,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
-import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -52,7 +51,6 @@ import com.parse.ParseUser;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -65,10 +63,14 @@ import java.util.TimeZone;
  */
 public class HomeFragment extends BottomSheetDialogFragment implements OnBottomSheetCallbacks {
     public static final String TAG = "HomeFragment";
+    public static final String KEY_CREATED_AT = "createdAt";
     public static final int LOAD_AT_ONCE = 5;
     public static final int SELECT_LOCATION_FROM_REQUEST_CODE = 101;
+    public static final int SORT_MOST_RECENT = 0;
+    public static final int SORT_EARLIEST = 1;
+    public static final int SORT_LOCATION_TO = 2;
+    public static final int SORT_LOCATION_FROM = 3;
 
-    private ArrayList<Postcard> receivedPostcards;
     private HomePostcardAdapter adapter;
 
     private RecyclerView rvPostcards;
@@ -131,11 +133,8 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         super.onViewCreated(view, savedInstanceState);
         setupViews(view);
         displayPostcards();
+        setTargetLocation(((User) ParseUser.getCurrentUser()).getCurrentLocation());
         setupSwipeToRefresh();
-//        setupDateRangePicker();
-//        setupLocationPicker();
-
-//        Log.d(TAG, String.valueOf(view.getId() == R.id.home_fragment_container));
         homeBackdropFragment.configureBackdrop(view);
     }
 
@@ -166,7 +165,7 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
                 Place place = Autocomplete.getPlaceFromIntent(data);
                 ParseGeoPoint coordinates = new ParseGeoPoint(place.getLatLng().latitude, place.getLatLng().longitude);
                 targetLocation = new Location(place.getName(), place.getAddress(), coordinates);
-                homeBackdropFragment.displayLocationFrom(targetLocation);
+                homeBackdropFragment.displayTargetLocation(targetLocation);
                 reloadPostcards();
             }
         }
@@ -215,6 +214,15 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar(); // or getActionBar();
         actionBar.setTitle("Filter Postcards Displayed"); // set the top title
         actionBar.setElevation(0);
+    }
+
+    /**
+     * Sets the target location of the user
+     * @param location The location to set as the target location
+     */
+    private void setTargetLocation(Location location) {
+        targetLocation = location;
+        homeBackdropFragment.displayTargetLocation(location);
     }
 
     public void launchDateRangePicker() {
@@ -278,64 +286,150 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
      * For the infinite scroll
      */
     private void loadMorePostcards() {
-
-
-        // IF THERE IS NO TARGET LOCATION
-        if (targetLocation == null) {
-            ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
-            query.whereEqualTo(KEY_USER_TO, ParseUser.getCurrentUser());
+        ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
+        query.whereEqualTo(KEY_USER_TO, ParseUser.getCurrentUser());
+        // Set date constraints
+        if (startDate != null && endDate != null) {
+            query.whereGreaterThan("createdAt", startDate);
+            query.whereLessThan("createdAt", endDate);
+        }
+        // Sort by the most recent date first
+        if (sortBy == SORT_MOST_RECENT) {
             query.setLimit(LOAD_AT_ONCE);
-            // TODO : add this key as a constant
-            query.addDescendingOrder("createdAt");
-            // TODO : add a backdrop for the filters
-            if (startDate != null && endDate != null) {
-                query.whereGreaterThan("createdAt", startDate);
-                query.whereLessThan("createdAt", endDate);
-            }
-
+            query.addDescendingOrder(KEY_CREATED_AT);
             query.setSkip(skip);
-            if (skip == 0) {
-                scrollListener.resetState();
-            }
-            query.findInBackground(new FindCallback<Postcard>() {
-                @Override
-                public void done(List<Postcard> postcards, ParseException e) {
-                    if (e == null) {
-                        updatePostcards(postcards);
-                    } else {
-                        Log.d(TAG, "There has been an issue retrieving the postcards from the backend: " + e.getMessage());
-                    }
-                }
-            });
+            if (skip == 0) { scrollListener.resetState(); }
+        } else if (sortBy == SORT_EARLIEST) {
+            // Sort by the least recent date first
+            query.setLimit(LOAD_AT_ONCE);
+            query.addAscendingOrder(KEY_CREATED_AT);
+            query.setSkip(skip);
+            if (skip == 0) { scrollListener.resetState(); }
+        } else if (sortBy == SORT_LOCATION_FROM) {
+        } else if (sortBy == SORT_LOCATION_TO) {
         } else {
-            ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
-            query.whereEqualTo(KEY_USER_TO, ParseUser.getCurrentUser());
-            query.addDescendingOrder("createdAt");
-            query.findInBackground(new FindCallback<Postcard>() {
+            Log.d(TAG, "The sort has not been clicked!");
+        }
+
+        query.findInBackground(new FindCallback<Postcard>() {
+            @Override
+            public void done(List<Postcard> postcards, ParseException e) {
+                if (e == null) {
+                    updatePostcards(postcards, sortBy);
+                } else {
+                    Log.d(TAG, "There has been an issue retrieving the postcards from the backend: " + e.getMessage());
+                }
+            }
+        });
+
+//        // IF THERE IS NO TARGET LOCATION
+//        if (targetLocation == null) {
+//            ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
+//            query.whereEqualTo(KEY_USER_TO, ParseUser.getCurrentUser());
+//            query.setLimit(LOAD_AT_ONCE);
+//            // TODO : add this key as a constant
+//            query.addDescendingOrder("createdAt");
+//            // TODO : add a backdrop for the filters
+//            if (startDate != null && endDate != null) {
+//                query.whereGreaterThan("createdAt", startDate);
+//                query.whereLessThan("createdAt", endDate);
+//            }
+//
+//            query.setSkip(skip);
+//            if (skip == 0) {
+//                scrollListener.resetState();
+//            }
+//
+//        } else {
+//            ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
+//            query.whereEqualTo(KEY_USER_TO, ParseUser.getCurrentUser());
+//            query.addDescendingOrder("createdAt");
+//            query.findInBackground(new FindCallback<Postcard>() {
+//                @Override
+//                public void done(List<Postcard> postcards, ParseException e) {
+//                    Log.d(TAG, String.valueOf(postcards.size()));
+//
+//                    LocationComparator comparator = new LocationComparator(targetLocation);
+//                    Collections.sort(postcards, comparator);
+//                    for (int i = 0; i < postcards.size(); i++) {
+//                        try {
+//                            Log.d(TAG, postcards.get(i).getLocationFrom().getLocationName());
+//                            Log.d(TAG, "COMPARE!!" + Location.getDistanceBetweenLocations(targetLocation, postcards.get(i).getLocationFrom()));
+//
+//                        } catch (ParseException ex) {
+//                            ex.printStackTrace();
+//                        }
+//                    }
+//                    adapter.clear();
+//                    adapter.addAll((ArrayList<Postcard>) postcards);
+//                    try {
+//                        tvPostcardHeader.setText("Postcard Collection" + targetLocation.getLocationName());
+//                    } catch (ParseException ex) {
+//                        ex.printStackTrace();
+//                    }
+//                }
+//            });
+//        }
+    }
+
+
+    /**
+     * Updates the adapter with the new postcards and updates variables for infinite scrolling
+     * @param postcards The postcards to add
+     */
+    private void updatePostcards(List<Postcard> postcards, int sortBy) {
+        swipeContainer.setRefreshing(false);
+
+        // If this is the first query made in the infinite scroll, clear the adapter in case this is swipe to refresh
+        if (skip == 0) {
+            // TODO : display the filtering criteria in the appbar
+            tvPostcardHeader.setText("Postcard Collection");
+            adapter.clear();
+            if (postcards.size() == 0) {
+                // TODO : format this better
+                tvPostcardHeader.setText("Postcard Collection Empty");
+            }
+        }
+
+        // Sort based on the selected feature
+        if (sortBy == SORT_MOST_RECENT) {
+            skip += postcards.size();
+            if (postcards.size() != 0) {
+                adapter.addAll((ArrayList<Postcard>) postcards);
+                loadMore = true;
+            } else {
+                // No more postcards to load
+                loadMore = false;
+            }
+        } else if (sortBy == SORT_EARLIEST) {
+            skip += postcards.size();
+            if (postcards.size() != 0) {
+                adapter.addAll((ArrayList<Postcard>) postcards);
+                loadMore = true;
+            } else {
+                // No more postcards to load
+                loadMore = false;
+            }
+        } else if (sortBy == SORT_LOCATION_FROM) {
+            LocationComparator comparatorTo = new LocationComparator(targetLocation, new LocationComparator.getPostcardLocation() {
                 @Override
-                public void done(List<Postcard> postcards, ParseException e) {
-                    Log.d(TAG, String.valueOf(postcards.size()));
-
-                    LocationComparator comparator = new LocationComparator(targetLocation);
-                    Collections.sort(postcards, comparator);
-                    for (int i = 0; i < postcards.size(); i++) {
-                        try {
-                            Log.d(TAG, postcards.get(i).getLocationFrom().getLocationName());
-                            Log.d(TAG, "COMPARE!!" + Location.getDistanceBetweenLocations(targetLocation, postcards.get(i).getLocationFrom()));
-
-                        } catch (ParseException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                    adapter.clear();
-                    adapter.addAll((ArrayList<Postcard>) postcards);
-                    try {
-                        tvPostcardHeader.setText("Postcard Collection" + targetLocation.getLocationName());
-                    } catch (ParseException ex) {
-                        ex.printStackTrace();
-                    }
+                public Location getLocation(Postcard postcard) {
+                    return postcard.getLocationTo();
                 }
             });
+            Collections.sort(postcards, comparatorTo);
+            adapter.clear();
+            adapter.addAll((ArrayList<Postcard>) postcards);
+        } else if (sortBy == SORT_LOCATION_TO) {
+            LocationComparator comparatorFrom = new LocationComparator(targetLocation, new LocationComparator.getPostcardLocation() {
+                @Override
+                public Location getLocation(Postcard postcard) {
+                    return postcard.getLocationFrom();
+                }
+            });
+            Collections.sort(postcards, comparatorFrom);
+            adapter.clear();
+            adapter.addAll((ArrayList<Postcard>) postcards);
         }
     }
 
