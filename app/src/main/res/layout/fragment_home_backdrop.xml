@@ -124,7 +124,6 @@
             android:textSize="18sp" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:maxLines="1"
             android:layout_marginStart="24dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="24dp"
@@ -133,13 +132,15 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_filter_user"
             android:hint="Enter username"
-            app:startIconDrawable="@drawable/icon_person">
+            app:startIconDrawable="@drawable/icon_person"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_filter_username"
-                android:background="@drawable/small_corner"
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:singleLine="true"
+                android:id="@+id/actv_filter_username"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="match_parent"
+                android:background="@drawable/small_corner" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

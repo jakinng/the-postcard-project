@@ -1,6 +1,7 @@
 package com.example.thepostcardproject.fragments;
 
 import static android.app.Activity.RESULT_OK;
+import static com.example.thepostcardproject.utilities.Keys.KEY_USER_FROM;
 import static com.example.thepostcardproject.utilities.Keys.KEY_USER_TO;
 
 import android.content.Intent;
@@ -89,6 +90,7 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
     private Date startDate;
     private Date endDate;
     private Location targetLocation;
+    private User targetUser;
 
     // Current state for behavior as a bottom fragment
     private HomeBackdropFragment homeBackdropFragment;
@@ -225,6 +227,11 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         homeBackdropFragment.displayTargetLocation(location);
     }
 
+    public void setTargetUser(User user) {
+        targetUser = user;
+        reloadPostcards();
+    }
+
     public void launchDateRangePicker() {
         MaterialDatePicker<Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText("Filter by date range")
@@ -293,6 +300,11 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
             query.whereGreaterThan("createdAt", startDate);
             query.whereLessThan("createdAt", endDate);
         }
+
+        if (targetUser != null) {
+            query.whereEqualTo(KEY_USER_FROM, targetUser);
+        }
+
         // Sort by the most recent date first
         if (sortBy == SORT_MOST_RECENT) {
             query.setLimit(LOAD_AT_ONCE);
