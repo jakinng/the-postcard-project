@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.example.thepostcardproject.R;
 import com.example.thepostcardproject.fragments.CreateFragment;
+import com.example.thepostcardproject.fragments.HomeBackdropFragment;
 import com.example.thepostcardproject.fragments.HomeFragment;
 import com.example.thepostcardproject.fragments.MapFragment;
 import com.example.thepostcardproject.fragments.PostcardDetailFragment;
@@ -114,17 +115,18 @@ public class MainActivity extends AppCompatActivity {
      * Navigates to the Home fragment
      */
     private void goHomeFragment() {
-        HomeFragment.GoToDetailViewListener goToDetailViewListener = new HomeFragment.GoToDetailViewListener() {
-            @Override
-            public void goToDetailView(Postcard postcard) {
-                fragmentManager.beginTransaction()
-                        .replace(R.id.rl_container, PostcardDetailFragment.newInstance(postcard))
-                        .addToBackStack(null)
-                        .commit();
-            }
-        };
-        final HomeFragment homeFragment = HomeFragment.newInstance(goToDetailViewListener);
-        fragmentManager.beginTransaction().replace(R.id.rl_container, homeFragment).commit();
+//        HomeFragment.GoToDetailViewListener goToDetailViewListener = new HomeFragment.GoToDetailViewListener() {
+//            @Override
+//            public void goToDetailView(Postcard postcard) {
+//                fragmentManager.beginTransaction()
+//                        .replace(R.id.rl_container, PostcardDetailFragment.newInstance(postcard))
+//                        .addToBackStack(null)
+//                        .commit();
+//            }
+//        };
+//        final HomeFragment homeFragment = HomeFragment.newInstance(goToDetailViewListener);
+        HomeBackdropFragment homeBackdropFragment = new HomeBackdropFragment();
+        fragmentManager.beginTransaction().replace(R.id.rl_container, homeBackdropFragment).commit();
     }
 
     /**

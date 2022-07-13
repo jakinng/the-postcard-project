@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/imageView"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="12dp"
         android:gravity="center"
         android:text="post.card"
         android:textColor="@color/postcard_black"
@@ -46,33 +46,61 @@
 
     <Button
         android:id="@+id/btn_login"
-        android:layout_width="100dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/et_password"
         android:layout_alignEnd="@+id/et_password"
         android:layout_marginTop="6dp"
         android:layout_marginEnd="0dp"
+        android:drawableRight="@drawable/icon_right_arrow"
+
         android:text="Log in" />
 
-    <Button
-        android:id="@+id/btn_signup"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btn_login"
-        android:layout_alignEnd="@+id/et_password"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="0dp"
-        android:text="Sign up" />
+<!--    <Button-->
+<!--        android:id="@+id/btn_signup"-->
+<!--        android:layout_width="100dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_below="@+id/btn_login"-->
+<!--        android:layout_alignEnd="@+id/et_password"-->
+<!--        android:layout_marginTop="0dp"-->
+<!--        android:layout_marginEnd="0dp"-->
+<!--        android:text="Sign up" />-->
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="240dp"
         android:layout_height="200dp"
-        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="88dp"
-        android:layout_marginTop="72dp"
-        android:layout_marginBottom="-50dp"
-        app:srcCompat="@drawable/postcard_icon" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp"
+        app:srcCompat="@drawable/icon_postcard" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40dp"
+        android:layout_centerInParent="true">
+
+        <TextView
+            android:id="@+id/tv_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:text="create an account"
+            android:textColor="@color/postcard_black"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/tv_signup"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_toEndOf="@+id/tv_signup"
+            android:text=" to start your adventure!"
+            android:textColor="@color/postcard_black"
+            android:textSize="18sp" />
+    </RelativeLayout>
 
 </RelativeLayout>

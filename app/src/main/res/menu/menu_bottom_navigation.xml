@@ -4,28 +4,33 @@
 
     <item
         android:id="@+id/action_home"
+        android:icon="@drawable/icon_home"
         android:enabled="true"
         android:title="Home"
-        app:showAsAction="always|withText"
+        app:showAsAction="ifRoom|withText"
         android:visible="true"/>
     <item
         android:enabled="true"
         android:id="@+id/action_map"
-        android:title="Maps"
-        app:showAsAction="always|withText" />
+        android:icon="@drawable/icon_explore"
+        android:title="Explore"
+        app:showAsAction="ifRoom|withText" />
     <item
         android:enabled="true"
         android:id="@+id/action_create"
+        android:icon="@drawable/icon_create"
         android:title="Create"
-        app:showAsAction="always|withText" />
+        app:showAsAction="ifRoom|withText" />
     <item
         android:enabled="true"
         android:id="@+id/action_profile"
+        android:icon="@drawable/icon_account"
         android:title="Profile"
-        app:showAsAction="always|withText" />
+        app:showAsAction="ifRoom|withText" />
     <item
         android:enabled="true"
         android:id="@+id/action_logout"
+        android:icon="@drawable/icon_logout"
         android:title="Logout"
         app:showAsAction="always|withText" />
 </menu>
