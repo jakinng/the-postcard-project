@@ -11,6 +11,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -117,6 +119,7 @@ public class ProfileFragment extends Fragment {
         displayUserLocation();
         displaySentPostcards();
         setupSwipeToRefresh();
+        configureActionBar();
     }
 
 
@@ -311,5 +314,13 @@ public class ProfileFragment extends Fragment {
 
     public interface GoToDetailViewListener {
         public void goToDetailView(Postcard postcard);
+    }
+
+    /**
+     * Set the action bar to have the appropriate title and icons
+     */
+    private void configureActionBar() {
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar(); // or getActionBar();
+        actionBar.setTitle("Profile"); // set the top title
     }
 }

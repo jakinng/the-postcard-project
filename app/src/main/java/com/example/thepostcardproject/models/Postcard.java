@@ -15,6 +15,8 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+import java.util.Comparator;
+
 @ParseClassName("Postcard")
 public class Postcard extends ParseObject {
 
