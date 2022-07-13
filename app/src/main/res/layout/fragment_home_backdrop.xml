@@ -97,7 +97,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Select date range"
-            app:startIconDrawable="@drawable/icon_date_range">
+            app:startIconDrawable="@drawable/icon_date_range"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/icon_cancel">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:inputType="none"
@@ -133,7 +135,9 @@
             android:layout_below="@id/tv_filter_user"
             android:hint="Enter username"
             app:startIconDrawable="@drawable/icon_person"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/icon_cancel" >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:singleLine="true"

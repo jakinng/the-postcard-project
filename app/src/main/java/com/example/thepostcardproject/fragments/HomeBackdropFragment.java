@@ -50,18 +50,20 @@ import java.util.TimeZone;
  */
 public class HomeBackdropFragment extends Fragment {
     private static final String TAG = "HomeBackdropFragment";
-    private static final ArrayList<String> SORT_CATEGORIES = new ArrayList<String>(Arrays.asList("Most recent date", "Earliest date", "Location sent to", "Location sent from"));
+    private static final ArrayList<String> SORT_CATEGORIES = new ArrayList<String>(Arrays.asList("Most recent date (default)", "Earliest date", "Location sent to", "Location sent from"));
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private OnBottomSheetCallbacks listener;
     private HomeFragment homeFragment;
 
+    private TextInputLayout iDateRange;
     private EditText etDateRange;
 
     private AutoCompleteTextView actvFilterBy;
     private TextInputLayout iFilterLocation;
     private EditText etFilterLocation;
 
+    private TextInputLayout iFilterUsername;
     private AutoCompleteTextView actvFilterUsername;
 
     public HomeBackdropFragment() {
@@ -96,6 +98,8 @@ public class HomeBackdropFragment extends Fragment {
         iFilterLocation = view.findViewById(R.id.i_filter_location);
         etFilterLocation = view.findViewById(R.id.et_filter_location);
         etDateRange = view.findViewById(R.id.et_date_range);
+        iDateRange = view.findViewById(R.id.i_date_range);
+        iFilterUsername = view.findViewById(R.id.i_filter_username);
 
         actvFilterUsername = view.findViewById(R.id.actv_filter_username);
     }
@@ -149,6 +153,10 @@ public class HomeBackdropFragment extends Fragment {
         }
     }
 
+    public void clearTargetLocation() {
+        etFilterLocation.setText(null);
+    }
+
     // ################################
     // ##      FILTER BY DATE        ##
     // ################################
@@ -158,6 +166,13 @@ public class HomeBackdropFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 homeFragment.launchDateRangePicker();
+            }
+        });
+        iDateRange.setEndIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                homeFragment.clearDateRange();
+                etDateRange.setText(null);
             }
         });
     }
@@ -225,6 +240,13 @@ public class HomeBackdropFragment extends Fragment {
                         }
                     }
                 });
+            }
+        });
+        iFilterUsername.setEndIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                homeFragment.clearUsername();
+                actvFilterUsername.setText(null);
             }
         });
     }

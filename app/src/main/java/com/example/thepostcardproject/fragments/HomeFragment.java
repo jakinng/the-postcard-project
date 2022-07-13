@@ -222,9 +222,26 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
      * Sets the target location of the user
      * @param location The location to set as the target location
      */
-    private void setTargetLocation(Location location) {
+    public void setTargetLocation(Location location) {
         targetLocation = location;
         homeBackdropFragment.displayTargetLocation(location);
+    }
+
+    /**
+     * Resets the date range to all possible dates
+     */
+    public void clearDateRange() {
+        startDate = null;
+        endDate = null;
+        reloadPostcards();
+    }
+
+    /**
+     * Resets the username filtered by to be empty
+     */
+    public void clearUsername() {
+        targetUser = null;
+        reloadPostcards();
     }
 
     public void setTargetUser(User user) {
