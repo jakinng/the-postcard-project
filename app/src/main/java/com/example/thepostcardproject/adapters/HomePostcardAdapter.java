@@ -14,11 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.thepostcardproject.R;
+import com.example.thepostcardproject.databinding.ItemHomePostcardBinding;
 import com.example.thepostcardproject.fragments.HomeFragment;
+import com.example.thepostcardproject.models.FilteredPhoto;
 import com.example.thepostcardproject.models.Postcard;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,9 +43,8 @@ public class HomePostcardAdapter extends RecyclerView.Adapter<HomePostcardAdapte
         context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View postcardView = inflater.inflate(R.layout.item_home_postcard, parent, false);
-        ViewHolder viewHolder = new ViewHolder(postcardView);
-        return viewHolder;
+        ItemHomePostcardBinding itemBinding = ItemHomePostcardBinding.inflate(inflater, parent, false);
+        return new ViewHolder(itemBinding);
     }
 
     @Override
@@ -58,28 +59,25 @@ public class HomePostcardAdapter extends RecyclerView.Adapter<HomePostcardAdapte
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public ImageView ivHomePostcard;
-        public TextView tvUsername;
-        public TextView tvMessage;
+        ItemHomePostcardBinding binding;
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            ivHomePostcard = (ImageView) itemView.findViewById(R.id.iv_home_postcard);
-            tvUsername = (TextView) itemView.findViewById(R.id.tv_username);
-            tvMessage = (TextView) itemView.findViewById(R.id.tv_message);
-            itemView.setOnClickListener(this);
+        public ViewHolder(ItemHomePostcardBinding itemBinding) {
+            super(itemBinding.getRoot());
+            binding = itemBinding;
         }
 
         public void bind(Postcard postcard) {
-            ParseFile coverPhoto = postcard.getCoverPhoto();
-            Glide.with(context)
-                    .load(coverPhoto.getUrl())
-                    .centerCrop()
-                    .into(ivHomePostcard);
+            try {
+                FilteredPhoto coverPhotoFiltered = postcard.getCoverPhotoFiltered();
+                coverPhotoFiltered.displayFilteredPhoto(context, binding.ivHomePostcard);
+            } catch (ParseException e) {
+                Log.d(TAG, "An error occurred while getting the cover photo: " + e.getMessage());
+                e.printStackTrace();
+            }
             try {
                 String toFrom = "From: " + postcard.getUserFrom().getUsername() + " | " + postcard.getLocationFrom().getLocationName() + "\nTo: " + postcard.getUserTo().getUsername() + " | " + postcard.getLocationTo().getLocationName();
-                tvUsername.setText(toFrom);
-                tvMessage.setText(postcard.getMessage());
+                binding.tvUsername.setText(toFrom);
+                binding.tvMessage.setText(postcard.getMessage());
             } catch (com.parse.ParseException e) {
                 Log.d(TAG, "An exception occurred with retrieving the username: " + e.getMessage());
             }

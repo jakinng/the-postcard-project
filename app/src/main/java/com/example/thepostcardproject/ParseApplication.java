@@ -2,6 +2,7 @@ package com.example.thepostcardproject;
 
 import android.app.Application;
 
+import com.example.thepostcardproject.models.FilteredPhoto;
 import com.example.thepostcardproject.models.Location;
 import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.models.User;
@@ -43,5 +44,6 @@ public class ParseApplication extends Application {
         ParseObject.registerSubclass(Postcard.class);
         ParseObject.registerSubclass(Location.class);
         ParseUser.registerSubclass(User.class);
+        ParseObject.registerSubclass(FilteredPhoto.class);
     }
 }

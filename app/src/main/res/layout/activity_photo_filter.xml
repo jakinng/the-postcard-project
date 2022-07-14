@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.PhotoFilterActivity">
+
+
+    <androidx.constraintlayout.utils.widget.ImageFilterView
+        android:id="@+id/iv_cover_photo"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/slider_brightness"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/rl_brightness"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="0dp"
+        android:layout_toEndOf="@id/rl_brightness"
+        android:valueFrom="0"
+        android:valueTo="2"
+        android:value="1" />
+
+    <RelativeLayout
+        android:id="@+id/rl_brightness"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_cover_photo"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp">
+
+        <ImageView
+            android:id="@+id/iv_brightness"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_below="@+id/tv_brightness"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="6dp"
+            android:src="@drawable/icon_brightness" />
+
+        <TextView
+            android:id="@+id/tv_brightness"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Brightness" />
+
+    </RelativeLayout>
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/slider_contrast"
+        android:layout_alignBottom="@+id/rl_contrast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="0dp"
+        android:layout_toEndOf="@id/rl_brightness"
+        android:valueFrom="0"
+        android:valueTo="2"
+        android:value="1" />
+
+    <RelativeLayout
+        android:id="@+id/rl_contrast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rl_brightness"
+        android:layout_alignEnd="@+id/rl_brightness"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="0dp">
+
+        <ImageView
+            android:id="@+id/iv_contrast"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_below="@+id/tv_contrast"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="6dp"
+            android:src="@drawable/icon_contrast" />
+
+        <TextView
+            android:id="@+id/tv_contrast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Contrast" />
+
+    </RelativeLayout>
+
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/slider_saturation"
+        android:layout_alignBottom="@+id/rl_saturation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="0dp"
+        android:layout_toEndOf="@id/rl_saturation"
+        android:valueFrom="0"
+        android:valueTo="2"
+        android:value="1" />
+
+    <RelativeLayout
+        android:id="@+id/rl_saturation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rl_contrast"
+        android:layout_alignEnd="@+id/rl_brightness"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="0dp">
+
+        <ImageView
+            android:id="@+id/iv_saturation"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_below="@+id/tv_saturation"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="6dp"
+            android:src="@drawable/icon_saturation" />
+
+        <TextView
+            android:id="@+id/tv_saturation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Saturation" />
+
+    </RelativeLayout>
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/slider_warmth"
+        android:layout_alignBottom="@+id/rl_warmth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="0dp"
+        android:layout_toEndOf="@id/rl_warmth"
+        android:valueFrom="0"
+        android:valueTo="2"
+        android:value="1" />
+
+    <RelativeLayout
+        android:id="@+id/rl_warmth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rl_saturation"
+        android:layout_alignEnd="@+id/rl_brightness"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="0dp">
+
+        <ImageView
+            android:id="@+id/iv_warmth"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_below="@+id/tv_warmth"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="6dp"
+            android:src="@drawable/icon_warmth" />
+
+        <TextView
+            android:id="@+id/tv_warmth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Warmth" />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/button_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/slider_warmth"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="19dp"
+        android:layout_marginEnd="12dp"
+        android:text="save" />
+
+</RelativeLayout>

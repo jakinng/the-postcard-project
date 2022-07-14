@@ -73,4 +73,14 @@
         android:src="@drawable/icon_from_gallery"
         app:srcCompat="@drawable/icon_from_gallery" />
 
+    <ImageView
+        android:id="@+id/iv_filter_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/iv_cover_photo"
+        android:layout_alignTop="@+id/iv_cover_photo"
+        android:layout_marginStart="9dp"
+        android:layout_marginTop="9dp"
+        android:src="@drawable/edit_icon" />
+
 </RelativeLayout>

@@ -1,6 +1,7 @@
 package com.example.thepostcardproject.models;
 
 import static com.example.thepostcardproject.utilities.Keys.KEY_COVER_PHOTO;
+import static com.example.thepostcardproject.utilities.Keys.KEY_COVER_PHOTO_FILTERED;
 import static com.example.thepostcardproject.utilities.Keys.KEY_LOCATION_FROM;
 import static com.example.thepostcardproject.utilities.Keys.KEY_LOCATION_TO;
 import static com.example.thepostcardproject.utilities.Keys.KEY_MESSAGE;
@@ -38,6 +39,14 @@ public class Postcard extends ParseObject {
 
     public void setCoverPhoto(ParseFile coverPhoto) {
         put(KEY_COVER_PHOTO, coverPhoto);
+    }
+
+    public FilteredPhoto getCoverPhotoFiltered() throws ParseException {
+        return (FilteredPhoto) fetchIfNeeded().getParseObject(KEY_COVER_PHOTO_FILTERED);
+    }
+
+    public void setCoverPhotoFiltered(FilteredPhoto filteredPhoto) {
+        put(KEY_COVER_PHOTO_FILTERED, filteredPhoto);
     }
 
     public User getUserFrom() throws ParseException {

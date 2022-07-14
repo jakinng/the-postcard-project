@@ -6,14 +6,10 @@ import static androidx.core.content.PermissionChecker.checkSelfPermission;
 import static com.example.thepostcardproject.utilities.Keys.KEY_USERNAME;
 
 import android.Manifest;
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ImageDecoder;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,38 +29,30 @@ import androidx.fragment.app.Fragment;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.thepostcardproject.R;
+import com.example.thepostcardproject.activities.PhotoFilterActivity;
 import com.example.thepostcardproject.databinding.FragmentCreateBinding;
-import com.example.thepostcardproject.models.Location;
+import com.example.thepostcardproject.models.FilteredPhoto;
 import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.models.User;
-import com.example.thepostcardproject.utilities.BitmapScaler;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.parceler.Parcels;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -80,12 +68,16 @@ public class CreateFragment extends Fragment {
     private final static String TAG = "CreateFragment";
     public final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034;
     public final static int PICK_PHOTO_CODE = 1046;
+    public final static int FILTER_PHOTO_CODE = 1056;
 
     private FragmentCreateBinding binding;
 
     ActivityResultLauncher<String> requestPermissionLauncher;
     String photoFilePath;
     File photoFile;
+
+    FilteredPhoto filteredPhoto;
+
     private ArrayAdapter<String> usernameAdapter;
 
     public CreateFragment() {
@@ -117,6 +109,7 @@ public class CreateFragment extends Fragment {
         setupCameraButton();
         setupGalleryButton();
         setupSendButton();
+        setupFilterButton();
         setupUsernameAutocomplete();
         configureActionBar();
     }
@@ -131,6 +124,7 @@ public class CreateFragment extends Fragment {
 //                // See BitmapScaler.java: https://gist.github.com/nesquena/3885707fd3773c09f1bb
 //                Bitmap resizedBitmap = BitmapScaler.scaleToFitWidth(capturedImage, 400);
 
+                filteredPhoto = new FilteredPhoto(new ParseFile(photoFile));
                 Glide.with(getContext())
                         .load(photoFile)
                         .centerCrop()
@@ -158,20 +152,24 @@ public class CreateFragment extends Fragment {
                 Snackbar.make(binding.ivCoverPhoto, "Picture wasn't taken!", Snackbar.LENGTH_SHORT).show();
             }
         }
+
+        // ACTIVITY COMES FROM GALLERY
         if ((data != null) && requestCode == PICK_PHOTO_CODE) {
             Uri photoUri = data.getData();
-//            Bitmap photoBitmap = loadFromUri(photoUri);
-
-//            ImageProcessor processor = new ImageProcessor();
-//            Bitmap tintBitmap = processor.applySnowEffect(photoBitmap);
-
             // Load the selected image into a preview
-            binding.ivCoverPhoto.setWarmth(2);
+            filteredPhoto = new FilteredPhoto(new ParseFile(photoDataFromBitmap(loadFromUri(photoUri))));
             Glide.with(getContext())
                     .load(photoUri)
                     .centerCrop()
                     .into(binding.ivCoverPhoto);
-//            Snackbar.make(ivCoverPhoto, "S:FJ", Snackbar.LENGTH_SHORT).show();
+        }
+
+        // ACTIVITY COMES FROM PHOTOFILTERACTIVITY
+        if (requestCode == FILTER_PHOTO_CODE) {
+            if (resultCode == RESULT_OK) {
+                filteredPhoto = (FilteredPhoto) Parcels.unwrap(data.getParcelableExtra(FilteredPhoto.class.getSimpleName()));
+                filteredPhoto.displayFilteredPhoto(getContext(), binding.ivCoverPhoto);
+            }
         }
     }
 
@@ -189,16 +187,21 @@ public class CreateFragment extends Fragment {
                 String message = binding.etMessage.getText().toString();
 //                String userTo = etSendTo.getText().toString();
                 String userTo = binding.actvUsername.getText().toString();
-                userTo = userTo.substring(5);
                 if (message == null) {
                     Snackbar.make(binding.ibSendPostcard, "Your postcard message is empty!", Snackbar.LENGTH_SHORT).show();
                 } else if (userTo == null) {
                     Snackbar.make(binding.ibSendPostcard, "Please specify a recipient!", Snackbar.LENGTH_SHORT).show();
-                } else if (photoFile != null) {
-                    sendToUser(userTo, message, new ParseFile(photoFile));
-                    // TODO : make the gallery intent and camera intent work in the same way (saving a file)
+                } else if (filteredPhoto != null) {
+                    filteredPhoto.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            sendToUser(userTo, message, new ParseFile(photoFile));
+                            // TODO : make the gallery intent and camera intent work in the same way (saving a file)
+                        }
+                    });
                 } else if (binding.ivCoverPhoto.getDrawable() != null) {
-                    sendToUser(userTo, message, parseFileFromDrawable(binding.ivCoverPhoto.getDrawable()));
+                    Bitmap bitmap = ((BitmapDrawable) binding.ivCoverPhoto.getDrawable()).getBitmap();
+                    sendToUser(userTo, message, parseFileFromBitmap(bitmap));
                 } else {
                     Snackbar.make(binding.ibSendPostcard, "Please attach a cover photo!", Snackbar.LENGTH_SHORT).show();
                 }
@@ -449,20 +452,22 @@ public class CreateFragment extends Fragment {
     }
 
     /**
-     * Given a drawable, returns a ParseFile associated with the same image
-     * @param drawable The drawable to convert to a ParseFile
+     * Given a bitmap, returns a ParseFile associated with the same image
+     * @param bitmap The bitmap to convert to a ParseFile
      * @return The ParseFile containing the associated image
      */
-    private ParseFile parseFileFromDrawable(Drawable drawable) {
-        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+    private ParseFile parseFileFromBitmap(Bitmap bitmap) {
+        ParseFile image = new ParseFile(photoDataFromBitmap(bitmap));
+        return image;
+    }
+
+    private byte[] photoDataFromBitmap(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         Bitmap.CompressFormat format = Bitmap.CompressFormat.JPEG;
         int quality = 100;
         bitmap.compress(format, quality, stream);
         byte[] bitmapBytes = stream.toByteArray();
-
-        ParseFile image = new ParseFile(bitmapBytes);
-        return image;
+        return bitmapBytes;
     }
 
     /**
@@ -471,5 +476,37 @@ public class CreateFragment extends Fragment {
     private void configureActionBar() {
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar(); // or getActionBar();
         actionBar.setTitle("Create"); // set the top title
+    }
+
+    // ***********************************************************
+    // **  HELPER METHODS FOR ADDING PHOTO ENHANCEMENT FILTERS  **
+    // ***********************************************************
+
+    private void goPhotoFilterActivity() {
+        if (filteredPhoto == null) {
+            Snackbar.make(binding.ivCoverPhoto, "Select or take a picture to edit!", Snackbar.LENGTH_SHORT).show();
+        } else {
+            try {
+                filteredPhoto.getPhotoFile().saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        Intent intent = new Intent(getContext(), PhotoFilterActivity.class);
+                        intent.putExtra(FilteredPhoto.class.getSimpleName(), Parcels.wrap(filteredPhoto));
+                        startActivityForResult(intent, FILTER_PHOTO_CODE);
+                    }
+                });
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void setupFilterButton() {
+        binding.ivFilterPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goPhotoFilterActivity();
+            }
+        });
     }
 }

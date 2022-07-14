@@ -49,10 +49,6 @@ public class Location extends ParseObject {
         put(KEY_COORDINATES, coordinates);
     }
 
-    public String locationFromAddressComponents() {
-        return "hi";
-    }
-
     // ##########################################
     // ##   DISTANCE TO TARGET LOCATION        ##
     // ##########################################

@@ -7,14 +7,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.utils.widget.ImageFilterView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.example.thepostcardproject.R;
+import com.example.thepostcardproject.databinding.ItemHomePostcardBinding;
+import com.example.thepostcardproject.databinding.ItemProfilePostcardBinding;
 import com.example.thepostcardproject.fragments.HomeFragment;
 import com.example.thepostcardproject.fragments.ProfileFragment;
+import com.example.thepostcardproject.models.FilteredPhoto;
 import com.example.thepostcardproject.models.Postcard;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 
 import java.util.ArrayList;
@@ -37,9 +42,8 @@ public class ProfilePostcardAdapter extends RecyclerView.Adapter<ProfilePostcard
         context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View postcardView = inflater.inflate(R.layout.item_profile_postcard, parent, false);
-        ViewHolder viewHolder = new ViewHolder(postcardView);
-        return viewHolder;
+        ItemProfilePostcardBinding itemBinding = ItemProfilePostcardBinding.inflate(inflater, parent, false);
+        return new ProfilePostcardAdapter.ViewHolder(itemBinding);
     }
 
     @Override
@@ -54,20 +58,21 @@ public class ProfilePostcardAdapter extends RecyclerView.Adapter<ProfilePostcard
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public ImageView ivProfilePostcard;
+        ItemProfilePostcardBinding binding;
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            ivProfilePostcard = (ImageView) itemView.findViewById(R.id.iv_profile_postcard);
-            itemView.setOnClickListener(this);
+        public ViewHolder(ItemProfilePostcardBinding itemBinding) {
+            super(itemBinding.getRoot());
+            binding = itemBinding;
         }
 
         public void bind(Postcard postcard) {
-            ParseFile coverPhoto = postcard.getCoverPhoto();
-            Glide.with(context)
-                    .load(coverPhoto.getUrl())
-                    .centerCrop()
-                    .into(ivProfilePostcard);
+            FilteredPhoto coverPhotoFiltered = null;
+            try {
+                coverPhotoFiltered = postcard.getCoverPhotoFiltered();
+                coverPhotoFiltered.displayFilteredPhoto(context, binding.ivProfilePostcard);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override

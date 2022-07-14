@@ -63,6 +63,10 @@ dependencies {
     // Pull to refresh
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
+    // Parceler to wrap objects for sending with intents
+    implementation 'org.parceler:parceler-api:1.1.12'
+    annotationProcessor 'org.parceler:parceler:1.1.12'
+
     def lifecycle_version = "2.6.0-alpha01"
 
     // ViewModel
