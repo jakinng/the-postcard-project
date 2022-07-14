@@ -48,6 +48,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.thepostcardproject.R;
+import com.example.thepostcardproject.databinding.FragmentCreateBinding;
 import com.example.thepostcardproject.models.Location;
 import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.models.User;
@@ -80,15 +81,7 @@ public class CreateFragment extends Fragment {
     public final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034;
     public final static int PICK_PHOTO_CODE = 1046;
 
-
-    private EditText etMessage;
-//    private EditText etSendTo;
-    private ImageButton ibSendPostcard;
-    private ImageFilterView ivCoverPhoto;
-    private ImageView ivOpenCamera;
-    private ImageView ivOpenGallery;
-    private AutoCompleteTextView actvUsernameTo;
-
+    private FragmentCreateBinding binding;
 
     ActivityResultLauncher<String> requestPermissionLauncher;
     String photoFilePath;
@@ -109,7 +102,8 @@ public class CreateFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_create, container, false);
+        binding = FragmentCreateBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     /**
@@ -120,7 +114,6 @@ public class CreateFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupViews(view);
         setupCameraButton();
         setupGalleryButton();
         setupSendButton();
@@ -141,7 +134,7 @@ public class CreateFragment extends Fragment {
                 Glide.with(getContext())
                         .load(photoFile)
                         .centerCrop()
-                        .into(ivCoverPhoto);
+                        .into(binding.ivCoverPhoto);
 
 //                // Save the smaller image to disk
 //                // Configure byte output stream
@@ -162,7 +155,7 @@ public class CreateFragment extends Fragment {
 //                    e.printStackTrace();
 //                }
             } else {
-                Snackbar.make(ivCoverPhoto, "Picture wasn't taken!", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(binding.ivCoverPhoto, "Picture wasn't taken!", Snackbar.LENGTH_SHORT).show();
             }
         }
         if ((data != null) && requestCode == PICK_PHOTO_CODE) {
@@ -173,52 +166,41 @@ public class CreateFragment extends Fragment {
 //            Bitmap tintBitmap = processor.applySnowEffect(photoBitmap);
 
             // Load the selected image into a preview
-            ivCoverPhoto.setWarmth(2);
+            binding.ivCoverPhoto.setWarmth(2);
             Glide.with(getContext())
                     .load(photoUri)
                     .centerCrop()
-                    .into(ivCoverPhoto);
+                    .into(binding.ivCoverPhoto);
 //            Snackbar.make(ivCoverPhoto, "S:FJ", Snackbar.LENGTH_SHORT).show();
         }
-    }
-
-    /**
-     * Attaches the views to the corresponding variables
-     * @param view The encapsulating view
-     */
-    private void setupViews(View view) {
-        etMessage = view.findViewById(R.id.et_message);
-//        etSendTo = view.findViewById(R.id.et_sendto);
-        ibSendPostcard = view.findViewById(R.id.ib_send_postcard);
-        ivCoverPhoto = view.findViewById(R.id.iv_cover_photo);
-        ivOpenCamera = view.findViewById(R.id.iv_open_camera);
-        ivOpenGallery = view.findViewById(R.id.iv_open_gallery);
-        actvUsernameTo = view.findViewById(R.id.actv_username);
     }
 
     // ***************************************************
     // **      HELPER METHODS FOR SENDING A POSTCARD    **
     // ***************************************************
 
+    /**
+     * Send a postcard when the send button is clicked
+     */
     private void setupSendButton() {
-        ibSendPostcard.setOnClickListener(new View.OnClickListener() {
+        binding.ibSendPostcard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String message = etMessage.getText().toString();
+                String message = binding.etMessage.getText().toString();
 //                String userTo = etSendTo.getText().toString();
-                String userTo = actvUsernameTo.getText().toString();
+                String userTo = binding.actvUsername.getText().toString();
                 userTo = userTo.substring(5);
                 if (message == null) {
-                    Snackbar.make(ibSendPostcard, "Your postcard message is empty!", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(binding.ibSendPostcard, "Your postcard message is empty!", Snackbar.LENGTH_SHORT).show();
                 } else if (userTo == null) {
-                    Snackbar.make(ibSendPostcard, "Please specify a recipient!", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(binding.ibSendPostcard, "Please specify a recipient!", Snackbar.LENGTH_SHORT).show();
                 } else if (photoFile != null) {
                     sendToUser(userTo, message, new ParseFile(photoFile));
                     // TODO : make the gallery intent and camera intent work in the same way (saving a file)
-                } else if (ivCoverPhoto.getDrawable() != null) {
-                    sendToUser(userTo, message, parseFileFromDrawable(ivCoverPhoto.getDrawable()));
+                } else if (binding.ivCoverPhoto.getDrawable() != null) {
+                    sendToUser(userTo, message, parseFileFromDrawable(binding.ivCoverPhoto.getDrawable()));
                 } else {
-                    Snackbar.make(ibSendPostcard, "Please attach a cover photo!", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(binding.ibSendPostcard, "Please attach a cover photo!", Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
@@ -240,25 +222,25 @@ public class CreateFragment extends Fragment {
                             @Override
                             public void done(ParseException e) {
                                 if (e == null) {
-                                    Snackbar.make(ibSendPostcard, "Postcard has been sent!", Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(binding.ibSendPostcard, "Postcard has been sent!", Snackbar.LENGTH_SHORT).show();
                                     // Clear the visual fields
-                                    etMessage.setText(null);
+                                    binding.etMessage.setText(null);
 //                                    etSendTo.setText(null);
-                                    actvUsernameTo.setText(null);
-                                    ivCoverPhoto.setImageResource(0);
+                                    binding.actvUsername.setText(null);
+                                    binding.ivCoverPhoto.setImageResource(0);
                                 } else {
                                     Log.d(TAG, e.getMessage());
-                                    Snackbar.make(ibSendPostcard, "An error occurred!", Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(binding.ibSendPostcard, "An error occurred!", Snackbar.LENGTH_SHORT).show();
                                 }
                             }
                         });
                     } else {
-                        Snackbar.make(ibSendPostcard, "There are no users with this username!", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(binding.ibSendPostcard, "There are no users with this username!", Snackbar.LENGTH_SHORT).show();
                     }
                 } else {
                     // Something went wrong.
                     Log.d(TAG, "Error retrieving list of users: " + e.getMessage());
-                    Snackbar.make(ibSendPostcard, "An error occurred while finding users to send this postcard to!", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(binding.ibSendPostcard, "An error occurred while finding users to send this postcard to!", Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
@@ -268,26 +250,10 @@ public class CreateFragment extends Fragment {
     // **     AUTOCOMPLETE FOR SENDING BY USERNAME      **
     // ***************************************************
 
+    /**
+     * Displays a list of usernames to send the postcard to
+     */
     private void setupUsernameAutocomplete() {
-        // TODO : make this to stuff look better
-        String to = "@to: ";
-        actvUsernameTo.setText(to);
-        actvUsernameTo.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if(s.length() < to.length()){
-                    actvUsernameTo.setText(to); //set editext with "To" again like has been initialized
-                    actvUsernameTo.setSelection(actvUsernameTo.getText().length()); // to make cursor in end of text
-                }
-            }
-        });
-
         ArrayList<String> usernames = new ArrayList<>();
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.findInBackground(new FindCallback<ParseUser>() {
@@ -296,15 +262,13 @@ public class CreateFragment extends Fragment {
                 if (e == null) {
                     for (ParseUser parseUser : users) {
                         User user = (User) parseUser;
-                        usernames.add(to + user.getUsername());
+                        usernames.add(user.getUsername());
                     }
                     usernameAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, usernames);
-                    actvUsernameTo.setAdapter(usernameAdapter);
+                    binding.actvUsername.setAdapter(usernameAdapter);
                 }
             }
         });
-
-
     }
 
     // ***************************************************
@@ -323,18 +287,18 @@ public class CreateFragment extends Fragment {
                     public void onActivityResult(Boolean result) {
                         if (result) {
                             // PERMISSION GRANTED
-                            Snackbar.make(ivCoverPhoto, "Camera access granted!", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(binding.ivCoverPhoto, "Camera access granted!", Snackbar.LENGTH_SHORT).show();
                             launchCamera();
                         } else {
                             // PERMISSION NOT GRANTED
-                            Snackbar.make(ivCoverPhoto, "Camera access denied! Enable the in-app camera in Settings.", Snackbar.LENGTH_SHORT)
-                                    .setAction("Settings", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            startActivity(new Intent(Settings.ACTION_SETTINGS));
-                                        }
-                                    })
-                                    .show();
+                            Snackbar.make(binding.ivCoverPhoto, "Camera access denied! Enable the in-app camera in Settings.", Snackbar.LENGTH_SHORT)
+                                .setAction("Settings", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        startActivity(new Intent(Settings.ACTION_SETTINGS));
+                                    }
+                                })
+                                .show();
                         }
                     }
                 });
@@ -344,7 +308,7 @@ public class CreateFragment extends Fragment {
      * When the "add photo" button is clicked, checks for permission and launches the camera
      */
     private void setupCameraButton() {
-        ivOpenCamera.setOnClickListener(new View.OnClickListener() {
+        binding.ivOpenCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (checkSelfPermission(getContext(), Manifest.permission.CAMERA)
@@ -371,40 +335,40 @@ public class CreateFragment extends Fragment {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
             } catch (IOException exception) {
-                Snackbar.make(ivCoverPhoto, "Sorry, an error occurred while taking the photo.", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(binding.ivCoverPhoto, "Sorry, an error occurred while taking the photo.", Snackbar.LENGTH_SHORT).show();
             }
         }
     }
 
-    /**
-     * Testing whether the intent chooser works or not
-     * TODO : figure out whether I can launch camera & gallery with one button or not (for later)
-     */
-    private void launchCameraAndGallery() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
-            // Create a File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-                Uri photoURI = FileProvider.getUriForFile(getContext(), "com.postcard.fileprovider", photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-//                startActivityForResult(takePictureIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-            } catch (IOException exception) {
-                Snackbar.make(ivCoverPhoto, "Sorry, an error occurred while taking the photo.", Snackbar.LENGTH_SHORT).show();
-            }
-        } // TODO : add an error handler
-        // Create intent for picking a photo from the gallery
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-        // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
-        // So as long as the result is not null, it's safe to use the intent.
-//        startActivityForResult(intent, PICK_PHOTO_CODE);
-        Intent chooser = Intent.createChooser(galleryIntent, "Some text here");
-        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] { takePictureIntent });
-        startActivityForResult(chooser, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-    }
+//    /**
+//     * Testing whether the intent chooser works or not
+//     * TODO : figure out whether I can launch camera & gallery with one button or not (for later)
+//     */
+//    private void launchCameraAndGallery() {
+//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
+//            // Create a File where the photo should go
+//            File photoFile = null;
+//            try {
+//                photoFile = createImageFile();
+//                Uri photoURI = FileProvider.getUriForFile(getContext(), "com.postcard.fileprovider", photoFile);
+//                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+////                startActivityForResult(takePictureIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+//            } catch (IOException exception) {
+//                Snackbar.make(ivCoverPhoto, "Sorry, an error occurred while taking the photo.", Snackbar.LENGTH_SHORT).show();
+//            }
+//        } // TODO : add an error handler
+//        // Create intent for picking a photo from the gallery
+//        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+//                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//
+//        // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
+//        // So as long as the result is not null, it's safe to use the intent.
+////        startActivityForResult(intent, PICK_PHOTO_CODE);
+//        Intent chooser = Intent.createChooser(galleryIntent, "Some text here");
+//        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] { takePictureIntent });
+//        startActivityForResult(chooser, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+//    }
 
     /**
      * Creates an image file with a unique name
@@ -440,7 +404,7 @@ public class CreateFragment extends Fragment {
      * When the "add picture from gallery" button is clicked, the gallery intent is launched
      */
     public void setupGalleryButton() {
-        ivOpenGallery.setOnClickListener(new View.OnClickListener() {
+        binding.ivOpenGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 launchGallery();
@@ -508,5 +472,4 @@ public class CreateFragment extends Fragment {
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar(); // or getActionBar();
         actionBar.setTitle("Create"); // set the top title
     }
-
 }

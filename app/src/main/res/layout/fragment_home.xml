@@ -23,7 +23,7 @@
 <!--                android:background="@drawable/bottom_gray_border"-->
 <!--                android:id="@+id/rl_subheader">-->
             <TextView
-                android:id="@+id/tv_received_postcard_message"
+                android:id="@+id/tv_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"

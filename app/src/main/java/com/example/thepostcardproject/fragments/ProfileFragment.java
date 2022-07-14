@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.example.thepostcardproject.R;
 import com.example.thepostcardproject.adapters.ProfilePostcardAdapter;
+import com.example.thepostcardproject.databinding.FragmentProfileBinding;
 import com.example.thepostcardproject.models.Location;
 import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.models.User;
@@ -69,15 +70,10 @@ public class ProfileFragment extends Fragment {
     private ArrayList<Postcard> sentPostcards;
     private ProfilePostcardAdapter adapter;
 
-    private ImageView ivLocationIcon;
-    private RecyclerView rvPostcards;
-    private ImageView ivProfile;
-    private TextView tvUsername;
-    private TextView tvLocation;
+    private FragmentProfileBinding binding;
 
     private GoToDetailViewListener goToDetailViewListener;
     private EndlessRecyclerViewScrollListener scrollListener;
-    private SwipeRefreshLayout swipeContainer;
 
     // Counters for the infinite scroll
     private int limit = 0;
@@ -99,11 +95,14 @@ public class ProfileFragment extends Fragment {
         setCurrentUser();
     }
 
+    // TODO : override onresume so when you click on detailview and come back it's still normal
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        binding = FragmentProfileBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     /**
@@ -114,7 +113,6 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupViews(view);
         displayUsername();
         displayUserLocation();
         displaySentPostcards();
@@ -147,17 +145,10 @@ public class ProfileFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    /**
-     * Attaches the views to the corresponding variables
-     * @param view The encapsulating view
-     */
-    private void setupViews(View view) {
-        ivLocationIcon = view.findViewById(R.id.iv_location_icon);
-        rvPostcards = view.findViewById(R.id.rv_postcards);
-        ivProfile = view.findViewById(R.id.iv_profile);
-        tvUsername = view.findViewById(R.id.tv_username);
-        tvLocation = view.findViewById(R.id.tv_location);
-        swipeContainer = view.findViewById(R.id.swipe_container);
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     // ********************************************************
@@ -174,7 +165,7 @@ public class ProfileFragment extends Fragment {
      * Displays the current ParseUser's username
      */
     private void displayUsername() {
-        tvUsername.setText("@" + currentUser.getUsername());
+        binding.tvUsername.setText("@" + currentUser.getUsername());
     }
 
     // ********************************************************
@@ -187,13 +178,13 @@ public class ProfileFragment extends Fragment {
     private void displayUserLocation() {
         // Display the location in the textview
         try {
-            tvLocation.setText(currentUser.getCurrentLocation().getLocationName());
+            binding.tvLocation.setText(currentUser.getCurrentLocation().getLocationName());
         } catch (ParseException e) {
             Log.d(TAG, "The user has no location!");
             e.printStackTrace();
         }
         // Set an onclick listener on the location icon
-        ivLocationIcon.setOnClickListener(new View.OnClickListener() {
+        binding.ivLocationIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Sets which fields the API request is asking for
@@ -214,7 +205,7 @@ public class ProfileFragment extends Fragment {
         ParseGeoPoint coordinates = new ParseGeoPoint(place.getLatLng().latitude, place.getLatLng().longitude);
         Location newLocation = new Location(place.getName(), place.getAddress(), coordinates);
         currentUser.setCurrentLocation(newLocation);
-        tvLocation.setText(place.getName());
+        binding.tvLocation.setText(place.getName());
         currentUser.saveInBackground();
     }
 
@@ -231,12 +222,12 @@ public class ProfileFragment extends Fragment {
 
         // Set the adapter with a grid layout manager
         adapter = new ProfilePostcardAdapter(getContext(), new ArrayList<>(), goToDetailViewListener);
-        rvPostcards.setAdapter(adapter);
-        rvPostcards.setHasFixedSize(true);
+        binding.rvPostcards.setAdapter(adapter);
+        binding.rvPostcards.setHasFixedSize(true);
 
         // Add infinite scroll
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), NUM_PROFILE_COLUMNS);
-        rvPostcards.setLayoutManager(gridLayoutManager);
+        binding.rvPostcards.setLayoutManager(gridLayoutManager);
         scrollListener = new EndlessRecyclerViewScrollListener(gridLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
@@ -245,7 +236,7 @@ public class ProfileFragment extends Fragment {
                 }
             }
         };
-        rvPostcards.addOnScrollListener(scrollListener);
+        binding.rvPostcards.addOnScrollListener(scrollListener);
         loadMorePostcards();
     }
 
@@ -255,7 +246,7 @@ public class ProfileFragment extends Fragment {
      */
     private void loadMorePostcards() {
         ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
-        query.whereEqualTo(KEY_USER_FROM, ParseUser.getCurrentUser());
+        query.whereEqualTo(KEY_USER_FROM, currentUser);
         query.setLimit(LOAD_AT_ONCE);
         query.addDescendingOrder("createdAt");
 
@@ -269,11 +260,11 @@ public class ProfileFragment extends Fragment {
             public void done(List<Postcard> postcards, ParseException e) {
                 if (e == null) {
                     Log.d(TAG, "Just got " + postcards.size() + " postcards!");
-                    swipeContainer.setRefreshing(false);
+                    binding.swipeContainer.setRefreshing(false);
                     if (limit == 0) {
                         adapter.clear();
                         if (postcards.size() == 0) {
-                            Snackbar.make(rvPostcards, "You have not been sent any postcards!", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(binding.rvPostcards, "You have not been sent any postcards!", Snackbar.LENGTH_SHORT).show();
                         }
                     }
                     limit += postcards.size();
@@ -291,7 +282,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void setupSwipeToRefresh() {
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        binding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 // Your code to refresh the list here.
@@ -302,7 +293,7 @@ public class ProfileFragment extends Fragment {
             }
         });
         // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+        binding.swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);

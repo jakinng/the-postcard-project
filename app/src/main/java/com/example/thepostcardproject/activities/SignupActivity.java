@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.thepostcardproject.R;
+import com.example.thepostcardproject.databinding.ActivitySignupBinding;
 import com.example.thepostcardproject.models.Location;
 import com.example.thepostcardproject.models.User;
 import com.google.android.gms.common.api.Status;
@@ -23,6 +24,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -38,92 +40,54 @@ public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
     private static final int AUTOCOMPLETE_REQUEST_CODE = 1000;
 
-    private TextInputEditText etUsername;
-    private TextInputEditText etPassword;
-    private TextInputEditText etName;
-    private TextInputEditText etLocation;
-    private Button btnSignup;
+    private ActivitySignupBinding binding;
 
     private Location currentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signup);
+        binding = ActivitySignupBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         Places.initialize(getApplicationContext(), "AIzaSyAVrhwVJs0zsb_X8HcFuWBkqhp4LTIsJ2g");
         PlacesClient placesClient = Places.createClient(this);
 
-
-        setupViews();
-
         setupLocation();
         setupSignup();
-
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        // Add the selected location as the current location
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = Autocomplete.getPlaceFromIntent(data);
-                saveNewLocation(place);
-            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                // TODO: Handle the error.
-                Status status = Autocomplete.getStatusFromIntent(data);
-                Log.i(TAG, "Error in picking location. Try again! Error message: " + status.getStatusMessage());
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-            }
+            handleLocationSelected(resultCode, data);
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    /**
-     * Saves the provided Place as a Location and updates the currentLocation of the current user
-     * @param place The Place to save as the new location
-     */
-    private void saveNewLocation(Place place) {
-        ParseGeoPoint coordinates = new ParseGeoPoint(place.getLatLng().latitude, place.getLatLng().longitude);
-        Location newLocation = new Location(place.getName(), place.getAddress(), coordinates);
-        etLocation.setText(place.getName());
-        currentLocation = newLocation;
-    }
-
-    private void setupLocation() {
-        etLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Sets which fields the API request is asking for
-                List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.ADDRESS_COMPONENTS, Place.Field.LAT_LNG);
-                // Start the autocomplete intent.
-                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
-                        .build(SignupActivity.this);
-                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
-            }
-        });
-    }
-
-    private void setupViews() {
-        etUsername = (TextInputEditText) findViewById(R.id.et_username);
-        etPassword = (TextInputEditText) findViewById(R.id.et_password);
-        etName = (TextInputEditText) findViewById(R.id.et_name);
-        etLocation = (TextInputEditText) findViewById(R.id.et_location);
-        btnSignup = (Button) findViewById(R.id.btn_signup);
-    }
+    // **********************************************
+    // **     DEAL WITH SIGNING UP A NEW USER      **
+    // **********************************************
 
     /**
-     * Sets up the sign up button by adding an onclick listener to sign up a new user
+     * When the sign up button is clicked, sign up a new user with the provided information
      */
     private void setupSignup() {
-        btnSignup.setOnClickListener(new View.OnClickListener() {
+        binding.btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = etUsername.getText().toString();
-                String password = etPassword.getText().toString();
-                String name = etName.getText().toString();
-                signupUser(username, password, name, currentLocation);
+                String username = binding.etUsername.getText().toString();
+                String password = binding.etPassword.getText().toString();
+                String name = binding.etName.getText().toString();
+                // Make sure required fields are filled out
+                if (username == null || password == null || name == null || currentLocation == null) {
+                    Snackbar.make(binding.btnSignup, "Please fill out all the fields!", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    // Sign up the user with the provided information
+                    signupUser(username, password, name, currentLocation);
+                }
             }
         });
     }
@@ -167,4 +131,55 @@ public class SignupActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
+    // ***********************************************************
+    // **     HANDLE SELECTING LOCATION USING AUTOCOMPLETE      **
+    // ***********************************************************
+
+    /**
+     * If the resultCode is OK, saves the selected location as the current location
+     * @param resultCode The result code indicating whether the intent went through successfully
+     */
+    private void handleLocationSelected(int resultCode, @Nullable Intent data) {
+        if (resultCode == RESULT_OK) {
+            Place place = Autocomplete.getPlaceFromIntent(data);
+            saveNewLocation(place);
+        } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+            // TODO: Handle the error.
+            Status status = Autocomplete.getStatusFromIntent(data);
+            Log.i(TAG, "Error in picking location. Try again! Error message: " + status.getStatusMessage());
+        } else if (resultCode == RESULT_CANCELED) {
+            // The user canceled the operation.
+        }
+    }
+
+    /**
+     * Saves the provided Place as a Location and updates the currentLocation of the current user
+     * @param place The Place to save as the new location
+     */
+    private void saveNewLocation(Place place) {
+        ParseGeoPoint coordinates = new ParseGeoPoint(place.getLatLng().latitude, place.getLatLng().longitude);
+        Location newLocation = new Location(place.getName(), place.getAddress(), coordinates);
+        binding.etLocation.setText(place.getName());
+        currentLocation = newLocation;
+    }
+
+    /**
+     * Allow user to select location when the location edittext is clicked
+     */
+    private void setupLocation() {
+        binding.etLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Sets which fields the API request is asking for
+                List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.ADDRESS_COMPONENTS, Place.Field.LAT_LNG);
+                // Start the autocomplete intent.
+                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
+                        .build(SignupActivity.this);
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+            }
+        });
+    }
+
+
 }

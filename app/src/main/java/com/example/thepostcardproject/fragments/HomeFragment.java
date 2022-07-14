@@ -30,6 +30,8 @@ import android.widget.TextView;
 
 import com.example.thepostcardproject.R;
 import com.example.thepostcardproject.adapters.HomePostcardAdapter;
+import com.example.thepostcardproject.databinding.FragmentHomeBinding;
+import com.example.thepostcardproject.databinding.FragmentPostcardDetailBinding;
 import com.example.thepostcardproject.models.Location;
 import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.models.User;
@@ -72,15 +74,17 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
     public static final int SORT_LOCATION_TO = 2;
     public static final int SORT_LOCATION_FROM = 3;
 
+    private FragmentHomeBinding binding;
+
     private HomePostcardAdapter adapter;
 
-    private RecyclerView rvPostcards;
+//    private RecyclerView rvPostcards;
 
     private GoToDetailViewListener goToDetailViewListener;
     private EndlessRecyclerViewScrollListener scrollListener;
-    private SwipeRefreshLayout swipeContainer;
+//    private SwipeRefreshLayout swipeContainer;
 
-    private TextView tvPostcardHeader;
+//    private TextView tvPostcardHeader;
 
     // Counters for the infinite scroll
     private int skip;
@@ -119,10 +123,13 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         // Set this as listener for the backdrop fragment
         homeBackdropFragment = (HomeBackdropFragment) getParentFragment();
         homeBackdropFragment.setOnBottomSheetCallbacks(this);
+
         // Enable filter icon in menu
         setHasOptionsMenu(true);
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     /**
@@ -133,13 +140,17 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupViews(view);
         displayPostcards();
         setTargetLocation(((User) ParseUser.getCurrentUser()).getCurrentLocation());
         setupSwipeToRefresh();
         homeBackdropFragment.configureBackdrop(view);
     }
 
+    /**
+     * Display the menu with a filter icon
+     * @param menu
+     * @param inflater
+     */
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         // Set the action bar to have the appropriate title and icons
@@ -190,16 +201,6 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         } else {
             return super.onOptionsItemSelected(item);
         }
-    }
-
-    /**
-     * Attaches the views to the corresponding variables
-     * @param view The encapsulating view
-     */
-    private void setupViews(View view) {
-        tvPostcardHeader = view.findViewById(R.id.tv_received_postcard_message);
-        rvPostcards = view.findViewById(R.id.rv_postcards);
-        swipeContainer = view.findViewById(R.id.swipe_container);
     }
 
     // ######################################################
@@ -350,55 +351,6 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
                 }
             }
         });
-
-//        // IF THERE IS NO TARGET LOCATION
-//        if (targetLocation == null) {
-//            ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
-//            query.whereEqualTo(KEY_USER_TO, ParseUser.getCurrentUser());
-//            query.setLimit(LOAD_AT_ONCE);
-//            // TODO : add this key as a constant
-//            query.addDescendingOrder("createdAt");
-//            // TODO : add a backdrop for the filters
-//            if (startDate != null && endDate != null) {
-//                query.whereGreaterThan("createdAt", startDate);
-//                query.whereLessThan("createdAt", endDate);
-//            }
-//
-//            query.setSkip(skip);
-//            if (skip == 0) {
-//                scrollListener.resetState();
-//            }
-//
-//        } else {
-//            ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
-//            query.whereEqualTo(KEY_USER_TO, ParseUser.getCurrentUser());
-//            query.addDescendingOrder("createdAt");
-//            query.findInBackground(new FindCallback<Postcard>() {
-//                @Override
-//                public void done(List<Postcard> postcards, ParseException e) {
-//                    Log.d(TAG, String.valueOf(postcards.size()));
-//
-//                    LocationComparator comparator = new LocationComparator(targetLocation);
-//                    Collections.sort(postcards, comparator);
-//                    for (int i = 0; i < postcards.size(); i++) {
-//                        try {
-//                            Log.d(TAG, postcards.get(i).getLocationFrom().getLocationName());
-//                            Log.d(TAG, "COMPARE!!" + Location.getDistanceBetweenLocations(targetLocation, postcards.get(i).getLocationFrom()));
-//
-//                        } catch (ParseException ex) {
-//                            ex.printStackTrace();
-//                        }
-//                    }
-//                    adapter.clear();
-//                    adapter.addAll((ArrayList<Postcard>) postcards);
-//                    try {
-//                        tvPostcardHeader.setText("Postcard Collection" + targetLocation.getLocationName());
-//                    } catch (ParseException ex) {
-//                        ex.printStackTrace();
-//                    }
-//                }
-//            });
-//        }
     }
 
 
@@ -407,16 +359,16 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
      * @param postcards The postcards to add
      */
     private void updatePostcards(List<Postcard> postcards, int sortBy) {
-        swipeContainer.setRefreshing(false);
+        binding.swipeContainer.setRefreshing(false);
 
         // If this is the first query made in the infinite scroll, clear the adapter in case this is swipe to refresh
         if (skip == 0) {
             // TODO : display the filtering criteria in the appbar
-            tvPostcardHeader.setText("Postcard Collection");
+            binding.tvHeader.setText("Postcard Collection");
             adapter.clear();
             if (postcards.size() == 0) {
                 // TODO : format this better
-                tvPostcardHeader.setText("Postcard Collection Empty");
+                binding.tvHeader.setText("Postcard Collection Empty");
             }
         }
 
@@ -463,47 +415,6 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
     }
 
     /**
-     * Updates the adapter with the new postcards and updates variables for infinite scrolling
-     * @param postcards The postcards to add
-     */
-    private void updatePostcards(List<Postcard> postcards) {
-        Log.d(TAG, "Number of postcards: " + postcards.size());
-        swipeContainer.setRefreshing(false);
-        // If this is the first query made, clear the adapter for the swipe to refresh
-        if (skip == 0) {
-            String datesFromTo = "";
-            String targetLocationString = "";
-            if (startDate != null && endDate != null) {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("E, MMMM d, y");
-                dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-                datesFromTo = "\n" + dateFormat.format(startDate) + " - " + dateFormat.format(endDate);
-            }
-            if (targetLocation != null) {
-                try {
-                    targetLocationString = "\n" + targetLocation.getLocationName();
-                } catch (ParseException parseException) {
-                    Log.d(TAG, parseException.getMessage());
-                }
-            }
-            tvPostcardHeader.setText("Postcard Collection" + datesFromTo + targetLocationString);
-            adapter.clear();
-            if (postcards.size() == 0) {
-                // TODO : format this better
-                tvPostcardHeader.setText("Postcard Collection Empty" + datesFromTo + targetLocationString);
-            }
-        }
-
-        skip += postcards.size();
-        if (postcards.size() != 0) {
-            adapter.addAll((ArrayList<Postcard>) postcards);
-            loadMore = true;
-        } else {
-            // No more postcards to load
-            loadMore = false;
-        }
-    }
-
-    /**
      * Reloads postcards, resetting the infinite scroll
      */
     private void reloadPostcards() {
@@ -517,14 +428,14 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
     private void displayPostcards() {
         // Set the adapter
         adapter = new HomePostcardAdapter(getContext(), new ArrayList<>(), goToDetailViewListener);
-        rvPostcards.setAdapter(adapter);
+        binding.rvPostcards.setAdapter(adapter);
 
         // Optimizes since the items are static and will not change while scrolling
-        rvPostcards.setHasFixedSize(true);
+        binding.rvPostcards.setHasFixedSize(true);
 
         // Add infinite scroll
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        rvPostcards.setLayoutManager(linearLayoutManager);
+        binding.rvPostcards.setLayoutManager(linearLayoutManager);
         scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
@@ -533,11 +444,11 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
                 }
             }
         };
-        rvPostcards.addOnScrollListener(scrollListener);
+        binding.rvPostcards.addOnScrollListener(scrollListener);
 
         // Add snap to center
         SnapHelper snapHelper = new LinearSnapHelper();
-        snapHelper.attachToRecyclerView(rvPostcards);
+        snapHelper.attachToRecyclerView(binding.rvPostcards);
 
         loadMorePostcards();
     }
@@ -552,7 +463,7 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
 
     private void setupSwipeToRefresh() {
         // Setup refresh listener which triggers new data loading
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        binding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 // Your code to refresh the list here.
@@ -562,7 +473,7 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
             }
         });
         // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+        binding.swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);

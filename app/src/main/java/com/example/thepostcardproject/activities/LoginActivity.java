@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.thepostcardproject.R;
+import com.example.thepostcardproject.databinding.ActivityLoginBinding;
 import com.example.thepostcardproject.models.User;
 import com.google.android.material.textfield.TextInputEditText;
 import com.parse.LogInCallback;
@@ -23,40 +24,31 @@ import com.parse.SignUpCallback;
 public class LoginActivity extends AppCompatActivity {
 
     public static final String TAG = "LoginActivity";
-    private TextInputEditText etUsername;
-    private TextInputEditText etPassword;
-    private Button btnLogin;
-    private TextView tvSignup;
+
+    private ActivityLoginBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
-        setupViews();
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         setupLogin();
         setupSignup();
     }
 
-    /**
-     * Binds all the views in the XML file to the instance variables for the login activity
-     */
-    private void setupViews() {
-        etUsername = (TextInputEditText) findViewById(R.id.et_username);
-        etPassword = (TextInputEditText) findViewById(R.id.et_password);
-        btnLogin = (Button) findViewById(R.id.btn_login);
-        tvSignup = (TextView) findViewById(R.id.tv_signup);
-    }
+    // *****************************************
+    // **      ADD LISTENERS TO BUTTONS       **
+    // *****************************************
 
     /**
      * Sets up the login button by adding an onclick listener to sign in a user
      */
     private void setupLogin() {
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = etUsername.getText().toString();
-                String password = etPassword.getText().toString();
+                String username = binding.etUsername.getText().toString();
+                String password = binding.etPassword.getText().toString();
                 loginUser(username, password);
             }
         });
@@ -68,8 +60,8 @@ public class LoginActivity extends AppCompatActivity {
     private void setupSignup() {
         SpannableString content = new SpannableString("create an account");
         content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
-        tvSignup.setText(content);
-        tvSignup.setOnClickListener(new View.OnClickListener() {
+        binding.tvSignup.setText(content);
+        binding.tvSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 goSignupActivity();
@@ -94,9 +86,9 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    // ********************************************************
-    // **    HELPER METHODS FOR LOGGING IN AND SIGNING UP    **
-    // ********************************************************
+    // *****************************************
+    // **    HELPER METHODS FOR LOGGING IN    **
+    // *****************************************
 
     /**
      * Logs in the ParseUser with the associated username and password

@@ -27,7 +27,7 @@
         <entry key="app/src/main/res/layout/fragment_home_posts.xml" value="0.11018237082066869" />
         <entry key="app/src/main/res/layout/fragment_map.xml" value="0.17604166666666668" />
         <entry key="app/src/main/res/layout/fragment_postcard_detail.xml" value="0.3384429931640625" />
-        <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.4233463383753807" />
+        <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_home_postcard.xml" value="0.11976047904191617" />
         <entry key="app/src/main/res/layout/item_profile_postcard.xml" value="0.1" />
         <entry key="app/src/main/res/menu/menu_bottom_navigation.xml" value="0.346875" />

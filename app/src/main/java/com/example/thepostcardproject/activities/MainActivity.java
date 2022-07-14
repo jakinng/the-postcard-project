@@ -9,9 +9,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.thepostcardproject.R;
+import com.example.thepostcardproject.databinding.ActivityMainBinding;
 import com.example.thepostcardproject.fragments.CreateFragment;
 import com.example.thepostcardproject.fragments.HomeBackdropFragment;
 import com.example.thepostcardproject.fragments.HomeFragment;
@@ -33,28 +35,22 @@ import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivity";
-    BottomNavigationView bottomNavigationView;
-    FragmentManager fragmentManager;
+    FragmentManager fragmentManager = getSupportFragmentManager();
+
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
-        setupViews();
         setupBottomNavigation();
         goHomeFragment();
 
         Places.initialize(getApplicationContext(), "AIzaSyAVrhwVJs0zsb_X8HcFuWBkqhp4LTIsJ2g");
         PlacesClient placesClient = Places.createClient(this);
-    }
-
-    /**
-     * Binds instance variables to the associated views
-     */
-    private void setupViews() {
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
-        fragmentManager = getSupportFragmentManager();
     }
 
     /**
@@ -64,9 +60,8 @@ public class MainActivity extends AppCompatActivity {
 
         final MapFragment mapFragment = new MapFragment();
         final CreateFragment createFragment = new CreateFragment();
-        final ProfileFragment profileFragment = new ProfileFragment();
 
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+        binding.bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment fragment;
@@ -115,16 +110,6 @@ public class MainActivity extends AppCompatActivity {
      * Navigates to the Home fragment
      */
     private void goHomeFragment() {
-//        HomeFragment.GoToDetailViewListener goToDetailViewListener = new HomeFragment.GoToDetailViewListener() {
-//            @Override
-//            public void goToDetailView(Postcard postcard) {
-//                fragmentManager.beginTransaction()
-//                        .replace(R.id.rl_container, PostcardDetailFragment.newInstance(postcard))
-//                        .addToBackStack(null)
-//                        .commit();
-//            }
-//        };
-//        final HomeFragment homeFragment = HomeFragment.newInstance(goToDetailViewListener);
         HomeBackdropFragment homeBackdropFragment = new HomeBackdropFragment();
         fragmentManager.beginTransaction().replace(R.id.rl_container, homeBackdropFragment).commit();
     }

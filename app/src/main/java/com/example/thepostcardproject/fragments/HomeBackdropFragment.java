@@ -23,6 +23,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
 import com.example.thepostcardproject.R;
+import com.example.thepostcardproject.databinding.FragmentHomeBackdropBinding;
+import com.example.thepostcardproject.databinding.FragmentPostcardDetailBinding;
 import com.example.thepostcardproject.models.Location;
 import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.models.User;
@@ -52,19 +54,11 @@ public class HomeBackdropFragment extends Fragment {
     private static final String TAG = "HomeBackdropFragment";
     private static final ArrayList<String> SORT_CATEGORIES = new ArrayList<String>(Arrays.asList("Most recent date (default)", "Earliest date", "Location sent to", "Location sent from"));
 
+    private FragmentHomeBackdropBinding binding;
+
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private OnBottomSheetCallbacks listener;
     private HomeFragment homeFragment;
-
-    private TextInputLayout iDateRange;
-    private EditText etDateRange;
-
-    private AutoCompleteTextView actvFilterBy;
-    private TextInputLayout iFilterLocation;
-    private EditText etFilterLocation;
-
-    private TextInputLayout iFilterUsername;
-    private AutoCompleteTextView actvFilterUsername;
 
     public HomeBackdropFragment() {
         // Required empty public constructor
@@ -79,12 +73,12 @@ public class HomeBackdropFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 //         Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_backdrop, container, false);
+        binding = FragmentHomeBackdropBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        setupViews(view);
         inflateHomeFragment();
         setupFilterBy();
         setupLocationPicker();
@@ -93,40 +87,29 @@ public class HomeBackdropFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
-    private void setupViews(View view) {
-        actvFilterBy = view.findViewById(R.id.actv_filter_by);
-        iFilterLocation = view.findViewById(R.id.i_filter_location);
-        etFilterLocation = view.findViewById(R.id.et_filter_location);
-        etDateRange = view.findViewById(R.id.et_date_range);
-        iDateRange = view.findViewById(R.id.i_date_range);
-        iFilterUsername = view.findViewById(R.id.i_filter_username);
-
-        actvFilterUsername = view.findViewById(R.id.actv_filter_username);
-    }
-
     // ####################################
     // ##      SORT BY CONDITIONS        ##
     // ####################################
 
     private void setupFilterBy() {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, SORT_CATEGORIES);
-        actvFilterBy.setAdapter(adapter);
+        binding.actvFilterBy.setAdapter(adapter);
         // Automatically sort by most recent date sent and make sure the autocomplete does not filter out the other sorting possibilities
-        actvFilterBy.setText(SORT_CATEGORIES.get(0), false);
-        iFilterLocation.setVisibility(View.GONE);
+        binding.actvFilterBy.setText(SORT_CATEGORIES.get(0), false);
+        binding.iFilterLocation.setVisibility(View.GONE);
         homeFragment.setSortBy(0);
-        actvFilterBy.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        binding.actvFilterBy.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 homeFragment.setSortBy(position);
                 if (position == 0) {
-                    iFilterLocation.setVisibility(View.GONE);
+                    binding.iFilterLocation.setVisibility(View.GONE);
                 } else if (position == 1) {
-                    iFilterLocation.setVisibility(View.GONE);
+                    binding.iFilterLocation.setVisibility(View.GONE);
                 } else if (position == 2) {
-                    iFilterLocation.setVisibility(View.VISIBLE);
+                    binding.iFilterLocation.setVisibility(View.VISIBLE);
                 } else if (position == 3) {
-                    iFilterLocation.setVisibility(View.VISIBLE);
+                    binding.iFilterLocation.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -137,7 +120,7 @@ public class HomeBackdropFragment extends Fragment {
     // ####################################
 
     private void setupLocationPicker() {
-        etFilterLocation.setOnClickListener(new View.OnClickListener() {
+        binding.etFilterLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 homeFragment.launchLocationFromPicker();
@@ -147,14 +130,14 @@ public class HomeBackdropFragment extends Fragment {
 
     public void displayTargetLocation(Location locationFrom) {
         try {
-            etFilterLocation.setText(locationFrom.getLocationName());
+            binding.etFilterLocation.setText(locationFrom.getLocationName());
         } catch (com.parse.ParseException e) {
             Log.d(TAG, e.getMessage());
         }
     }
 
     public void clearTargetLocation() {
-        etFilterLocation.setText(null);
+        binding.etFilterLocation.setText(null);
     }
 
     // ################################
@@ -162,17 +145,17 @@ public class HomeBackdropFragment extends Fragment {
     // ################################
 
     private void setupDateRangePicker() {
-        etDateRange.setOnClickListener(new View.OnClickListener() {
+        binding.etDateRange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 homeFragment.launchDateRangePicker();
             }
         });
-        iDateRange.setEndIconOnClickListener(new View.OnClickListener() {
+        binding.iDateRange.setEndIconOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 homeFragment.clearDateRange();
-                etDateRange.setText(null);
+                binding.etDateRange.setText(null);
             }
         });
     }
@@ -181,7 +164,7 @@ public class HomeBackdropFragment extends Fragment {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM d, y");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         String datesFromTo = dateFormat.format(startDate) + " - " + dateFormat.format(endDate);
-        etDateRange.setText(datesFromTo);
+        binding.etDateRange.setText(datesFromTo);
     }
 
     // ####################################
@@ -189,23 +172,6 @@ public class HomeBackdropFragment extends Fragment {
     // ####################################
 
     private void setupUsernameAutocomplete() {
-        String to = "@";
-//        actvFilterUsername.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//                if(0 < s.length() && s.length() <= to.length() && s.toString() != to){
-//                    actvFilterUsername.setText(to + actvFilterUsername.getText()); //set editext with "To" again like has been initialized
-//                    actvFilterUsername.setSelection(actvFilterUsername.getText().length()); // to make cursor in end of text
-//                }
-//            }
-//        });
-
         ArrayList<String> usernames = new ArrayList<>();
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.findInBackground(new FindCallback<ParseUser>() {
@@ -217,14 +183,15 @@ public class HomeBackdropFragment extends Fragment {
                         usernames.add(user.getUsername());
                     }
                     ArrayAdapter<String> usernameAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, usernames);
-                    actvFilterUsername.setAdapter(usernameAdapter);
+                    binding.actvFilterUsername.setAdapter(usernameAdapter);
                 }
             }
         });
-        actvFilterUsername.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        binding.actvFilterUsername.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String username = actvFilterUsername.getText().toString();
+                String username = binding.actvFilterUsername.getText().toString();
                 Log.d(TAG, username + " selected from actv");
                 ParseQuery<ParseUser> query = ParseUser.getQuery();
                 query.whereEqualTo(KEY_USERNAME, username);
@@ -242,11 +209,15 @@ public class HomeBackdropFragment extends Fragment {
                 });
             }
         });
-        iFilterUsername.setEndIconOnClickListener(new View.OnClickListener() {
+
+        /**
+         * Allow users to clear username by clicking the x
+         */
+        binding.iFilterUsername.setEndIconOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 homeFragment.clearUsername();
-                actvFilterUsername.setText(null);
+                binding.actvFilterUsername.setText(null);
             }
         });
     }
