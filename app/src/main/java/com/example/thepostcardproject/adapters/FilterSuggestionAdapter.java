@@ -36,6 +36,13 @@ public class FilterSuggestionAdapter extends RecyclerView.Adapter<FilterSuggesti
         this.displaySelectedFilterListener = displaySelectedFilterListener;
     }
 
+    // **************************************************
+    // **     IMPLEMENT RECYCLERVIEW ADAPTER METHODS   **
+    // **************************************************
+
+    /**
+     * Inflates the layout for each filter
+     */
     @NonNull
     @Override
     public FilterSuggestionAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -45,6 +52,9 @@ public class FilterSuggestionAdapter extends RecyclerView.Adapter<FilterSuggesti
         return new ViewHolder(itemBinding);
     }
 
+    /**
+     * Binds the information for each filter to the layout
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Filter filter = filters.get(position);
@@ -56,16 +66,31 @@ public class FilterSuggestionAdapter extends RecyclerView.Adapter<FilterSuggesti
         return filters.size();
     }
 
+    // **************************************************
+    // **     ADD NEW FILTERS TO THE LIST DISPLAYED    **
+    // **************************************************
+
+    /**
+     * Add a list of filters to the list displayed
+     * @param addFilters The list of new filters to display
+     */
     public void addAll(ArrayList<Filter> addFilters) {
-//        int positionStart = filters.size();
         filters.addAll(addFilters);
         notifyDataSetChanged();
     }
 
+    /**
+     * Add a filter to the list displayed
+     * @param newFilter The new filter to display
+     */
     public void add(Filter newFilter) {
         notifyItemInserted(filters.size());
         filters.add(newFilter);
     }
+
+    // *********************************************
+    // **     VIEWHOLDER TO DISPLAY EACH FILTER   **
+    // *********************************************
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ItemFilterSuggestionBinding binding;
@@ -76,6 +101,11 @@ public class FilterSuggestionAdapter extends RecyclerView.Adapter<FilterSuggesti
             binding = itemBinding;
         }
 
+        /**
+         * Binds the photo and the filter to the ImageView
+         * @param drawablePhoto The photo to display
+         * @param filter The filter to apply on the photo
+         */
         public void bind(Drawable drawablePhoto, Filter filter) {
             filter.addFilterToImageView(binding.ivFilterSuggestion);
             Glide.with(context)
@@ -87,13 +117,14 @@ public class FilterSuggestionAdapter extends RecyclerView.Adapter<FilterSuggesti
             }
         }
 
+        /**
+         * When a filter is clicked, display the result on the image preview
+         * @param view The view selected
+         */
         @Override
-        public void onClick(View v) {
+        public void onClick(View view) {
             int position = getAdapterPosition();
-            Log.d(TAG, String.valueOf(filters));
             displaySelectedFilterListener.displaySelectedFilter(filters.get(position));
-            Log.d(TAG, "View clicked! " + position);
         }
     }
-
 }

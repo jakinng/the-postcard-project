@@ -41,6 +41,13 @@ public class HomePostcardAdapter extends RecyclerView.Adapter<HomePostcardAdapte
         this.goToDetailViewListener = goToDetailViewListener;
     }
 
+    // **************************************************
+    // **     IMPLEMENT RECYCLERVIEW ADAPTER METHODS   **
+    // **************************************************
+
+    /**
+     * Inflates the layout for each postcard
+     */
     @NonNull
     @Override
     public HomePostcardAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -50,22 +57,26 @@ public class HomePostcardAdapter extends RecyclerView.Adapter<HomePostcardAdapte
         return new ViewHolder(itemBinding);
     }
 
+    /**
+     * Binds the information for each postcard to the layout
+     */
     @Override
     public void onBindViewHolder(@NonNull HomePostcardAdapter.ViewHolder holder, int position) {
         Postcard postcard = receivedPostcards.getValue().get(position);
-        holder.bind(postcard, createOnClickListener());
+        holder.bind(postcard);
     }
 
+    /**
+     * @return The number of postcards currently loaded
+     */
     @Override
     public int getItemCount() {
         return receivedPostcards.getValue().size();
     }
 
-    private View.OnClickListener createOnClickListener() {
-        return v -> {
-            Navigation.findNavController(v).navigate(R.id.action_home_backdrop_fragment_to_postcard_detail_fragment);
-        };
-    }
+    // ***********************************************
+    // **     VIEWHOLDER TO DISPLAY EACH POSTCARD   **
+    // ***********************************************
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ItemHomePostcardBinding itemBinding;
@@ -76,9 +87,11 @@ public class HomePostcardAdapter extends RecyclerView.Adapter<HomePostcardAdapte
             this.itemBinding = itemBinding;
         }
 
-        public void bind(Postcard postcard, View.OnClickListener listener) {
-//            itemBinding.getRoot().setOnClickListener(listener);
-
+        /**
+         * Binds the postcard with a filtered cover photo
+         * @param postcard
+         */
+        public void bind(Postcard postcard) {
             try {
                 FilteredPhoto coverPhotoFiltered = postcard.getCoverPhotoFiltered();
                 coverPhotoFiltered.displayFilteredPhoto(context, itemBinding.ivHomePostcard);
@@ -87,7 +100,7 @@ public class HomePostcardAdapter extends RecyclerView.Adapter<HomePostcardAdapte
                 e.printStackTrace();
             }
             try {
-                String toFrom = "From: " + postcard.getUserFrom().getUsername() + " | " + postcard.getLocationFrom().getLocationName() + "\nTo: " + postcard.getUserTo().getUsername() + " | " + postcard.getLocationTo().getLocationName();
+                String toFrom = "From: " + postcard.getUserFrom().getUsername() + "  &#x1F4CD " + postcard.getLocationFrom().getLocationName() + "\nTo: " + postcard.getUserTo().getUsername() + "  &#x1F4CD " + postcard.getLocationTo().getLocationName();
                 itemBinding.tvUsername.setText(toFrom);
                 itemBinding.tvMessage.setText(postcard.getMessage());
             } catch (com.parse.ParseException e) {
@@ -95,6 +108,10 @@ public class HomePostcardAdapter extends RecyclerView.Adapter<HomePostcardAdapte
             }
         }
 
+        /**
+         * When a postcard is clicked, go to a detail view
+         * @param v
+         */
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();

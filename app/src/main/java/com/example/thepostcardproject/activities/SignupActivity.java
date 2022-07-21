@@ -41,7 +41,6 @@ public class SignupActivity extends AppCompatActivity {
     private static final int AUTOCOMPLETE_REQUEST_CODE = 1000;
 
     private ActivitySignupBinding binding;
-
     private Location currentLocation;
 
     @Override
@@ -62,9 +61,9 @@ public class SignupActivity extends AppCompatActivity {
         // Add the selected location as the current location
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             handleLocationSelected(resultCode, data);
-            return;
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     // **********************************************
@@ -102,31 +101,24 @@ public class SignupActivity extends AppCompatActivity {
         user.setUsername(username);
         user.setPassword(password);
         user.setName(name);
-        location.saveInBackground(new SaveCallback() {
+        user.setCurrentLocation(location);
+        user.signUpInBackground(new SignUpCallback() {
             @Override
             public void done(ParseException e) {
-                Log.d(TAG, "location has been saved!");
-                user.setCurrentLocation(location);
-                user.signUpInBackground(new SignUpCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            goMainActivity();
-                        } else {
-                            // TODO : better error handling
-                            Log.d(TAG, e.getMessage());
-                            Toast.makeText(SignupActivity.this, "Error signing up. Try again!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+                if (e == null) {
+                    goSplashActivity();
+                } else {
+                    Log.d(TAG, e.getMessage());
+                    Toast.makeText(SignupActivity.this, "Error signing up. Try again!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
     /**
-     * Uses an intent to start the MainActivity
+     * Uses an intent to start the Splash
      */
-    private void goMainActivity() {
+    private void goSplashActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
@@ -137,31 +129,19 @@ public class SignupActivity extends AppCompatActivity {
     // ***********************************************************
 
     /**
-     * If the resultCode is OK, saves the selected location as the current location
-     * @param resultCode The result code indicating whether the intent went through successfully
-     */
-    private void handleLocationSelected(int resultCode, @Nullable Intent data) {
-        if (resultCode == RESULT_OK) {
-            Place place = Autocomplete.getPlaceFromIntent(data);
-            saveNewLocation(place);
-        } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-            // TODO: Handle the error.
-            Status status = Autocomplete.getStatusFromIntent(data);
-            Log.i(TAG, "Error in picking location. Try again! Error message: " + status.getStatusMessage());
-        } else if (resultCode == RESULT_CANCELED) {
-            // The user canceled the operation.
-        }
-    }
-
-    /**
      * Saves the provided Place as a Location and updates the currentLocation of the current user
      * @param place The Place to save as the new location
      */
     private void saveNewLocation(Place place) {
         ParseGeoPoint coordinates = new ParseGeoPoint(place.getLatLng().latitude, place.getLatLng().longitude);
         Location newLocation = new Location(place.getName(), place.getAddress(), coordinates, place.getId());
-        binding.etLocation.setText(place.getName());
-        currentLocation = newLocation;
+        newLocation.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                binding.etLocation.setText(place.getName());
+                currentLocation = newLocation;
+            }
+        });
     }
 
     /**
@@ -181,5 +161,17 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * If the resultCode is OK, saves the selected location as the current location
+     * @param resultCode The result code indicating whether the intent went through successfully
+     */
+    private void handleLocationSelected(int resultCode, @Nullable Intent data) {
+        if (resultCode == RESULT_OK) {
+            Place place = Autocomplete.getPlaceFromIntent(data);
+            saveNewLocation(place);
+        } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+            Status status = Autocomplete.getStatusFromIntent(data);
+            Snackbar.make(binding.etLocation, "Error occurred when selecting location. Try again!", Snackbar.LENGTH_SHORT).show();
+        }
+    }
 }

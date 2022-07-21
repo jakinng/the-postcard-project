@@ -41,6 +41,10 @@ public class ProfilePostcardAdapter extends RecyclerView.Adapter<ProfilePostcard
         this.goToDetailViewListener = goToDetailViewListener;
     }
 
+    // **************************************************
+    // **     IMPLEMENT RECYCLERVIEW ADAPTER METHODS   **
+    // **************************************************
+
     /**
      * Inflates the layout for each postcard
      */
@@ -70,6 +74,10 @@ public class ProfilePostcardAdapter extends RecyclerView.Adapter<ProfilePostcard
     public int getItemCount() {
         return sentPostcards.getValue().size();
     }
+
+    // ***********************************************
+    // **     VIEWHOLDER TO DISPLAY EACH POSTCARD   **
+    // ***********************************************
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ItemProfilePostcardBinding itemBinding;

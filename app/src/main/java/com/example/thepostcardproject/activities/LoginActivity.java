@@ -24,12 +24,12 @@ import com.parse.SignUpCallback;
 public class LoginActivity extends AppCompatActivity {
 
     public static final String TAG = "LoginActivity";
-
     private ActivityLoginBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // If a user is already logged in, go directly to the main activity
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setupLogin();
@@ -72,8 +72,8 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Uses an intent to start the MainActivity
      */
-    private void goMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
+    private void goSplashActivity() {
+        Intent intent = new Intent(this, SplashActivity.class);
         startActivity(intent);
         finish();
     }
@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void done(ParseUser user, ParseException e) {
                 if (e == null) {
-                    goMainActivity();
+                    goSplashActivity();
                 } else {
                     Log.d(TAG, e.getMessage());
                     Toast.makeText(LoginActivity.this, "Wrong password. Try again!", Toast.LENGTH_SHORT).show();
