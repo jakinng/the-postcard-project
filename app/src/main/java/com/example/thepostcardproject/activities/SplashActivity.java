@@ -1,6 +1,7 @@
 package com.example.thepostcardproject.activities;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -23,7 +24,12 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        configureActionBar();
         goMainActivity();
+    }
+    private void configureActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
     }
 
     /**

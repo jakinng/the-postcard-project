@@ -1,6 +1,7 @@
 package com.example.thepostcardproject.activities;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -48,6 +49,7 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivitySignupBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        configureActionBar();
 
         Places.initialize(getApplicationContext(), "AIzaSyAVrhwVJs0zsb_X8HcFuWBkqhp4LTIsJ2g");
         PlacesClient placesClient = Places.createClient(this);
@@ -64,6 +66,11 @@ public class SignupActivity extends AppCompatActivity {
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    private void configureActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
     }
 
     // **********************************************

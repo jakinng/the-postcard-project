@@ -1,5 +1,6 @@
 package com.example.thepostcardproject.activities;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -32,8 +33,14 @@ public class LoginActivity extends AppCompatActivity {
         // If a user is already logged in, go directly to the main activity
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        configureActionBar();
         setupLogin();
         setupSignup();
+    }
+
+    private void configureActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
     }
 
     // *****************************************
