@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.ProfileFragment">
+
+    <ImageView
+        android:id="@+id/iv_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        app:srcCompat="@drawable/person_icon" />
+
+    <TextView
+        android:id="@+id/tv_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_profile"
+        android:layout_alignStart="@+id/iv_profile"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="12dp"
+        android:textColor="@color/postcard_black"
+        tools:text="\@jakin" />
+
+    <ImageView
+        android:id="@+id/iv_location_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_below="@+id/tv_username"
+        android:layout_alignStart="@+id/iv_profile"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/icon_location"
+        app:srcCompat="@drawable/ic_vector_location" />
+
+    <TextView
+        android:id="@+id/tv_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/iv_location_icon"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="1dp"
+        android:layout_toEndOf="@+id/iv_location_icon"
+        android:textColor="@color/postcard_black"
+        tools:text="Vegas, baby!" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/iv_location_icon"
+        android:layout_marginTop="30dp">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_postcards"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</RelativeLayout>

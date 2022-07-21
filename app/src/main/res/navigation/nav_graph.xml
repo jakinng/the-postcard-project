@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/home_backdrop_fragment">
+    <fragment
+        android:id="@+id/home_backdrop_fragment"
+        android:name="com.example.thepostcardproject.fragments.HomeBackdropFragment"
+        android:label="HomeBackdropFragment"
+        tools:layout="@layout/fragment_home_backdrop" >
+        <action
+            android:id="@+id/action_home_backdrop_fragment_to_postcard_detail_fragment"
+            app:destination="@id/postcard_detail_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profile_fragment"
+        android:name="com.example.thepostcardproject.fragments.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profile_fragment_to_postcard_detail_fragment"
+            app:destination="@id/postcard_detail_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/create_fragment"
+        android:name="com.example.thepostcardproject.fragments.CreateFragment"
+        android:label="fragment_create"
+        tools:layout="@layout/fragment_create" >
+        <action
+            android:id="@+id/action_create_fragment_to_photo_filter_fragment"
+            app:destination="@id/photo_filter_fragment" />
+    </fragment>
+    <activity
+        android:id="@+id/login_activity"
+        android:name="com.example.thepostcardproject.activities.LoginActivity"
+        android:label="activity_login"
+        tools:layout="@layout/activity_login" />
+    <fragment
+        android:id="@+id/postcard_detail_fragment"
+        android:name="com.example.thepostcardproject.fragments.PostcardDetailFragment"
+        android:label="fragment_postcard_detail"
+        tools:layout="@layout/fragment_postcard_detail" >
+        <action
+            android:id="@+id/action_postcard_detail_fragment_from_home_self_left"
+            app:destination="@id/postcard_detail_fragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popUpToInclusive="@id/home_backdrop_fragment" />
+        <action
+            android:id="@+id/action_postcard_detail_fragment_from_home_self_right"
+            app:destination="@id/postcard_detail_fragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popUpToInclusive="@id/home_backdrop_fragment" />
+        <action
+            android:id="@+id/action_postcard_detail_fragment_from_profile_self_left"
+            app:destination="@id/postcard_detail_fragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popUpToInclusive="@id/profile_fragment" />
+        <action
+            android:id="@+id/action_postcard_detail_fragment_from_profile_self_right"
+            app:destination="@id/postcard_detail_fragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popUpToInclusive="@id/profile_fragment" />
+        <action
+            android:id="@+id/action_postcard_detail_fragment_to_home_backdrop_fragment"
+            app:destination="@id/home_backdrop_fragment" />
+        <action
+            android:id="@+id/action_postcard_detail_fragment_to_profile_fragment"
+            app:destination="@id/profile_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/photo_filter_fragment"
+        android:name="com.example.thepostcardproject.fragments.PhotoFilterFragment"
+        android:label="fragment_photo_filter"
+        tools:layout="@layout/fragment_photo_filter" >
+        <action
+            android:id="@+id/action_photo_filter_fragment_to_create_fragment"
+            app:destination="@id/create_fragment" />
+    </fragment>
+</navigation>

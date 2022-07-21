@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/home_backdrop_fragment"
+        android:icon="@drawable/icon_home"
+        android:enabled="true"
+        android:title="Home"
+        app:showAsAction="ifRoom|withText"
+        android:visible="true"/>
+<!--    <item-->
+<!--        android:enabled="true"-->
+<!--        android:id="@+id/action_map"-->
+<!--        android:icon="@drawable/icon_explore"-->
+<!--        android:title="Explore"-->
+<!--        app:showAsAction="ifRoom|withText" />-->
+    <item
+        android:enabled="true"
+        android:id="@+id/create_fragment"
+        android:icon="@drawable/icon_create"
+        android:title="Create"
+        app:showAsAction="ifRoom|withText" />
+    <item
+        android:enabled="true"
+        android:id="@+id/profile_fragment"
+        android:icon="@drawable/icon_account"
+        android:title="Profile"
+        app:showAsAction="ifRoom|withText" />
+    <item
+        android:enabled="true"
+        android:id="@+id/login_activity"
+        android:icon="@drawable/icon_logout"
+        android:title="Logout"
+        app:showAsAction="always|withText" />
+</menu>
