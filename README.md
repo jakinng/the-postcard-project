@@ -40,7 +40,7 @@ Send digital postcards to your friends or people around the world!
 * Users can see a feed of postcards they have sent and a separate feed of postcards they have received
 * Users can see a detail view of postcards
 * Users can set their location
-* Users can find other users by location
+* Users can find other users by username
 * Users can filter postcard feeds by location and time
 * Users can send postcards through text/email/messaging apps
 
