@@ -131,10 +131,7 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         setViewModel();
         displayPostcards();
-        // Load the first batch of postcards
-        if (viewModel.receivedPostcards == null) {
-            reloadPostcards();
-        }
+        reloadPostcards();
         setupSwipeToRefresh();
 
         observeDateRange();

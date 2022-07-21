@@ -97,10 +97,7 @@ public class ProfileFragment extends Fragment {
         displayUsername();
         displayUserLocation();
         displayPostcards();
-        // Load the first batch of postcards
-        if (viewModel.sentPostcards == null) {
-            reloadPostcards();
-        }
+        reloadPostcards();
         setupSwipeToRefresh();
         configureActionBar();
     }
