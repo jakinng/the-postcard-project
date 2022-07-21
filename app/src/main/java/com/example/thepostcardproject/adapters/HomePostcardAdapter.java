@@ -100,7 +100,7 @@ public class HomePostcardAdapter extends RecyclerView.Adapter<HomePostcardAdapte
                 e.printStackTrace();
             }
             try {
-                String toFrom = "From: " + postcard.getUserFrom().getUsername() + "  &#x1F4CD " + postcard.getLocationFrom().getLocationName() + "\nTo: " + postcard.getUserTo().getUsername() + "  &#x1F4CD " + postcard.getLocationTo().getLocationName();
+                String toFrom = "From: " + postcard.getUserFrom().getUsername() + "  \uD83D\uDCCD " + postcard.getLocationFrom().getLocationName() + "\nTo: " + postcard.getUserTo().getUsername() + " \uD83D\uDCCD " + postcard.getLocationTo().getLocationName();
                 itemBinding.tvUsername.setText(toFrom);
                 itemBinding.tvMessage.setText(postcard.getMessage());
             } catch (com.parse.ParseException e) {

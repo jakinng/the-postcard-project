@@ -26,6 +26,10 @@ public class DetailViewModel extends ViewModel {
         return postcards;
     }
 
+    /**
+     * Increments the position of the selected postcard
+     * @return Returns true if there is a next postcard to flip to
+     */
     public boolean selectNextPostcard() {
         if (postcardPosition.getValue() < postcards.getValue().size() - 1) {
             postcardPosition.setValue(postcardPosition.getValue() + 1);
@@ -35,6 +39,10 @@ public class DetailViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Decrements the position of the selected postcard
+     * @return Returns true if there is a previous postcard to flip to
+     */
     public boolean selectPreviousPostcard() {
         if (postcardPosition.getValue() > 0) {
             postcardPosition.setValue(postcardPosition.getValue() - 1);

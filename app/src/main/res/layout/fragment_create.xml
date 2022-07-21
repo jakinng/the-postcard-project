@@ -102,15 +102,25 @@
     </androidx.cardview.widget.CardView>
 
     <Button
-        android:id="@+id/ib_send_postcard"
+        android:id="@+id/button_place_photo"
         style="?attr/materialButtonOutlinedStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/card_lower"
-        android:layout_alignParentEnd="true"
+        android:layout_alignStart="@+id/card_lower"
+        android:layout_marginStart="0dp"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="12dp"
-        android:drawableRight="@drawable/icon_send"
+        android:text="find photo" />
+
+    <Button
+        android:id="@+id/button_send_postcard"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/card_lower"
+        android:layout_alignEnd="@+id/card_lower"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="0dp"
         android:text="Send"
         app:icon="@drawable/icon_send" />
 </RelativeLayout>

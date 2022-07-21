@@ -1,8 +1,6 @@
 package com.example.thepostcardproject.fragments;
 
 import static android.app.Activity.RESULT_OK;
-import static com.example.thepostcardproject.utilities.Keys.KEY_USER_FROM;
-import static com.example.thepostcardproject.utilities.Keys.KEY_USER_TO;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,18 +26,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.example.thepostcardproject.R;
 import com.example.thepostcardproject.adapters.HomePostcardAdapter;
 import com.example.thepostcardproject.databinding.FragmentHomeBinding;
-import com.example.thepostcardproject.databinding.FragmentPostcardDetailBinding;
 import com.example.thepostcardproject.models.Location;
 import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.models.User;
 import com.example.thepostcardproject.utilities.EndlessRecyclerViewScrollListener;
-import com.example.thepostcardproject.utilities.LocationComparator;
-import com.example.thepostcardproject.utilities.OnBottomSheetCallbacks;
 import com.example.thepostcardproject.viewmodels.HomeViewModel;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.Autocomplete;
@@ -51,23 +45,17 @@ import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClic
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link HomeFragment# newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends BottomSheetDialogFragment implements OnBottomSheetCallbacks {
+public class HomeFragment extends BottomSheetDialogFragment {
     public static final String TAG = "HomeFragment";
     public static final int SELECT_LOCATION_FROM_REQUEST_CODE = 101;
 
@@ -75,14 +63,8 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
     private HomeViewModel viewModel;
 
     private HomePostcardAdapter adapter;
-
-//    private RecyclerView rvPostcards;
-
     private GoToDetailViewListener goToDetailViewListener;
     private EndlessRecyclerViewScrollListener scrollListener;
-//    private SwipeRefreshLayout swipeContainer;
-
-//    private TextView tvPostcardHeader;
 
     // Counters for the infinite scroll
     private int skip = 0;
@@ -110,10 +92,6 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Set this as listener for the backdrop fragment
-        homeBackdropFragment = (HomeBackdropFragment) getParentFragment();
-        homeBackdropFragment.setOnBottomSheetCallbacks(this);
-
         // Enable filter icon in menu
         setHasOptionsMenu(true);
 
@@ -136,6 +114,7 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
 
         observeDateRange();
         observeTargetUser();
+        homeBackdropFragment = (HomeBackdropFragment) getParentFragment();
         homeBackdropFragment.configureBackdrop(view);
         super.onViewCreated(view, savedInstanceState);
     }
@@ -192,10 +171,13 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
     }
 
-    // ######################################################
-    // ##            FILTER BY DATE AND LOCATION           ##
-    // ######################################################
+    // ###################################################################
+    // ##            FILTER BY DATE, LOCATION, AND TARGET USER          ##
+    // ###################################################################
 
+    /**
+     * Configure action bar when the backdrop is open
+     */
     private void actionBarOpen() {
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar(); // or getActionBar();
         actionBar.show();
@@ -203,6 +185,9 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         actionBar.setElevation(0);
     }
 
+    /**
+     * Configure action bar when the backdrop is closed
+     */
     private void actionBarClosed() {
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar(); // or getActionBar();
         actionBar.show();
@@ -210,6 +195,9 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         actionBar.setElevation(0);
     }
 
+    /**
+     * Launch the date range picker
+     */
     public void launchDateRangePicker() {
         MaterialDatePicker<Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText("Filter by date range")
@@ -226,6 +214,9 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         });
     }
 
+    /**
+     * Launch the location picker
+     */
     public void launchLocationFromPicker() {
         // Sets which fields the API request is asking for
         List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.ADDRESS_COMPONENTS, Place.Field.LAT_LNG, Place.Field.ID);
@@ -234,21 +225,6 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
                 AutocompleteActivityMode.FULLSCREEN, fields)
                 .build(getContext());
         startActivityForResult(intent, SELECT_LOCATION_FROM_REQUEST_CODE);
-    }
-
-    /**
-     * Handles the bottom sheet collapsing or expanding
-     * @param bottomSheet The view consisting of the bottom sheet, which is the entire HomeFragment
-     * @param newState The new state, either STATE_EXPANDED or STATE_COLLAPSED
-     */
-    @Override
-    public void onStateChanged(View bottomSheet, int newState) {
-        currentState = newState;
-        if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-
-        } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-
-        }
     }
 
     /**
@@ -326,10 +302,6 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
             @Override
             public void done(List<Postcard> postcards, ParseException e) {
                 if (e == null) {
-//                    Log.d(TAG, "just got " + postcards.size() + " postcards!" + " skip: " + skip);
-                    if (postcards.size() > 0) {
-                        Log.d(TAG, "first postcard; " + postcards.get(0).getMessage());
-                    }
                     updatePostcards(postcards, viewModel.getSortBy(), clear);
                 } else {
                     Log.d(TAG, "There has been an issue retrieving the postcards from the backend: " + e.getMessage());
@@ -337,12 +309,10 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
             }
         };
         if (loadMore) {
-            Log.d(TAG, "loading more!");
             loadMore = false;
             viewModel.loadMorePostcards(skip, findCallback);
         }
     }
-
 
     /**
      * Updates the adapter with the new postcards and updates variables for infinite scrolling
@@ -352,9 +322,7 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         binding.swipeContainer.setRefreshing(false);
         if (clear) { viewModel.clearPostcards(); }
 
-        // If this is the first query made in the infinite scroll, clear the adapter in case this is swipe to refresh
         if (skip == 0 && postcards.size() == 0) {
-            // TODO : display the filtering criteria in the appbar
             binding.tvHeader.setText("Postcard Collection Empty");
         }
 
@@ -385,6 +353,13 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
         loadMorePostcards(true);
     }
 
+    // ##################################
+    // ##        DETAIL VIEW          ##
+    // ##################################
+
+    /**
+     * Interface for detail view on click
+     */
     public interface GoToDetailViewListener {
         void goToDetailView(int postcardPosition);
     }
@@ -393,6 +368,9 @@ public class HomeFragment extends BottomSheetDialogFragment implements OnBottomS
     // ##        SWIPE TO REFRESH              ##
     // ##########################################
 
+    /**
+     * Set up swipe to refresh
+     */
     private void setupSwipeToRefresh() {
         // Setup refresh listener which triggers new data loading
         binding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

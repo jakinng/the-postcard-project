@@ -84,7 +84,6 @@ public class CreateFragment extends Fragment {
     private final static String TAG = "CreateFragment";
     public final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034;
     public final static int PICK_PHOTO_CODE = 1046;
-    public final static int FILTER_PHOTO_CODE = 1056;
 
     private FragmentCreateBinding binding;
     private CreateViewModel viewModel;
@@ -132,34 +131,6 @@ public class CreateFragment extends Fragment {
         displayPlacePhoto();
     }
 
-    private void displayCoverPhoto() {
-        viewModel.filteredPhoto.observe(getViewLifecycleOwner(), new Observer<FilteredPhoto>() {
-            @Override
-            public void onChanged(FilteredPhoto filteredPhoto) {
-                if (filteredPhoto != null) {
-                    try {
-                        filteredPhoto.getFilter().addFilterToImageView(binding.ivCoverPhoto);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-        viewModel.drawablePhoto.observe(getViewLifecycleOwner(), new Observer<Drawable>() {
-            @Override
-            public void onChanged(Drawable drawable) {
-                if (drawable == null) {
-                    binding.ivCoverPhoto.setImageResource(0);
-                } else {
-                    Glide.with(getContext())
-                            .load(drawable)
-                            .transform(new CenterCrop(), new RoundedCorners(30))
-                            .into(binding.ivCoverPhoto);
-                }
-            }
-        });
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -201,6 +172,35 @@ public class CreateFragment extends Fragment {
         viewModel = new ViewModelProvider(requireActivity()).get(CreateViewModel.class);
     }
 
+    private void displayCoverPhoto() {
+        viewModel.filteredPhoto.observe(getViewLifecycleOwner(), new Observer<FilteredPhoto>() {
+            @Override
+            public void onChanged(FilteredPhoto filteredPhoto) {
+                if (filteredPhoto != null) {
+                    try {
+                        filteredPhoto.getFilter().addFilterToImageView(binding.ivCoverPhoto);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        viewModel.drawablePhoto.observe(getViewLifecycleOwner(), new Observer<Drawable>() {
+            @Override
+            public void onChanged(Drawable drawable) {
+                if (drawable == null) {
+                    binding.ivCoverPhoto.setImageResource(0);
+                } else {
+                    Glide.with(getContext())
+                            .load(drawable)
+                            .transform(new CenterCrop(), new RoundedCorners(30))
+                            .into(binding.ivCoverPhoto);
+                }
+            }
+        });
+    }
+
+
     // ***************************************************
     // **      HELPER METHODS FOR SENDING A POSTCARD    **
     // ***************************************************
@@ -209,15 +209,15 @@ public class CreateFragment extends Fragment {
      * Send a postcard when the send button is clicked
      */
     private void setupSendButton() {
-        binding.ibSendPostcard.setOnClickListener(new View.OnClickListener() {
+        binding.buttonSendPostcard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String message = binding.etMessage.getText().toString();
                 String userTo = binding.actvUsername.getText().toString();
                 if (message == null) {
-                    Snackbar.make(binding.ibSendPostcard, "Your postcard message is empty!", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(binding.buttonSendPostcard, "Your postcard message is empty!", Snackbar.LENGTH_SHORT).show();
                 } else if (userTo == null) {
-                    Snackbar.make(binding.ibSendPostcard, "Please specify a recipient!", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(binding.buttonSendPostcard, "Please specify a recipient!", Snackbar.LENGTH_SHORT).show();
                 } else if (viewModel.filteredPhoto != null) {
                     viewModel.filteredPhoto.getValue().saveInBackground(new SaveCallback() {
                         @Override
@@ -226,7 +226,7 @@ public class CreateFragment extends Fragment {
                         }
                     });
                 } else {
-                    Snackbar.make(binding.ibSendPostcard, "Please attach a cover photo!", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(binding.buttonSendPostcard, "Please attach a cover photo!", Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
@@ -250,24 +250,22 @@ public class CreateFragment extends Fragment {
                             @Override
                             public void done(ParseException e) {
                                 if (e == null) {
-                                    Snackbar.make(binding.ibSendPostcard, "Postcard has been sent!", Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(binding.buttonSendPostcard, "Postcard has been sent!", Snackbar.LENGTH_SHORT).show();
                                     // Clear the visual fields
                                     binding.etMessage.setText(null);
                                     binding.actvUsername.setText(null);
-//                                    binding.ivCoverPhoto.setImageResource(0);
                                     viewModel.filteredPhoto.setValue(null);
                                     viewModel.drawablePhoto.setValue(null);
                                 } else {
                                     Log.d(TAG, e.getMessage());
-                                    Snackbar.make(binding.ibSendPostcard, "An error occurred!", Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(binding.buttonSendPostcard, "An error occurred!", Snackbar.LENGTH_SHORT).show();
                                 }
                             }
                         });
                     } else {
-                        Snackbar.make(binding.ibSendPostcard, "There are no users with this username!", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(binding.buttonSendPostcard, "There are no users with this username!", Snackbar.LENGTH_SHORT).show();
                     }
                 } else {
-                    // Something went wrong.
                     Log.d(TAG, "Error retrieving list of users: " + e.getMessage());
                 }
             }
@@ -375,12 +373,12 @@ public class CreateFragment extends Fragment {
         String imageFileName = "postcard_" + timeStamp + "_";
         File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
+                imageFileName,
+                ".jpg",
+                storageDir
         );
 
-        // Save a file: path for use with ACTION_VIEW intents
+        // Save a file: path
         viewModel.photoFile = image;
         return image;
     }
@@ -496,7 +494,7 @@ public class CreateFragment extends Fragment {
     // ***********************************************************
 
     private void launchPhotoFilter() {
-        if (viewModel.filteredPhoto == null) {
+        if (viewModel.filteredPhoto.getValue() == null) {
             Snackbar.make(binding.ivCoverPhoto, "Select or take a picture to edit!", Snackbar.LENGTH_SHORT).show();
         } else {
             viewModel.drawablePhoto.setValue(binding.ivCoverPhoto.getDrawable());
@@ -518,10 +516,15 @@ public class CreateFragment extends Fragment {
     // ***************************************************
 
     /**
-     * Displays a place photo of the location of the current user
+     * Displays a place photo of the location of the current user upon button press
      */
     public void displayPlacePhoto() {
-        displayPlacePhoto(((User) ParseUser.getCurrentUser()).getCurrentLocation().getId());
+        binding.buttonPlacePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayPlacePhoto(((User) ParseUser.getCurrentUser()).getCurrentLocation().getId());
+            }
+        });
     }
 
     /**
@@ -541,6 +544,7 @@ public class CreateFragment extends Fragment {
             // Get the photo metadata.
             final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
             if (metadata == null || metadata.isEmpty()) {
+                Snackbar.make(binding.buttonPlacePhoto, "No photos found!", Snackbar.LENGTH_SHORT).show();
                 Log.w(TAG, "No photo metadata.");
                 return;
             }
@@ -548,22 +552,24 @@ public class CreateFragment extends Fragment {
 
             // Get the attribution text.
             final String attributions = photoMetadata.getAttributions();
+            if (attributions != null) {
+                Snackbar.make(binding.buttonPlacePhoto, "Attributions: " + attributions, Snackbar.LENGTH_SHORT).show();
+            }
 
             // Create a FetchPhotoRequest.
             final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-//                    .setMaxWidth(1600) // Optional.
-//                    .setMaxHeight(300) // Optional.
                     .build();
             placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
                 Bitmap bitmap = fetchPhotoResponse.getBitmap();
                 viewModel.filteredPhoto.setValue(new FilteredPhoto(parseFileFromBitmap(bitmap)));
                 Glide.with(getContext())
                         .load(bitmap)
-                        .centerCrop()
+                        .transform(new CenterCrop(), new RoundedCorners(30))
                         .into(binding.ivCoverPhoto);
             }).addOnFailureListener((exception) -> {
                 if (exception instanceof ApiException) {
                     final ApiException apiException = (ApiException) exception;
+                    Snackbar.make(binding.buttonPlacePhoto, "No photos found!", Snackbar.LENGTH_SHORT).show();
                     Log.e(TAG, "Place not found: " + exception.getMessage());
                     final int statusCode = apiException.getStatusCode();
                 }

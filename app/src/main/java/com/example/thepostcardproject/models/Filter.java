@@ -46,8 +46,6 @@ public class Filter extends ParseObject {
         setWarmth(warmth);
     }
 
-
-
     public String getDescription() {
         return description;
     }

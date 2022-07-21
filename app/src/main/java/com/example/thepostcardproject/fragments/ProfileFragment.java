@@ -162,8 +162,6 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        // Display the location in the textview
-//        binding.tvLocation.setText(viewModel.currentUser.getCurrentLocation().getLocationName());
         // Set an onclick listener on the location icon
         binding.ivLocationIcon.setOnClickListener(new View.OnClickListener() {
             @Override

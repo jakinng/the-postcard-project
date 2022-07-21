@@ -6,42 +6,27 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Pair;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 
 import com.example.thepostcardproject.R;
 import com.example.thepostcardproject.databinding.FragmentHomeBackdropBinding;
-import com.example.thepostcardproject.databinding.FragmentPostcardDetailBinding;
 import com.example.thepostcardproject.models.Location;
-import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.models.User;
-import com.example.thepostcardproject.utilities.OnBottomSheetCallbacks;
 import com.example.thepostcardproject.viewmodels.DetailViewModel;
 import com.example.thepostcardproject.viewmodels.HomeViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
-import com.google.android.material.textfield.TextInputLayout;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -66,8 +51,6 @@ public class HomeBackdropFragment extends Fragment {
     private BottomSheetBehavior bottomSheetBehavior;
     private FragmentHomeBackdropBinding binding;
     private HomeViewModel viewModel;
-
-    private OnBottomSheetCallbacks listener;
     private HomeFragment homeFragment;
 
     public HomeBackdropFragment() {
@@ -198,6 +181,9 @@ public class HomeBackdropFragment extends Fragment {
     // ##      FILTER BY USERNAME        ##
     // ####################################
 
+    /**
+     * Autocompletes the possible users to filter by
+     */
     private void setupUsernameAutocomplete() {
         ArrayList<String> usernames = new ArrayList<>();
         ParseQuery<ParseUser> query = ParseUser.getQuery();
@@ -214,13 +200,10 @@ public class HomeBackdropFragment extends Fragment {
                 }
             }
         });
-
         binding.actvFilterUsername.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // TODO : make into viewmodel.finduser
                 String username = binding.actvFilterUsername.getText().toString();
-                Log.d(TAG, username + " selected from actv");
                 ParseQuery<ParseUser> query = ParseUser.getQuery();
                 query.whereEqualTo(KEY_USERNAME, username);
                 query.findInBackground(new FindCallback<ParseUser>() {
@@ -272,15 +255,6 @@ public class HomeBackdropFragment extends Fragment {
     // ################################
 
     /**
-     * Sets a listener for changes to the backdrop
-     * For example, selecting a condition to sort the postcards by is a change that HomeFragment needs to be notified of
-     * @param onBottomSheetCallbacks The listener implementing the methods upon change on the backdrop
-     */
-    public void setOnBottomSheetCallbacks(OnBottomSheetCallbacks onBottomSheetCallbacks) {
-        this.listener = onBottomSheetCallbacks;
-    }
-
-    /**
      * Sets the bottom sheet to be collapsed
      */
     public void closeBottomSheet() {
@@ -302,9 +276,7 @@ public class HomeBackdropFragment extends Fragment {
         bottomSheetBehavior = BottomSheetBehavior.from(view);
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                listener.onStateChanged(bottomSheet, newState);
-            }
+            public void onStateChanged(@NonNull View bottomSheet, int newState) { }
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
@@ -312,8 +284,13 @@ public class HomeBackdropFragment extends Fragment {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
+    // #################################
+    // ##  CONFIGURE HOME FRAGMENT    ##
+    // #################################
+
     /**
      * Adds the home fragment with the postcards received
+     * Adds a listener to go to a detail view
      */
     private void inflateHomeFragment() {
         HomeFragment.GoToDetailViewListener goToDetailViewListener = new HomeFragment.GoToDetailViewListener() {

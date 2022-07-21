@@ -37,18 +37,4 @@ public class CreateViewModel extends ViewModel {
             usernames.add(user.getUsername());
         }
     }
-
-    public MutableLiveData<FilteredPhoto> getFilteredPhoto() {
-        if (filteredPhoto == null) {
-            return new MutableLiveData<FilteredPhoto>();
-        }
-        return filteredPhoto;
-    }
-
-    public MutableLiveData<Drawable> getDrawablePhoto() {
-        if (drawablePhoto == null) {
-            return new MutableLiveData<Drawable>();
-        }
-        return drawablePhoto;
-    }
 }

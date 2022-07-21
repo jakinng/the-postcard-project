@@ -97,9 +97,8 @@ public class ProfilePostcardAdapter extends RecyclerView.Adapter<ProfilePostcard
          * @param postcard
          */
         public void bind(Postcard postcard) {
-            FilteredPhoto coverPhotoFiltered = null;
             try {
-                coverPhotoFiltered = postcard.getCoverPhotoFiltered();
+                FilteredPhoto coverPhotoFiltered = postcard.getCoverPhotoFiltered();
                 coverPhotoFiltered.displayFilteredPhoto(context, itemBinding.ivProfilePostcard);
             } catch (ParseException e) {
                 e.printStackTrace();

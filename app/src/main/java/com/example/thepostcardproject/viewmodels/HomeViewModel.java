@@ -61,19 +61,30 @@ public class HomeViewModel extends ViewModel {
         return receivedPostcards;
     }
 
+    /**
+     * Add postcards to the current list of postcards
+     * @param postcards The list of postcards to add
+     */
     public void addPostcards(List<Postcard> postcards) {
         getReceivedPostcards().getValue().addAll(postcards);
         receivedPostcards.setValue(receivedPostcards.getValue());
     }
 
+    /**
+     * Clears the current list of postcards
+     */
     public void clearPostcards() {
         getReceivedPostcards().getValue().clear();
         receivedPostcards.setValue(receivedPostcards.getValue());
     }
 
+    /**
+     * Load more postcards
+     * @param skip The skip in the query; used for infinite scroll
+     * @param findCallback The action to take after the query has completed
+     */
     public void loadMorePostcards(int skip, FindCallback<Postcard> findCallback) {
         ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
-        Log.d(TAG, "the skip is " + skip);
         query.setSkip(skip);
 
         // Set date constraints
@@ -99,7 +110,6 @@ public class HomeViewModel extends ViewModel {
             query.addAscendingOrder(KEY_CREATED_AT);
             query.setSkip(skip);
         } else if (!(sortBy == SORT_LOCATION_FROM) & !(sortBy == SORT_LOCATION_TO)) {
-            // Sort by location is processsed after all the postcards are loaded
             Log.d(TAG, "The sort has not been clicked!");
         }
         query.findInBackground(findCallback);

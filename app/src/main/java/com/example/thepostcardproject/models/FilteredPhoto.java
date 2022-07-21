@@ -85,59 +85,13 @@ public class FilteredPhoto extends ParseObject {
     public void displayFilteredPhoto(Context context, ImageFilterView imageFilterView) {
         try {
             Filter filter = getFilter();
-            imageFilterView.setBrightness(filter.getBrightness());
-            imageFilterView.setContrast(filter.getContrast());
-            imageFilterView.setSaturation(filter.getSaturation());
-            imageFilterView.setWarmth(filter.getWarmth());
+            filter.addFilterToImageView(imageFilterView);
             Glide.with(context)
                     .load(getPhotoFile().getUrl())
                     .centerCrop()
                     .into(imageFilterView);
         } catch (ParseException e) {
-            Log.d(TAG, "I can't get the filter from Parse!");
-            e.printStackTrace();
-        }
-    }
-
-    public void displayFilteredPhoto(Context context, ImageFilterView imageFilterView, RequestListener<Drawable> drawableRequestListener) {
-        try {
-            Filter filter = getFilter();
-            imageFilterView.setBrightness(filter.getBrightness());
-            imageFilterView.setContrast(filter.getContrast());
-            imageFilterView.setSaturation(filter.getSaturation());
-            imageFilterView.setWarmth(filter.getWarmth());
-            Glide.with(context)
-                    .load(getPhotoFile().getUrl())
-                    .listener(drawableRequestListener)
-                    .centerCrop()
-                    .into(imageFilterView);
-        } catch (ParseException e) {
-            Log.d(TAG, "Issues retrieving filter from Parse.");
-            e.printStackTrace();
-        }
-    }
-
-    public void displayFilteredPhotoRounded(Context context, ImageFilterView imageFilterView) {
-        try {
-            displayFilteredPhotoRounded(context, imageFilterView, getFilter());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void displayFilteredPhotoRounded(Context context, ImageFilterView imageFilterView, Filter filter) {
-        try {
-            imageFilterView.setBrightness(filter.getBrightness());
-            imageFilterView.setContrast(filter.getContrast());
-            imageFilterView.setSaturation(filter.getSaturation());
-            imageFilterView.setWarmth(filter.getWarmth());
-            ParseFile photoFile = getPhotoFile();
-            Glide.with(context)
-                    .load(photoFile.getUrl())
-                    .transform(new CenterCrop(), new RoundedCorners(15))
-                    .into(imageFilterView);
-        } catch (ParseException e) {
-            Log.d(TAG, "I can't get the filter from Parse!");
+            Log.d(TAG, "The filter can't load.");
             e.printStackTrace();
         }
     }
