@@ -12,6 +12,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_upper"
+        app:cardCornerRadius="7dp"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_marginLeft="15dp"
@@ -42,7 +43,6 @@
                 android:ems="10"
                 android:gravity="start|top"
                 android:inputType="textMultiLine"
-                android:minLines="8"
                 android:textColor="@color/postcard_black"
                 android:hint="start writing your message..."
                 tools:text="Dear Mom, I am doing well in Las Vegas. Love, Jakin" />
@@ -71,7 +71,9 @@
         android:layout_height="300dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:layout_marginTop="15dp">
+        android:layout_marginTop="15dp"
+        app:cardCornerRadius="7dp"
+        >
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -112,6 +114,33 @@
             android:layout_marginStart="9dp"
             android:layout_marginTop="9dp"
             android:src="@drawable/edit_icon" />
+
+            <TextView
+                android:id="@+id/tv_location_from"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/iv_cover_photo"
+                android:background="@color/postcard_light_gray_transparent"
+                android:gravity="center"
+                android:paddingLeft="5dp"
+                android:paddingTop="12dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="12dp"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                tools:text="PARIS, FRANCE" />
+
+            <ImageView
+                android:id="@+id/button_add_location"
+                android:layout_width="24dp"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/tv_location_from"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="0dp"
+                android:src="@drawable/icon_edit_location" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 

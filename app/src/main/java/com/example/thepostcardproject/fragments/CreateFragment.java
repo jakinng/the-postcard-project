@@ -1,5 +1,6 @@
 package com.example.thepostcardproject.fragments;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static androidx.core.content.PermissionChecker.checkSelfPermission;
 
@@ -48,16 +49,21 @@ import com.example.thepostcardproject.R;
 import com.example.thepostcardproject.databinding.FragmentCreateBinding;
 import com.example.thepostcardproject.models.Filter;
 import com.example.thepostcardproject.models.FilteredPhoto;
+import com.example.thepostcardproject.models.Location;
 import com.example.thepostcardproject.models.Postcard;
 import com.example.thepostcardproject.models.User;
 import com.example.thepostcardproject.viewmodels.CreateViewModel;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -71,6 +77,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -84,6 +91,7 @@ public class CreateFragment extends Fragment {
     private final static String TAG = "CreateFragment";
     public final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034;
     public final static int PICK_PHOTO_CODE = 1046;
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 1001;
 
     private FragmentCreateBinding binding;
     private CreateViewModel viewModel;
@@ -129,6 +137,7 @@ public class CreateFragment extends Fragment {
         setupFilterButton();
         setupUsernameAutocomplete();
         displayPlacePhoto();
+        displayLocation();
     }
 
     @Override
@@ -137,10 +146,12 @@ public class CreateFragment extends Fragment {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             loadImageFromCamera(resultCode);
         }
-
         // ACTIVITY COMES FROM GALLERY
         if ((data != null) && requestCode == PICK_PHOTO_CODE) {
             loadImageFromGallery(resultCode, data);
+        }
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            setNewLocation(resultCode, data);
         }
     }
 
@@ -193,7 +204,7 @@ public class CreateFragment extends Fragment {
                 } else {
                     Glide.with(getContext())
                             .load(drawable)
-                            .transform(new CenterCrop(), new RoundedCorners(30))
+                            .transform(new CenterCrop())
                             .into(binding.ivCoverPhoto);
                 }
             }
@@ -284,6 +295,7 @@ public class CreateFragment extends Fragment {
             @Override
             public void done(List<ParseUser> users, ParseException e) {
                 if (e == null) {
+                    viewModel.usernames.clear();
                     viewModel.addUsersToList((ArrayList<ParseUser>) users);
                     usernameAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, viewModel.usernames);
                     binding.actvUsername.setAdapter(usernameAdapter);
@@ -522,7 +534,7 @@ public class CreateFragment extends Fragment {
         binding.buttonPlacePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                displayPlacePhoto(((User) ParseUser.getCurrentUser()).getCurrentLocation().getId());
+                displayPlacePhoto(viewModel.currentLocation.getValue().getId());
             }
         });
     }
@@ -564,7 +576,7 @@ public class CreateFragment extends Fragment {
                 viewModel.filteredPhoto.setValue(new FilteredPhoto(parseFileFromBitmap(bitmap)));
                 Glide.with(getContext())
                         .load(bitmap)
-                        .transform(new CenterCrop(), new RoundedCorners(30))
+                        .centerCrop()
                         .into(binding.ivCoverPhoto);
             }).addOnFailureListener((exception) -> {
                 if (exception instanceof ApiException) {
@@ -575,5 +587,49 @@ public class CreateFragment extends Fragment {
                 }
             });
         });
+    }
+
+    // ***************************************************
+    // **        DISPLAY LOCATION OF THE POSTCARD       **
+    // ***************************************************
+
+    /**
+     * Display the location of the postcard
+     */
+    private void displayLocation() {
+        viewModel.currentLocation.observe(getViewLifecycleOwner(), new Observer<Location>() {
+            @Override
+            public void onChanged(Location location) {
+                binding.tvLocationFrom.setText(location.getLocationName().toUpperCase());
+            }
+        });
+        binding.buttonAddLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.ADDRESS_COMPONENTS, Place.Field.LAT_LNG, Place.Field.ID);
+                // Start the autocomplete intent.
+                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
+                        .build(getContext());
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+            }
+        });
+    }
+
+    /**
+     * Sets the current location to be the result of the autocomplete picker
+     * @param resultCode The result of the intent
+     * @param data Data containing the location picked
+     */
+    private void setNewLocation(int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            Place place = Autocomplete.getPlaceFromIntent(data);
+            viewModel.saveNewLocation(place);
+        } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+            Status status = Autocomplete.getStatusFromIntent(data);
+            Log.i(TAG, "Error in picking location. Try again! Error message: " + status.getStatusMessage());
+        } else if (resultCode == RESULT_CANCELED) {
+            // The user canceled the operation.
+        }
+        return;
     }
 }

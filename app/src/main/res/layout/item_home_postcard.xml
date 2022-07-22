@@ -43,6 +43,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
+        android:layout_alignBottom="@id/iv_home_postcard"
         android:layout_toEndOf="@id/iv_home_postcard"
         android:text="Hi Mom, what's up?"
         android:textColor="@color/postcard_black"
