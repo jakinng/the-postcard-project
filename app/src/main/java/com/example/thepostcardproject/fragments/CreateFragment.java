@@ -153,7 +153,7 @@ public class CreateFragment extends Fragment {
      */
     private void configureActionBar() {
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        actionBar.show();
+        actionBar.hide();
         actionBar.setTitle("Create"); // set the top title
     }
 

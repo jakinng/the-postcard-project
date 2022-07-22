@@ -79,14 +79,14 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Uses an intent to start the MainActivity
      */
-    private void goSplashActivity() {
-        Intent intent = new Intent(this, SplashActivity.class);
+    private void goMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }
 
     /**
-     * Uses an intent to start the MainActivity
+     * Uses an intent to start the Sign up activity
      */
     private void goSignupActivity() {
         Intent intent = new Intent(this, SignupActivity.class);
@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void done(ParseUser user, ParseException e) {
                 if (e == null) {
-                    goSplashActivity();
+                    goMainActivity();
                 } else {
                     Log.d(TAG, e.getMessage());
                     Toast.makeText(LoginActivity.this, "Wrong password. Try again!", Toast.LENGTH_SHORT).show();

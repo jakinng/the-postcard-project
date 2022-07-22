@@ -156,10 +156,12 @@ public class HomeFragment extends BottomSheetDialogFragment {
                 item.setIcon(R.drawable.icon_close);
                 actionBarClosed();
                 homeBackdropFragment.closeBottomSheet();
+                currentState = BottomSheetBehavior.STATE_COLLAPSED;
             } else if (currentState == BottomSheetBehavior.STATE_COLLAPSED) {
                 item.setIcon(R.drawable.icon_filter_list);
                 actionBarOpen();
                 homeBackdropFragment.openBottomSheet();
+                currentState = BottomSheetBehavior.STATE_EXPANDED;
             }
             return true;
         } else {

@@ -17,6 +17,7 @@ public class SplashActivity extends AppCompatActivity {
 
     // Time to display in milliseconds
     private static final long SPLASH_TIME = 10000;
+    private static final long SPLASH_TIME_SHORT = 10;
 
 
     @Override
@@ -25,7 +26,7 @@ public class SplashActivity extends AppCompatActivity {
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         configureActionBar();
-        goMainActivity();
+        goLoginActivity();
     }
     private void configureActionBar() {
         ActionBar actionBar = getSupportActionBar();
@@ -35,7 +36,7 @@ public class SplashActivity extends AppCompatActivity {
     /**
      * Uses an intent to start the MainActivity after a delay
      */
-    private void goMainActivity() {
+    private void goLoginActivity() {
         Handler handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(@NonNull Message msg) {
@@ -45,10 +46,10 @@ public class SplashActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
             }
-        }, SPLASH_TIME);
+        }, SPLASH_TIME_SHORT);
     }
 }

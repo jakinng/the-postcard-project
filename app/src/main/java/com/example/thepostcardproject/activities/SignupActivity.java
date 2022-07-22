@@ -113,7 +113,7 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    goSplashActivity();
+                    goMainActivity();
                 } else {
                     Log.d(TAG, e.getMessage());
                     Toast.makeText(SignupActivity.this, "Error signing up. Try again!", Toast.LENGTH_SHORT).show();
@@ -123,9 +123,9 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     /**
-     * Uses an intent to start the Splash
+     * Uses an intent to start the Main Activity
      */
-    private void goSplashActivity() {
+    private void goMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
