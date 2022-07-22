@@ -229,11 +229,11 @@ public class CreateFragment extends Fragment {
                     Snackbar.make(binding.buttonSendPostcard, "Your postcard message is empty!", Snackbar.LENGTH_SHORT).show();
                 } else if (userTo == null) {
                     Snackbar.make(binding.buttonSendPostcard, "Please specify a recipient!", Snackbar.LENGTH_SHORT).show();
-                } else if (viewModel.filteredPhoto != null) {
+                } else if (viewModel.filteredPhoto.getValue() != null) {
                     viewModel.filteredPhoto.getValue().saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
-                            sendToUser(userTo, message, viewModel.filteredPhoto.getValue());
+                            sendToUser(userTo, message, viewModel.filteredPhoto.getValue(), viewModel.currentLocation.getValue());
                         }
                     });
                 } else {
@@ -246,7 +246,7 @@ public class CreateFragment extends Fragment {
     /**
      * Send a postcard with the specified recipient, message, and photo, and save in Parse
      */
-    private void sendToUser(String username, String message, FilteredPhoto filteredPhoto) {
+    private void sendToUser(String username, String message, FilteredPhoto filteredPhoto, Location locationFrom) {
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.whereEqualTo(KEY_USERNAME, username);
         query.findInBackground(new FindCallback<ParseUser>() {
@@ -256,7 +256,7 @@ public class CreateFragment extends Fragment {
                     if (users.size() == 1) {
                         User userFrom = (User) ParseUser.getCurrentUser();
                         User userTo = (User) users.get(0);
-                        Postcard postcard = new Postcard(userFrom, userTo, userFrom.getCurrentLocation(), userTo.getCurrentLocation(), message, filteredPhoto);
+                        Postcard postcard = new Postcard(userFrom, userTo, locationFrom, userTo.getCurrentLocation(), message, filteredPhoto);
                         postcard.saveInBackground(new SaveCallback() {
                             @Override
                             public void done(ParseException e) {
@@ -573,7 +573,13 @@ public class CreateFragment extends Fragment {
                     .build();
             placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
                 Bitmap bitmap = fetchPhotoResponse.getBitmap();
-                viewModel.filteredPhoto.setValue(new FilteredPhoto(parseFileFromBitmap(bitmap)));
+                Filter currentFilter = new Filter();
+                try {
+                    currentFilter = viewModel.filteredPhoto.getValue().getFilter();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                viewModel.filteredPhoto.setValue(new FilteredPhoto(parseFileFromBitmap(bitmap), currentFilter));
                 Glide.with(getContext())
                         .load(bitmap)
                         .centerCrop()

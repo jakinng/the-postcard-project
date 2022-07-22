@@ -271,7 +271,7 @@ public class ProfileFragment extends Fragment {
                 if (e == null) {
                     binding.swipeContainer.setRefreshing(false);
                     if (skip == 0 && postcards.size() == 0) {
-                        Snackbar.make(binding.rvPostcards, "You have not been sent any postcards!", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(binding.rvPostcards, "You have not sent any postcards yet!", Snackbar.LENGTH_SHORT).show();
                     }
                     skip += postcards.size();
                     if (postcards.size() != 0) {

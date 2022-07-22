@@ -63,6 +63,7 @@ public class ProfileViewModel extends ViewModel {
     public void saveNewLocation(Place place) {
         ParseGeoPoint coordinates = new ParseGeoPoint(place.getLatLng().latitude, place.getLatLng().longitude);
         Location newLocation = new Location(place.getName(), place.getAddress(), coordinates, place.getId());
+        newLocation.saveInBackground();
         currentUser.setCurrentLocation(newLocation);
         currentUser.saveInBackground();
         locationName.setValue(place.getName());

@@ -16,6 +16,7 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,6 +46,11 @@ public class CreateViewModel extends ViewModel {
     public void saveNewLocation(Place place) {
         ParseGeoPoint coordinates = new ParseGeoPoint(place.getLatLng().latitude, place.getLatLng().longitude);
         Location newLocation = new Location(place.getName(), place.getAddress(), coordinates, place.getId());
-        currentLocation.setValue(newLocation);
+        newLocation.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                currentLocation.setValue(newLocation);
+            }
+        });
     }
 }

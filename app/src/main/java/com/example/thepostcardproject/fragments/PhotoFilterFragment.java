@@ -43,6 +43,7 @@ import com.google.android.material.slider.Slider;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -157,8 +158,12 @@ public class PhotoFilterFragment extends Fragment {
                 Collections.reverse(mostUsed);
 
                 // Add the filters used
-                for (int i = 0; i < 3 && i < mostUsed.size(); i++) {
-                    mostUsed.get(i).setDescription("Commonly Used");
+                for (int i = 0; i < mostUsed.size(); i++) {
+                    if (i < 3) {
+                        mostUsed.get(i).setDescription("Commonly Used");
+                    } else {
+                        mostUsed.get(i).setDescription("Preset Filter");
+                    }
                 }
                 adapter.addAll((ArrayList<Filter>) mostUsed);
             }
