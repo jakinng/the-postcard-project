@@ -13,6 +13,7 @@ import com.example.thepostcardproject.models.User;
 import com.google.android.libraries.places.api.model.Place;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -52,5 +53,14 @@ public class CreateViewModel extends ViewModel {
                 currentLocation.setValue(newLocation);
             }
         });
+    }
+
+    public void setCoverPhoto(ParseFile photo) {
+        if (filteredPhoto.getValue() == null) {
+            filteredPhoto.setValue(new FilteredPhoto(photo, Filter.defaultFilter()));
+        } else {
+            filteredPhoto.getValue().setPhotoFile(photo);
+        }
+        filteredPhoto.getValue().saveInBackground();
     }
 }

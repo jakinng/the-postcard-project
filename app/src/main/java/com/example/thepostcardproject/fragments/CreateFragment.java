@@ -233,6 +233,7 @@ public class CreateFragment extends Fragment {
                     viewModel.filteredPhoto.getValue().saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
+                            Log.d(TAG, viewModel.currentLocation.getValue().getLocationName());
                             sendToUser(userTo, message, viewModel.filteredPhoto.getValue(), viewModel.currentLocation.getValue());
                         }
                     });
@@ -402,10 +403,7 @@ public class CreateFragment extends Fragment {
     private void loadImageFromCamera(int resultCode) {
         if (resultCode == RESULT_OK) {
             // Load the selected image into a preview
-            Filter defaultFilter = Filter.defaultFilter();
-
-            viewModel.filteredPhoto.setValue(new FilteredPhoto(new ParseFile(viewModel.photoFile), defaultFilter));
-            defaultFilter.addFilterToImageView(binding.ivCoverPhoto);
+            viewModel.setCoverPhoto(new ParseFile(viewModel.photoFile));
             Glide.with(getContext())
                     .load(viewModel.photoFile)
                     .centerCrop()
@@ -489,9 +487,7 @@ public class CreateFragment extends Fragment {
         if (resultCode == RESULT_OK) {
             // Load the selected image into a preview
             Uri photoUri = data.getData();
-            Filter defaultFilter = Filter.defaultFilter();
-            viewModel.filteredPhoto.setValue(new FilteredPhoto(new ParseFile(photoDataFromBitmap(loadFromUri(photoUri))), defaultFilter));
-            defaultFilter.addFilterToImageView(binding.ivCoverPhoto);
+            viewModel.setCoverPhoto(new ParseFile(photoDataFromBitmap(loadFromUri(photoUri))));
             Glide.with(getContext())
                     .load(photoUri)
                     .centerCrop()
@@ -499,6 +495,8 @@ public class CreateFragment extends Fragment {
         } else {
             Snackbar.make(binding.ivCoverPhoto, "Picture wasn't selected successfully. Try again!", Snackbar.LENGTH_SHORT).show();
         }
+
+
     }
 
     // ***********************************************************
@@ -573,13 +571,7 @@ public class CreateFragment extends Fragment {
                     .build();
             placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
                 Bitmap bitmap = fetchPhotoResponse.getBitmap();
-                Filter currentFilter = new Filter();
-                try {
-                    currentFilter = viewModel.filteredPhoto.getValue().getFilter();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                viewModel.filteredPhoto.setValue(new FilteredPhoto(parseFileFromBitmap(bitmap), currentFilter));
+                viewModel.setCoverPhoto(parseFileFromBitmap(bitmap));
                 Glide.with(getContext())
                         .load(bitmap)
                         .centerCrop()

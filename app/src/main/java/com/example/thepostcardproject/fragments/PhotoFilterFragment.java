@@ -217,9 +217,10 @@ public class PhotoFilterFragment extends Fragment {
                             dataSource, boolean isFirstResource) {
                         Bitmap imageBitmap = ((BitmapDrawable) resource).getBitmap();
                         int perceivedBrightness = calculateBrightness(imageBitmap);
-                        if (perceivedBrightness <= 55) { // Cutoff value: 55
+                        Log.d(TAG, "perceived brightness: " + perceivedBrightness);
+                        if (perceivedBrightness <= 90) { // Cutoff value: 55
                             Snackbar.make(binding.ivCoverPhoto, "The image is dark. Try increasing the brightness!", Snackbar.LENGTH_LONG).show();
-                        } else if (perceivedBrightness >= 200) { // Cutoff value: 200
+                        } else if (perceivedBrightness >= 155) { // Cutoff value: 200
                             Snackbar.make(binding.ivCoverPhoto, "The image is bright. Try decreasing the brightness!", Snackbar.LENGTH_LONG).show();
                         }
                         return false;
