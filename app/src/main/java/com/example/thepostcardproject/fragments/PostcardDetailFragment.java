@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -117,12 +118,14 @@ public class PostcardDetailFragment extends Fragment {
             e.printStackTrace();
         }
         try {
-            String toFrom = "From: " + postcard.getUserFrom().getUsername() + " | " + postcard.getLocationFrom().getLocationName() + "\nTo: " + postcard.getUserTo().getUsername() + " | " + postcard.getLocationTo().getLocationName();
+            String toFrom = "from: " + postcard.getUserFrom().getUsername() + "\nto: " + postcard.getUserTo().getUsername();
             binding.tvUsername.setText(toFrom);
         } catch (com.parse.ParseException e) {
             Log.d(TAG, "An exception occurred with retrieving the username: " + e.getMessage());
         }
         binding.tvMessage.setText(postcard.getMessage());
+        binding.tvMessage.setMovementMethod(new ScrollingMovementMethod());
+        binding.tvLocationFrom.setText("\uD83D\uDCCD " + postcard.getLocationFrom().getLocationName().toUpperCase());
     }
 
     // ********************************************

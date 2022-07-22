@@ -19,6 +19,7 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -34,7 +35,8 @@ public class ProfileViewModel extends ViewModel {
 
     public User currentUser;
     public MutableLiveData<Integer> selectedPostcardPosition;
-    private MutableLiveData<String> locationName;
+    public MutableLiveData<String> locationName;
+    public MutableLiveData<ParseFile> profilePhoto = new MutableLiveData<>();
     public MutableLiveData<List<Postcard>> sentPostcards;
 
     // ********************************************************
@@ -47,7 +49,11 @@ public class ProfileViewModel extends ViewModel {
     }
 
     public String getUsername() {
-        return currentUser.getUsername();
+        return "@" + currentUser.getUsername();
+    }
+
+    public String getName() {
+        return currentUser.getName();
     }
 
     // ********************************************************

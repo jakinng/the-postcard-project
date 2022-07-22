@@ -5,6 +5,7 @@ public abstract class Keys {
     public static final String KEY_NAME = "name";
     public static final String KEY_USERNAME = "username";
     public static final String KEY_CURRENT_LOCATION = "currentLocation";
+    public static final String KEY_PROFILE_PHOTO = "profilePhoto";
 
     // KEYS FOR POSTCARD
     public static final String KEY_COVER_PHOTO = "coverPhoto";

@@ -3,7 +3,13 @@ package com.example.thepostcardproject.fragments;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
+import static com.example.thepostcardproject.utilities.Keys.KEY_PROFILE_PHOTO;
+
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.ImageDecoder;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,6 +26,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -27,6 +34,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.example.thepostcardproject.R;
 import com.example.thepostcardproject.adapters.ProfilePostcardAdapter;
 import com.example.thepostcardproject.databinding.FragmentProfileBinding;
@@ -42,7 +50,11 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.SaveCallback;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -55,6 +67,7 @@ public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
     private static final int NUM_PROFILE_COLUMNS = 3;
     private static final int AUTOCOMPLETE_REQUEST_CODE = 1000;
+    private static final int PICK_PHOTO_CODE = 1567;
 
     ProfileViewModel viewModel;
     private FragmentProfileBinding binding;
@@ -94,6 +107,7 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         addViewModel();
         setCurrentUser();
+        setupProfilePicture();
         displayUsername();
         displayUserLocation();
         displayPostcards();
@@ -127,6 +141,20 @@ public class ProfileFragment extends Fragment {
             }
             return;
         }
+        if ((data != null) && requestCode == PICK_PHOTO_CODE) {
+            Uri photoUri = data.getData();
+            Bitmap selectedImage = loadFromUri(photoUri);
+            selectedImage = selectedImage.copy(Bitmap.Config.ARGB_8888, true);
+            ParseFile profilePhoto = parseFileFromBitmap(selectedImage);
+            profilePhoto.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    viewModel.profilePhoto.setValue(profilePhoto);
+                }
+            });
+            viewModel.currentUser.put(KEY_PROFILE_PHOTO, profilePhoto);
+            viewModel.currentUser.saveInBackground();
+        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -141,9 +169,10 @@ public class ProfileFragment extends Fragment {
     }
 
     /**
-     * Displays the current ParseUser's username
+     * Displays the current ParseUser's name and username
      */
     private void displayUsername() {
+        binding.tvName.setText(viewModel.getName());
         binding.tvUsername.setText(viewModel.getUsername());
     }
 
@@ -295,5 +324,75 @@ public class ProfileFragment extends Fragment {
     private void configureActionBar() {
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar(); // or getActionBar();
         actionBar.setTitle("Profile"); // set the top title
+    }
+
+    // ****************************************
+    // **        DISPLAY PROFILE PICTURE     **
+    // ****************************************
+
+    private void setupProfilePicture() {
+        viewModel.profilePhoto.observe(getViewLifecycleOwner(), new Observer<ParseFile>() {
+            @Override
+            public void onChanged(ParseFile profilePhoto) {
+                Log.d(TAG, "new profile photo uploaded!" + profilePhoto);
+                if (profilePhoto == null) {
+                    Glide.with(getContext())
+                            .load(R.drawable.icon_account_circle)
+                            .circleCrop()
+                            .into(binding.ivProfile);
+                } else {
+                    Glide.with(getContext())
+                            .load(profilePhoto.getUrl())
+                            .placeholder(R.drawable.icon_account_circle)
+                            .circleCrop()
+                            .into(binding.ivProfile);
+                }
+            }
+        });
+        viewModel.profilePhoto.setValue(null);
+        binding.ivProfile.setClickable(true);
+        binding.ivProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create intent for picking a photo from the gallery
+                Intent intent = new Intent(Intent.ACTION_PICK,
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, PICK_PHOTO_CODE);
+            }
+        });
+    }
+
+    /**
+     * Given a photo URI, returns a Bitmap
+     * @param photoUri The URI to get the Bitmap from
+     * @return A Bitmap loaded from the URI
+     */
+    public Bitmap loadFromUri(Uri photoUri) {
+        Bitmap image = null;
+        try {
+            if (Build.VERSION.SDK_INT > 27){
+                ImageDecoder.Source source = ImageDecoder.createSource(getContext().getContentResolver(), photoUri);
+                image = ImageDecoder.decodeBitmap(source);
+            } else {
+                image = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), photoUri);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
+    }
+
+    /**
+     * Returns a ParseFile, given a Bitmap
+     * @param bitmap A bitmap to convert to a ParseFile
+     * @return The equivalent parse file
+     */
+    private ParseFile parseFileFromBitmap(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Bitmap.CompressFormat format = Bitmap.CompressFormat.JPEG;
+        int quality = 100;
+        bitmap.compress(format, quality, stream);
+        byte[] bitmapBytes = stream.toByteArray();
+        return new ParseFile(bitmapBytes);
     }
 }

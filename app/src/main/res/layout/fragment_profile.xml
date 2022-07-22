@@ -9,33 +9,45 @@
 
     <ImageView
         android:id="@+id/iv_profile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp"
-        app:srcCompat="@drawable/person_icon" />
+        android:layout_marginTop="30dp" />
 
     <TextView
         android:id="@+id/tv_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/iv_profile"
-        android:layout_alignStart="@+id/iv_profile"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="12dp"
+        android:layout_alignBottom="@+id/iv_profile"
+        android:layout_marginStart="14dp"
+        android:layout_marginBottom="6dp"
+        android:layout_toEndOf="@+id/iv_profile"
         android:textColor="@color/postcard_black"
+        android:textStyle="bold"
         tools:text="\@jakin" />
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tv_username"
+        android:layout_marginStart="14dp"
+        android:layout_marginBottom="2dp"
+        android:layout_toEndOf="@+id/iv_profile"
+        android:textColor="@color/postcard_black"
+        android:textSize="18sp"
+        tools:text="Jakin Ng" />
 
     <ImageView
         android:id="@+id/iv_location_icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_below="@+id/tv_username"
+        android:layout_below="@+id/iv_profile"
         android:layout_alignStart="@+id/iv_profile"
         android:layout_marginStart="0dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="24dp"
         android:src="@drawable/icon_location"
         app:srcCompat="@drawable/ic_vector_location" />
 
@@ -45,9 +57,10 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/iv_location_icon"
         android:layout_marginStart="4dp"
-        android:layout_marginBottom="1dp"
+        android:layout_marginBottom="0dp"
         android:layout_toEndOf="@+id/iv_location_icon"
         android:textColor="@color/postcard_black"
+        android:textSize="18sp"
         tools:text="Vegas, baby!" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

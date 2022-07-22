@@ -1,6 +1,7 @@
 package com.example.thepostcardproject.viewmodels;
 
 import static com.example.thepostcardproject.utilities.Keys.KEY_USER_FROM;
+import static com.example.thepostcardproject.utilities.Keys.KEY_USER_TO;
 
 import android.util.Log;
 import android.util.Pair;
@@ -86,6 +87,7 @@ public class HomeViewModel extends ViewModel {
     public void loadMorePostcards(int skip, FindCallback<Postcard> findCallback) {
         ParseQuery<Postcard> query = ParseQuery.getQuery(Postcard.class);
         query.setSkip(skip);
+        query.whereEqualTo(KEY_USER_TO, ParseUser.getCurrentUser());
 
         // Set date constraints
         if (dateRange.getValue() != null) {
@@ -95,8 +97,6 @@ public class HomeViewModel extends ViewModel {
 
         if (targetUser.getValue() != null) {
             query.whereEqualTo(KEY_USER_FROM, targetUser.getValue());
-        } else {
-            query.whereEqualTo(KEY_USER_FROM, ParseUser.getCurrentUser());
         }
 
         // Sort by the most recent date first

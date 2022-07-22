@@ -325,7 +325,7 @@ public class HomeFragment extends BottomSheetDialogFragment {
         if (clear) { viewModel.clearPostcards(); }
 
         if (skip == 0 && postcards.size() == 0) {
-            binding.tvHeader.setText("Postcard Collection Empty");
+            binding.tvHeader.setText("No Postcards!");
         }
 
         // Sort based on the selected feature
