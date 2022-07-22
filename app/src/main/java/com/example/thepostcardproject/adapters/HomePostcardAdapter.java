@@ -92,6 +92,7 @@ public class HomePostcardAdapter extends RecyclerView.Adapter<HomePostcardAdapte
          * @param postcard
          */
         public void bind(Postcard postcard) {
+            itemBinding.tvLocationFrom.setText("\uD83D\uDCCD " + postcard.getLocationFrom().getLocationName());
             try {
                 FilteredPhoto coverPhotoFiltered = postcard.getCoverPhotoFiltered();
                 coverPhotoFiltered.displayFilteredPhoto(context, itemBinding.ivHomePostcard);
@@ -100,7 +101,7 @@ public class HomePostcardAdapter extends RecyclerView.Adapter<HomePostcardAdapte
                 e.printStackTrace();
             }
             try {
-                String toFrom = "From: " + postcard.getUserFrom().getUsername() + "  \uD83D\uDCCD " + postcard.getLocationFrom().getLocationName() + "\nTo: " + postcard.getUserTo().getUsername() + " \uD83D\uDCCD " + postcard.getLocationTo().getLocationName();
+                String toFrom = "from: " + postcard.getUserFrom().getUsername() + "\nto: " + postcard.getUserTo().getUsername();
                 itemBinding.tvUsername.setText(toFrom);
                 itemBinding.tvMessage.setText(postcard.getMessage());
             } catch (com.parse.ParseException e) {

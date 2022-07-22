@@ -15,7 +15,23 @@
     <androidx.constraintlayout.utils.widget.ImageFilterView
         android:id="@+id/iv_home_postcard"
         android:layout_width="200dp"
-        android:layout_height="300dp" />
+        android:layout_height="300dp"
+        tools:src="@drawable/login_background" />
+
+    <TextView
+        android:id="@+id/tv_location_from"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/iv_home_postcard"
+        android:background="@color/postcard_transparent"
+        android:gravity="center"
+        android:paddingLeft="5dp"
+        android:paddingTop="10dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="10dp"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        tools:text="\uD83D\uDCCD Paris, France" />
 
     <TextView
         android:id="@+id/tv_message"
@@ -25,7 +41,8 @@
         android:layout_alignParentEnd="true"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="0dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_toEndOf="@id/iv_home_postcard"
         android:text="Hi Mom, what's up?"
         android:textColor="@color/postcard_black"
@@ -38,7 +55,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="0dp"
+        android:layout_marginEnd="10dp"
         android:layout_toEndOf="@+id/iv_home_postcard"
         android:text="from: jakin to: mom"
         android:textColor="@color/postcard_dark_blue"
