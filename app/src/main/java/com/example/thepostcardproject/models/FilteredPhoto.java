@@ -27,6 +27,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterInside;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.example.thepostcardproject.R;
 import com.example.thepostcardproject.adapters.FilterSuggestionAdapter;
 import com.parse.GetDataCallback;
 import com.parse.ParseClassName;
@@ -89,6 +90,7 @@ public class FilteredPhoto extends ParseObject {
             Glide.with(context)
                     .load(getPhotoFile().getUrl())
                     .centerCrop()
+                    .placeholder(R.drawable.placeholder_postcard)
                     .into(imageFilterView);
         } catch (ParseException e) {
             Log.d(TAG, "The filter can't load.");

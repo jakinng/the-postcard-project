@@ -100,15 +100,19 @@ public class HomeBackdropFragment extends Fragment {
         binding.actvFilterBy.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, String.valueOf(position));
                 viewModel.setSortBy(position);
+                homeFragment.reloadPostcards();
                 if (position == 0) {
                     binding.iFilterLocation.setVisibility(View.GONE);
                 } else if (position == 1) {
                     binding.iFilterLocation.setVisibility(View.GONE);
                 } else if (position == 2) {
                     binding.iFilterLocation.setVisibility(View.VISIBLE);
+                    binding.iFilterLocation.setHint("Enter location sent to");
                 } else if (position == 3) {
                     binding.iFilterLocation.setVisibility(View.VISIBLE);
+                    binding.iFilterLocation.setHint("Enter location sent from");
                 }
             }
         });

@@ -48,8 +48,12 @@ public class Location extends ParseObject {
         put(KEY_ADDRESS, address);
     }
 
-    public ParseGeoPoint getCoordinates() throws ParseException {
-        return fetchIfNeeded().getParseGeoPoint(KEY_COORDINATES);
+    public ParseGeoPoint getCoordinates() {
+        try {
+            return fetchIfNeeded().getParseGeoPoint(KEY_COORDINATES);
+        } catch (ParseException e) {
+            return new ParseGeoPoint(0, 0);
+        }
     }
 
     public void setCoordinates(ParseGeoPoint coordinates) {

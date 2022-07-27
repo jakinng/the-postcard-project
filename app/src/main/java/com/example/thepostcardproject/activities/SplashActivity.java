@@ -16,7 +16,7 @@ public class SplashActivity extends AppCompatActivity {
     private ActivitySplashBinding binding;
 
     // Time to display in milliseconds
-    private static final long SPLASH_TIME = 10000;
+    private static final long SPLASH_TIME = 4300;
     private static final long SPLASH_TIME_SHORT = 10;
 
 

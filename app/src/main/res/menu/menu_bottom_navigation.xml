@@ -9,12 +9,14 @@
         android:title="Home"
         app:showAsAction="ifRoom|withText"
         android:visible="true"/>
-<!--    <item-->
-<!--        android:enabled="true"-->
-<!--        android:id="@+id/action_map"-->
-<!--        android:icon="@drawable/icon_explore"-->
-<!--        android:title="Explore"-->
-<!--        app:showAsAction="ifRoom|withText" />-->
+
+    <item
+        android:id="@+id/map_fragment"
+        android:enabled="true"
+        android:icon="@drawable/icon_explore"
+        android:title="Explore"
+        app:showAsAction="ifRoom|withText" />
+
     <item
         android:enabled="true"
         android:id="@+id/create_fragment"

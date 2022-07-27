@@ -283,7 +283,6 @@ public class HomeFragment extends BottomSheetDialogFragment {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 if (loadMore) {
-                    Log.d(TAG, "the scroll listener wants to load more");
                     loadMorePostcards(false);
                 }
             }
@@ -346,7 +345,7 @@ public class HomeFragment extends BottomSheetDialogFragment {
     /**
      * Reloads postcards, resetting the infinite scroll
      */
-    private void reloadPostcards() {
+    public void reloadPostcards() {
         binding.tvHeader.setText("Postcard Collection");
         loadMore = true;
         skip = 0;
