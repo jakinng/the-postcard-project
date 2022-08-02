@@ -56,6 +56,15 @@ public class ProfileViewModel extends ViewModel {
         return currentUser.getName();
     }
 
+    public void loadProfilePhoto() {
+        currentUser = (User) ParseUser.getCurrentUser();
+        ParseFile profile = currentUser.getProfilePhoto();
+        if (profile != null) {
+            profilePhoto.setValue(profile);
+        }
+    }
+
+
     // ********************************************************
     // **            HELPER METHODS FOR LOCATION             **
     // ********************************************************

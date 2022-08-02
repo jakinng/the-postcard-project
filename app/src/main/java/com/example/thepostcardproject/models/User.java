@@ -2,10 +2,12 @@ package com.example.thepostcardproject.models;
 
 import static com.example.thepostcardproject.utilities.Keys.KEY_CURRENT_LOCATION;
 import static com.example.thepostcardproject.utilities.Keys.KEY_NAME;
+import static com.example.thepostcardproject.utilities.Keys.KEY_PROFILE_PHOTO;
 
 import com.example.thepostcardproject.utilities.Keys;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
@@ -20,6 +22,14 @@ public class User extends ParseUser {
 
     public void setName(String name) {
         put(KEY_NAME, name);
+    }
+
+    public ParseFile getProfilePhoto() {
+        return getParseFile(KEY_PROFILE_PHOTO);
+    }
+
+    public void setProfilePhoto(ParseFile profilePhoto) {
+        put(KEY_PROFILE_PHOTO, profilePhoto);
     }
 
     @Override

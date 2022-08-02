@@ -1,5 +1,7 @@
 package com.example.thepostcardproject.fragments;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -25,9 +27,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
+
+import java.io.File;
+import java.io.FileInputStream;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -90,9 +98,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             LatLng postcardLatLng = new LatLng(coordinates.getLatitude(), coordinates.getLongitude());
             String locationName = locationFrom.getLocationName();
             Log.d(TAG, "location: " + locationName);
-            googleMap.addMarker(new MarkerOptions()
-                    .position(postcardLatLng)
-                    .title(locationName));
+            try {
+                File imageFile = postcard.getCoverPhotoFiltered().getPhotoFile().getFile();
+                Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 40, 30, true);
+                googleMap.addMarker(new MarkerOptions()
+                        .position(postcardLatLng)
+                        .title(locationName))
+                        .setIcon(BitmapDescriptorFactory.fromBitmap(scaledBitmap));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

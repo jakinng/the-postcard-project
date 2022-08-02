@@ -166,5 +166,17 @@
         android:layout_marginEnd="0dp"
         android:text="Send"
         app:icon="@drawable/icon_send" />
+
+    <TextView
+        android:id="@+id/attributions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_place_photo"
+        android:layout_alignStart="@+id/button_place_photo"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        android:autoLink="web"
+        tools:text="Jakin N" />
 </RelativeLayout>
 </ScrollView>

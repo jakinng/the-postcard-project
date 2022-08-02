@@ -10,12 +10,12 @@
         app:showAsAction="ifRoom|withText"
         android:visible="true"/>
 
-    <item
-        android:id="@+id/map_fragment"
-        android:enabled="true"
-        android:icon="@drawable/icon_explore"
-        android:title="Explore"
-        app:showAsAction="ifRoom|withText" />
+<!--    <item-->
+<!--        android:id="@+id/map_fragment"-->
+<!--        android:enabled="true"-->
+<!--        android:icon="@drawable/icon_explore"-->
+<!--        android:title="Explore"-->
+<!--        app:showAsAction="ifRoom|withText" />-->
 
     <item
         android:enabled="true"

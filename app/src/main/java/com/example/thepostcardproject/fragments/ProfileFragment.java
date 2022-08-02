@@ -152,7 +152,7 @@ public class ProfileFragment extends Fragment {
                     viewModel.profilePhoto.setValue(profilePhoto);
                 }
             });
-            viewModel.currentUser.put(KEY_PROFILE_PHOTO, profilePhoto);
+            viewModel.currentUser.setProfilePhoto(profilePhoto);
             viewModel.currentUser.saveInBackground();
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -349,7 +349,7 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
-        viewModel.profilePhoto.setValue(null);
+        viewModel.loadProfilePhoto();
         binding.ivProfile.setClickable(true);
         binding.ivProfile.setOnClickListener(new View.OnClickListener() {
             @Override

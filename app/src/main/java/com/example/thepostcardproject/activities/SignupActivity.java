@@ -108,16 +108,22 @@ public class SignupActivity extends AppCompatActivity {
         user.setUsername(username);
         user.setPassword(password);
         user.setName(name);
-        user.setCurrentLocation(location);
-        user.signUpInBackground(new SignUpCallback() {
+        location.saveEventually(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if (e == null) {
-                    goMainActivity();
-                } else {
-                    Log.d(TAG, e.getMessage());
-                    Toast.makeText(SignupActivity.this, "Error signing up. Try again!", Toast.LENGTH_SHORT).show();
-                }
+                ParseUser.logOut();
+                user.setCurrentLocation(location);
+                user.signUpInBackground(new SignUpCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            goMainActivity();
+                        } else {
+                            Log.d(TAG, "Issue signing up: " + e.getMessage());
+                            Toast.makeText(SignupActivity.this, "Error signing up. Try again!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
         });
     }

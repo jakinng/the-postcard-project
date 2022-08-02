@@ -31,9 +31,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // If a user is already logged in, go directly to the main activity
-        if (ParseUser.getCurrentUser() != null) {
-            goMainActivity();
-        }
+//        if (ParseUser.getCurrentUser() != null) {
+//            goMainActivity();
+//        }
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         configureActionBar();

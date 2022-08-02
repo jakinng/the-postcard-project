@@ -32,6 +32,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -563,7 +564,8 @@ public class CreateFragment extends Fragment {
             // Get the attribution text.
             final String attributions = photoMetadata.getAttributions();
             if (attributions != null) {
-                Snackbar.make(binding.buttonPlacePhoto, "Attributions: " + attributions, Snackbar.LENGTH_SHORT).show();
+//                Snackbar.make(binding.buttonPlacePhoto, "Attributions: " + attributions, Snackbar.LENGTH_SHORT).show();
+                binding.attributions.setText("Photo attributions: " + Html.fromHtml(attributions));
             }
 
             // Create a FetchPhotoRequest.
